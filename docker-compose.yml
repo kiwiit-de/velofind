@@ -1,0 +1,49 @@
+services:
+  velofind-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: velofind_app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://velofind:velofind_secure_password@postgres:5432/velofind_db
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+
+  postgres:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: velofind_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: velofind_db
+      POSTGRES_USER: velofind
+      POSTGRES_PASSWORD: velofind_secure_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U velofind -d velofind_db"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: velofind_flyway
+    command: -url=jdbc:postgresql://postgres:5432/velofind_db -user=velofind -password=velofind_secure_password -connectRetries=60 migrate
+    volumes:
+      - ./database/migrations:/flyway/sql
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  pgdata:

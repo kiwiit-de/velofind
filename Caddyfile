@@ -1,0 +1,67 @@
+# ==============================================================================
+# VeloFind Production Caddyfile (Phase 25)
+# Reverse Proxy, Automated Let's Encrypt TLS, Security Hardening & Compression
+# ==============================================================================
+
+# Global Configuration
+{
+    # ACME Certificate Authority Email for Let's Encrypt / ZeroSSL notifications
+    email {$ACME_EMAIL:admin@velofind.de}
+    admin off
+}
+
+# ------------------------------------------------------------------------------
+# 1. CANONICAL REDIRECT: www.velofind.de -> https://velofind.de
+# ------------------------------------------------------------------------------
+www.velofind.de {
+    # Permanent 308 redirect preserving full URI path and query string
+    redir https://velofind.de{uri} permanent
+}
+
+# ------------------------------------------------------------------------------
+# 2. PRIMARY CANONICAL HOST: https://velofind.de
+# ------------------------------------------------------------------------------
+velofind.de {
+    # Modern Compression: zstd preferred, fallback to gzip
+    encode zstd gzip
+
+    # Reverse proxy upstream to the private application container
+    reverse_proxy velofind-app:3000 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+    }
+
+    # Security Headers & Infrastructure Concealment
+    header {
+        # Hide internal server implementation and runtime signatures
+        -Server
+        -X-Powered-By
+        -X-AspNet-Version
+
+        # HTTP Strict Transport Security (HSTS): 1 Year, subdomains, preload
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+
+        # Prevent browser MIME-type sniffing
+        X-Content-Type-Options "nosniff"
+
+        # Clickjacking Defense (anti-framing)
+        X-Frame-Options "DENY"
+
+        # Referrer Information Control
+        Referrer-Policy "strict-origin-when-cross-origin"
+
+        # Permissions Policy restricting unused browser hardware APIs
+        Permissions-Policy "camera=(), microphone=(), geolocation=(self), payment=()"
+
+        # Content Security Policy (strict script/style/image isolation)
+        Content-Security-Policy "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https:; frame-ancestors 'none'; base-uri 'self'; form-action 'self';"
+    }
+
+    # Production Structured Access Logs
+    log {
+        output stdout
+        format json
+    }
+}

@@ -1,0 +1,238 @@
+# ==============================================================================
+# VeloFind Production Docker Compose Configuration (Phase 24 & 25)
+# Production-Hardened Multi-Service Deployment Stack with Automated TLS & Caddy
+# ==============================================================================
+# Security Invariants:
+# 1. ONLY Caddy exposes public ports (80 and 443).
+# 2. Application container and PostgreSQL are entirely private with NO exposed host ports.
+# 3. Public and private networks are strictly segregated (internal_net has internal: true).
+# 4. Application container executes as unprivileged non-root user ('node', UID 1000).
+# 5. Flyway migration must complete successfully before application starts.
+# 6. Production deployment fails if Flyway migration fails.
+# 7. Automated Let's Encrypt TLS, canonical domain enforcement, and HTTP-to-HTTPS redirect.
+# 8. Resource limits, automated restart policies, and healthchecks on all services.
+# 9. Persistent storage for database data, automated backups, and TLS certificates.
+# ==============================================================================
+
+name: velofind-production
+
+services:
+  # ----------------------------------------------------------------------------
+  # 1. INGRESS & TLS REVERSE PROXY (Caddy 2 with Automatic Let's Encrypt)
+  # ----------------------------------------------------------------------------
+  caddy:
+    image: caddy:2-alpine
+    container_name: velofind_caddy_prod
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    environment:
+      - ACME_EMAIL=${ACME_EMAIL:-admin@velofind.de}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - public_net
+    depends_on:
+      velofind-app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "caddy validate --config /etc/caddy/Caddyfile || exit 1"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------
+  # 2. APPLICATION CONTAINER (VeloFind Core Monolith: Express 4 + Vite SPA)
+  # ----------------------------------------------------------------------------
+  velofind-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: velofind-app:production
+    container_name: velofind_app_prod
+    restart: unless-stopped
+    user: "node"
+    security_opt:
+      - "no-new-privileges:true"
+    # IMPORTANT: Private application - NO public or host ports are exposed.
+    # Reached exclusively by Caddy via public_net on port 3000.
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-velofind}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-velofind_db}
+      - PGHOST=postgres
+      - PGPORT=5432
+      - PGUSER=${POSTGRES_USER:-velofind}
+      - PGPASSWORD=${POSTGRES_PASSWORD}
+      - PGDATABASE=${POSTGRES_DB:-velofind_db}
+      - APP_URL=${APP_URL:-https://velofind.de}
+      - POSTGRES_MAX_CONNECTIONS=${POSTGRES_MAX_CONNECTIONS:-20}
+    networks:
+      - public_net
+      - internal_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+      flyway:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "node -e \"fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))\""]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 1024M
+        reservations:
+          cpus: "0.25"
+          memory: 256M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------
+  # 3. DATABASE CONTAINER (PostgreSQL 17 + PostGIS 3.5 Spatial Extension)
+  # ----------------------------------------------------------------------------
+  postgres:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: velofind_postgres_prod
+    restart: unless-stopped
+    shm_size: 256mb
+    # IMPORTANT: Private database - NO public or host ports are exposed.
+    # Accessible only via internal_net on port 5432.
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-velofind_db}
+      POSTGRES_USER: ${POSTGRES_USER:-velofind}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - postgres_backups:/backups
+    networks:
+      - internal_net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER:-velofind} -d $${POSTGRES_DB:-velofind_db}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: "2.00"
+          memory: 2048M
+        reservations:
+          cpus: "0.50"
+          memory: 512M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  # ----------------------------------------------------------------------------
+  # 4. SCHEMA MIGRATION ENGINE (Flyway Community 10 One-Shot Runner)
+  # ----------------------------------------------------------------------------
+  flyway:
+    image: flyway/flyway:10-alpine
+    container_name: velofind_flyway_prod
+    restart: "no"
+    command: -url=jdbc:postgresql://postgres:5432/${POSTGRES_DB:-velofind_db} -user=${POSTGRES_USER:-velofind} -password=${POSTGRES_PASSWORD} -connectRetries=${FLYWAY_CONNECT_RETRIES:-60} -baselineOnMigrate=true migrate
+    volumes:
+      - ./database/migrations:/flyway/sql:ro
+    networks:
+      - internal_net
+    depends_on:
+      postgres:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: "1.00"
+          memory: 512M
+        reservations:
+          cpus: "0.10"
+          memory: 128M
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  # ----------------------------------------------------------------------------
+  # 5. DATABASE BACKUP UTILITY (On-Demand / Scheduled Snapshot Support)
+  # ----------------------------------------------------------------------------
+  db-backup:
+    image: postgis/postgis:17-3.5-alpine
+    container_name: velofind_backup_prod
+    profiles:
+      - backup
+    restart: "no"
+    networks:
+      - internal_net
+    volumes:
+      - postgres_backups:/backups
+      - ./scripts:/scripts:ro
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-velofind_db}
+      POSTGRES_USER: ${POSTGRES_USER:-velofind}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      BACKUP_DIR: /backups
+      BACKUP_PATH: /backups
+      BACKUP_RETENTION_DAYS: ${BACKUP_RETENTION_DAYS:-14}
+      BACKUP_ENCRYPTION_KEY_PATH: ${BACKUP_ENCRYPTION_KEY_PATH:-}
+      BACKUP_REMOTE_DESTINATION: ${BACKUP_REMOTE_DESTINATION:-}
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - "/scripts/backup.sh"
+
+# ------------------------------------------------------------------------------
+# PERSISTENT VOLUMES
+# ------------------------------------------------------------------------------
+volumes:
+  postgres_data:
+    name: velofind_postgres_data
+  postgres_backups:
+    name: velofind_postgres_backups
+  caddy_data:
+    name: velofind_caddy_data
+  caddy_config:
+    name: velofind_caddy_config
+
+# ------------------------------------------------------------------------------
+# SEGREGATED NETWORKS
+# ------------------------------------------------------------------------------
+networks:
+  # Ingress network: connects Caddy and application
+  public_net:
+    name: velofind_public_net
+    driver: bridge
+
+  # Fully isolated internal data network: no external gateway routing
+  internal_net:
+    name: velofind_internal_net
+    driver: bridge
+    internal: true

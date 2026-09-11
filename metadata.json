@@ -1,0 +1,6 @@
+{
+  "name": "VeloFind",
+  "description": "Germany-focused bike and e-bike discovery marketplace connecting riders with verified dealer inventory and leasing providers.",
+  "requestFramePermissions": ["geolocation"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
