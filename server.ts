@@ -24,12 +24,19 @@ import {
   auditEventsRepository
 } from './src/server/db/repositories/index.ts';
 import { feedIngestionService } from './src/server/services/feed-ingestion.service.ts';
+import { dailySyncService } from './src/server/services/daily-sync.service.ts';
+import { imageFetcherService } from './src/server/services/image-fetcher.service.ts';
 import { GERMAN_LOCATIONS, sanitizeCSVField, generateUUID } from './src/server/db/utils.ts';
+import { metricsMiddleware, handleMetricsEndpoint, metrics } from './src/server/monitoring/metrics.ts';
+import { handleLivenessCheck, handleReadinessCheck } from './src/server/monitoring/health.ts';
 import type { LeadStatus, BikeCategory, PropulsionType, AvailabilityStatus, OfferCondition } from './src/types.ts';
 
 async function startServer() {
   const app = express();
   const PORT = 3000;
+
+  // Operational metrics recording for all requests
+  app.use(metricsMiddleware);
 
   // Startup verification for PostgreSQL 17 + PostGIS
   console.log('[PostgreSQL 17] Verifying database connection pool...');
@@ -59,7 +66,12 @@ async function startServer() {
     next();
   });
 
-  // --- HEALTH CHECK ---
+  // --- HEALTH & READINESS PROBES (Phase 29) ---
+  app.get('/api/health/live', handleLivenessCheck);
+  app.get('/api/health/ready', handleReadinessCheck);
+  app.get('/api/metrics', handleMetricsEndpoint);
+
+  // General health summary
   app.get('/api/health', async (_req: Request, res: Response) => {
     const currentPg = await verifyPostgresConnection();
     const currentPostgis = currentPg.connected
@@ -243,6 +255,8 @@ async function startServer() {
         metadata: { destination: offer.source_url }
       });
 
+      metrics.recordOutboundClick();
+
       if (req.query.json === 'true') {
         return res.json({ redirectUrl: offer.source_url });
       }
@@ -306,6 +320,8 @@ async function startServer() {
         metadata: { dealer_id: lead.dealer_id, offer_id: lead.offer_id }
       });
 
+      metrics.recordLeadCreated();
+
       res.status(201).json({
         success: true,
         message: 'Anfrage erfolgreich an den Händler übermittelt',
@@ -326,6 +342,13 @@ async function startServer() {
       }
 
       const report = await feedIngestionService.importCSVFeed(dealer_id, csv_content);
+
+      metrics.recordFeedImportRun({
+        success: report.failedRows === 0,
+        importedRows: report.importedRows,
+        quarantinedRows: report.failedRows
+      });
+
       res.status(200).json({
         success: true,
         report
@@ -413,6 +436,59 @@ async function startServer() {
 
   app.get('/api/locations', (_req: Request, res: Response) => {
     res.json(GERMAN_LOCATIONS);
+  });
+
+  // --- DAILY CATALOG SYNC & INVENTORY FRESHNESS API ---
+  app.get('/api/sync/status', (_req: Request, res: Response) => {
+    res.json(dailySyncService.getStatus());
+  });
+
+  app.post('/api/sync/trigger', async (_req: Request, res: Response) => {
+    try {
+      const report = await dailySyncService.runDailySync();
+      res.json({ success: true, report });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Tägliche Aktualisierung fehlgeschlagen', details: err.message });
+    }
+  });
+
+  // --- ORIGINAL BIKE IMAGE EXTRACTION & RESOLUTION API ---
+  app.get('/api/images/resolve', async (req: Request, res: Response) => {
+    try {
+      const targetUrl = req.query.url ? String(req.query.url) : '';
+      if (!targetUrl) {
+        return res.status(400).json({ error: 'url query parameter is required' });
+      }
+      const extractedImage = await imageFetcherService.extractOriginalImageFromUrl(targetUrl);
+      res.json({
+        url: targetUrl,
+        extractedImage,
+        resolved: !!extractedImage
+      });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Image extraction failed', details: err.message });
+    }
+  });
+
+  app.post('/api/offers/:id/refresh-image', async (req: Request, res: Response) => {
+    try {
+      const offerId = req.params.id;
+      const offer = await offersRepository.findById(offerId);
+      if (!offer) {
+        return res.status(404).json({ error: 'Offer not found' });
+      }
+
+      // Attempt to extract original image from dealer website source_url
+      let newImage = await imageFetcherService.extractOriginalImageFromUrl(offer.source_url);
+      if (!newImage) {
+        newImage = imageFetcherService.getVerifiedModelImage(offer.brand_name, offer.title, offer.category);
+      }
+
+      await offersRepository.update(offerId, { image_url: newImage });
+      res.json({ success: true, offerId, image_url: newImage });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Failed to refresh offer image', details: err.message });
+    }
   });
 
   // --- VITE MIDDLEWARE (DEV) OR STATIC ASSETS (PROD) ---

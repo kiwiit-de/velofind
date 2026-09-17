@@ -3,6 +3,7 @@
  */
 
 import { getKysely } from '../kysely.ts';
+import { isDatabaseAvailable } from '../pool.ts';
 import type { ImportRunTable, ImportRecordTable, ImportStatus } from '../schema.ts';
 import type { Insertable, Selectable, Updateable } from 'kysely';
 
@@ -87,11 +88,18 @@ export class ImportRunsRepository {
   }
 
   async count(): Promise<number> {
-    const res = await this.db
-      .selectFrom('import_runs')
-      .select((eb) => eb.fn.count<number>('id').as('count'))
-      .executeTakeFirst();
-    return Number(res?.count ?? 0);
+    if (await isDatabaseAvailable()) {
+      try {
+        const res = await this.db
+          .selectFrom('import_runs')
+          .select((eb) => eb.fn.count<number>('id').as('count'))
+          .executeTakeFirst();
+        return Number(res?.count ?? 0);
+      } catch {
+        return 0;
+      }
+    }
+    return 0;
   }
 }
 

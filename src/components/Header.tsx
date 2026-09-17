@@ -1,19 +1,26 @@
 import React from 'react';
-import { Bike, MapPin, Building2, FileSpreadsheet, ShieldCheck, Search } from 'lucide-react';
+import { Bike, MapPin, Building2, FileSpreadsheet, ShieldCheck, Search, Heart, Scale } from 'lucide-react';
+import { useFavorites } from '../utils/favorites';
+import { useCompare } from '../utils/compare';
 
 interface HeaderProps {
-  currentTab: 'bikes' | 'leasing' | 'dealers' | 'admin';
-  setCurrentTab: (tab: 'bikes' | 'leasing' | 'dealers' | 'admin') => void;
+  currentTab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin';
+  setCurrentTab: (tab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin') => void;
   selectedCity: string;
   setSelectedCity: (city: string) => void;
+  onOpenCompare?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   currentTab,
   setCurrentTab,
   selectedCity,
-  setSelectedCity
+  setSelectedCity,
+  onOpenCompare
 }) => {
+  const { favoritesCount } = useFavorites();
+  const { compareCount } = useCompare();
+
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur border-b border-slate-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -33,7 +40,7 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Navigation Links */}
-          <nav className="flex items-center gap-1 sm:gap-2">
+          <nav className="flex items-center gap-1 sm:gap-1.5">
             <button
               id="nav-bikes-btn"
               onClick={() => setCurrentTab('bikes')}
@@ -46,6 +53,52 @@ export const Header: React.FC<HeaderProps> = ({
               <Search className="w-4 h-4" />
               <span>Räder & E-Bikes</span>
             </button>
+
+            <button
+              id="nav-favorites-btn"
+              onClick={() => setCurrentTab('favorites')}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+                currentTab === 'favorites'
+                  ? 'bg-rose-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <Heart
+                className={`w-4 h-4 transition-transform ${
+                  favoritesCount > 0
+                    ? currentTab === 'favorites'
+                      ? 'fill-white text-white'
+                      : 'fill-rose-500 text-rose-500'
+                    : ''
+                }`}
+              />
+              <span>Favoriten</span>
+              {favoritesCount > 0 && (
+                <span
+                  className={`px-1.5 py-0.5 text-[10px] font-bold rounded-full leading-none ${
+                    currentTab === 'favorites' ? 'bg-white text-rose-700' : 'bg-rose-500 text-white'
+                  }`}
+                >
+                  {favoritesCount}
+                </span>
+              )}
+            </button>
+
+            {compareCount > 0 && onOpenCompare && (
+              <button
+                id="nav-compare-btn"
+                type="button"
+                onClick={onOpenCompare}
+                className="px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 shadow-2xs"
+                title="Fahrrad-Vergleich öffnen"
+              >
+                <Scale className="w-4 h-4 text-emerald-600" />
+                <span>Vergleich</span>
+                <span className="px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-600 text-white leading-none">
+                  {compareCount}
+                </span>
+              </button>
+            )}
 
             <button
               id="nav-leasing-btn"
@@ -92,3 +145,4 @@ export const Header: React.FC<HeaderProps> = ({
     </header>
   );
 };
+

@@ -1,18 +1,32 @@
-import React from 'react';
-import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2, Heart, Scale } from 'lucide-react';
 import { Offer } from '../types';
+import { useFavorites } from '../utils/favorites';
+import { useCompare } from '../utils/compare';
 
 interface OfferCardProps {
   offer: Offer;
   onSelectOffer: (offer: Offer) => void;
   onTrackOutbound: (offerId: string) => void;
+  onOpenLeadModal?: (offer: Offer) => void;
+  onCompareNotice?: (msg: string) => void;
 }
 
 export const OfferCard: React.FC<OfferCardProps> = ({
   offer,
   onSelectOffer,
-  onTrackOutbound
+  onTrackOutbound,
+  onOpenLeadModal,
+  onCompareNotice
 }) => {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isInCompare, toggleCompare } = useCompare();
+  const isFav = isFavorite(offer.id);
+  const inCompare = isInCompare(offer.id);
+  const [imgSrc, setImgSrc] = useState(
+    offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80'
+  );
+
   const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
     style: 'currency',
     currency: 'EUR'
@@ -27,44 +41,138 @@ export const OfferCard: React.FC<OfferCardProps> = ({
 
   const isDiscounted = offer.compare_at_price_cents && offer.compare_at_price_cents > offer.price_cents;
   const closestLocation = offer.dealer_locations[0];
+  const isLowStock = offer.quantity > 0 && (offer.quantity <= 2 || offer.availability === 'AVAILABLE_SHORT_TERM');
+  const isOutOfStock = offer.availability === 'OUT_OF_STOCK' || offer.quantity === 0;
 
   return (
     <div
       id={`offer-card-${offer.id}`}
-      className="group bg-white rounded-2xl border border-slate-200 overflow-hidden hover:border-slate-300 hover:shadow-md transition-all flex flex-col justify-between"
+      className={`OfferCard group relative bg-white rounded-2xl border overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 hover:scale-[1.018] hover:border-emerald-300/80 hover:z-10 transition-all duration-300 ease-out flex flex-col justify-between will-change-transform ${
+        inCompare ? 'ring-2 ring-emerald-500 border-emerald-400 bg-emerald-50/10' : 'border-slate-200/90'
+      }`}
     >
       {/* Media & Badges Container */}
       <div className="relative aspect-4/3 bg-slate-50 overflow-hidden cursor-pointer" onClick={() => onSelectOffer(offer)}>
         <img
-          src={offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80'}
+          src={imgSrc}
           alt={offer.title}
-          className="w-full h-full object-cover group-hover:scale-103 transition-transform duration-300"
+          onError={() => {
+            setImgSrc('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80');
+          }}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           loading="lazy"
         />
 
-        {/* Category & Propulsion Badges */}
-        <div className="absolute top-3 left-3 flex flex-wrap gap-1.5">
-          <span className="px-2 py-0.5 text-[11px] font-semibold bg-white/95 text-slate-800 rounded-md shadow-xs backdrop-blur">
-            {offer.category}
-          </span>
-          {offer.propulsion === 'PEDELEC' && (
-            <span className="px-2 py-0.5 text-[11px] font-semibold bg-emerald-600 text-white rounded-md shadow-xs flex items-center gap-1">
-              <Zap className="w-3 h-3" /> E-Bike
+        {/* Top Left Corner: Inventory Status Badge (Low Stock / In Stock) & Category */}
+        <div className="absolute top-3 left-3 flex flex-col gap-1.5 z-10 items-start">
+          {/* Inventory Status Badge */}
+          <div
+            id={`stock-badge-${offer.id}`}
+            data-stock-status={isLowStock ? 'low-stock' : isOutOfStock ? 'out-of-stock' : 'in-stock'}
+            className={`px-2.5 py-0.5 rounded-full text-[10px] sm:text-[11px] font-bold flex items-center gap-1.5 shadow-sm backdrop-blur-md transition-all duration-200 ${
+              isLowStock
+                ? 'bg-amber-50/95 text-amber-950 border border-amber-300 shadow-amber-900/10 ring-1 ring-amber-400/40'
+                : isOutOfStock
+                ? 'bg-slate-100/95 text-slate-700 border border-slate-300'
+                : 'bg-emerald-50/95 text-emerald-950 border border-emerald-300/80 shadow-emerald-900/5'
+            }`}
+            title={
+              isLowStock
+                ? `Geringer Lagerbestand: Nur noch ${offer.quantity} Exemplar${offer.quantity === 1 ? '' : 'e'} vor Ort verfügbar!`
+                : isOutOfStock
+                ? 'Derzeit nicht vorrätig'
+                : `Auf Lager: ${offer.quantity} Exemplare sofort verfügbar`
+            }
+          >
+            {isLowStock ? (
+              <>
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-600"></span>
+                </span>
+                <span className="tracking-tight">Low Stock</span>
+                {offer.quantity > 0 && (
+                  <span className="text-[9.5px] font-semibold text-amber-900/80">
+                    ({offer.quantity === 1 ? 'Nur 1 übrig!' : `Nur ${offer.quantity} übrig`})
+                  </span>
+                )}
+              </>
+            ) : isOutOfStock ? (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                <span className="tracking-tight">Out of Stock</span>
+              </>
+            ) : (
+              <>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                <span className="tracking-tight">In Stock</span>
+              </>
+            )}
+          </div>
+
+          {/* Category & Propulsion Badges */}
+          <div className="flex flex-wrap gap-1">
+            <span className="px-2 py-0.5 text-[10px] font-semibold bg-white/95 text-slate-800 rounded-md shadow-xs backdrop-blur">
+              {offer.category}
             </span>
-          )}
-          {offer.propulsion === 'MUSCULAR' && (
-            <span className="px-2 py-0.5 text-[11px] font-semibold bg-slate-800 text-white rounded-md shadow-xs">
-              Bio-Bike
-            </span>
-          )}
+            {offer.propulsion === 'PEDELEC' && (
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-emerald-700 text-white rounded-md shadow-xs flex items-center gap-0.5">
+                <Zap className="w-2.5 h-2.5 text-emerald-200" /> E-Bike
+              </span>
+            )}
+            {offer.propulsion === 'MUSCULAR' && (
+              <span className="px-1.5 py-0.5 text-[10px] font-semibold bg-slate-800 text-white rounded-md shadow-xs">
+                Bio-Bike
+              </span>
+            )}
+          </div>
         </div>
 
-        {/* Availability Badge */}
-        <div className="absolute top-3 right-3">
-          <span className="px-2 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-800 border border-emerald-200 rounded-full flex items-center gap-1">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-            Sofort verfügbar
-          </span>
+        {/* Top Right Action Toolbar: Compare & Heart Favorite */}
+        <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
+          <button
+            id={`compare-btn-${offer.id}`}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              const res = toggleCompare(offer.id);
+              if (!res.success && res.error && onCompareNotice) {
+                onCompareNotice(res.error);
+              }
+            }}
+            aria-label={inCompare ? 'Aus Vergleich entfernen' : 'Zum Vergleich hinzufügen'}
+            title={inCompare ? 'Im Vergleich (Klicken zum Entfernen)' : 'Zum Vergleich hinzufügen (max. 3)'}
+            className={`h-8 px-2.5 rounded-full flex items-center gap-1 text-xs font-semibold transition-all duration-200 active:scale-95 shadow-xs ${
+              inCompare
+                ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-200'
+                : 'bg-white/95 text-slate-700 hover:text-emerald-700 hover:bg-white border border-slate-200/80 backdrop-blur-xs'
+            }`}
+          >
+            <Scale className={`w-3.5 h-3.5 ${inCompare ? 'text-white' : 'text-slate-500'}`} />
+            <span className="text-[11px]">{inCompare ? 'Im Vergleich' : 'Vergleichen'}</span>
+          </button>
+
+          <button
+            id={`favorite-btn-${offer.id}`}
+            type="button"
+            onClick={(e) => {
+              e.stopPropagation();
+              toggleFavorite(offer.id);
+            }}
+            aria-label={isFav ? 'Aus Favoriten entfernen' : 'Zu Favoriten hinzufügen'}
+            title={isFav ? 'Aus Favoriten entfernen' : 'Fahrrad merken'}
+            className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-sm ${
+              isFav
+                ? 'bg-white text-rose-500 ring-2 ring-rose-200 shadow-md'
+                : 'bg-white/90 text-slate-500 hover:text-rose-500 hover:bg-white backdrop-blur-xs'
+            }`}
+          >
+            <Heart
+              className={`w-4 h-4 transition-transform duration-200 ${
+                isFav ? 'fill-rose-500 text-rose-500 scale-110' : 'hover:scale-110'
+              }`}
+            />
+          </button>
         </div>
       </div>
 

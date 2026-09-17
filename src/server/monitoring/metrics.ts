@@ -4,7 +4,7 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import { getPool } from '../db/pool.ts';
+import { getPool, setDbConnectionErrorListener } from '../db/pool.ts';
 
 export interface HttpRouteMetric {
   count: number;
@@ -226,6 +226,10 @@ class MetricsRegistry {
 }
 
 export const metrics = new MetricsRegistry();
+
+setDbConnectionErrorListener(() => {
+  metrics.recordDbConnectionError();
+});
 
 /**
  * Express middleware to track HTTP request timing, route counts, and status codes.

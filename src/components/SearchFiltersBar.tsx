@@ -1,6 +1,7 @@
 import React from 'react';
-import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart } from 'lucide-react';
 import { BikeCategory, PropulsionType } from '../types';
+import { useFavorites } from '../utils/favorites';
 
 interface SearchFiltersBarProps {
   query: string;
@@ -23,6 +24,8 @@ interface SearchFiltersBarProps {
   availableProviders: { slug: string; name: string; count: number }[];
   totalResults: number;
   resetFilters: () => void;
+  onlyFavorites?: boolean;
+  setOnlyFavorites?: (val: boolean) => void;
 }
 
 const CATEGORIES: { id: string; label: string }[] = [
@@ -74,9 +77,12 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   availableBrands,
   availableProviders,
   totalResults,
-  resetFilters
+  resetFilters,
+  onlyFavorites = false,
+  setOnlyFavorites
 }) => {
-  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || leasingProvider !== 'ALL' || postalCode;
+  const { favoritesCount } = useFavorites();
+  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || leasingProvider !== 'ALL' || postalCode || onlyFavorites;
 
   return (
     <div className="bg-white border-b border-slate-200 shadow-xs">
@@ -209,6 +215,41 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               <option key={lp.slug} value={lp.slug}>✓ {lp.name} ({lp.count})</option>
             ))}
           </select>
+
+          {/* Quick Favorites Filter Toggle */}
+          {setOnlyFavorites && (
+            <button
+              id="filter-favorites-toggle-btn"
+              type="button"
+              onClick={() => setOnlyFavorites(!onlyFavorites)}
+              className={`px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs border ${
+                onlyFavorites
+                  ? 'bg-rose-500 text-white border-rose-600 shadow-xs'
+                  : 'bg-white text-slate-700 hover:text-rose-600 hover:bg-rose-50/50 border-slate-200'
+              }`}
+              title="Nur gespeicherte Favoriten anzeigen"
+            >
+              <Heart
+                className={`w-3.5 h-3.5 transition-transform ${
+                  onlyFavorites
+                    ? 'fill-white text-white scale-110'
+                    : favoritesCount > 0
+                    ? 'fill-rose-500 text-rose-500'
+                    : 'text-slate-400'
+                }`}
+              />
+              <span>Nur Favoriten</span>
+              {favoritesCount > 0 && (
+                <span
+                  className={`px-1.5 py-0.2 text-[10px] font-bold rounded-full ${
+                    onlyFavorites ? 'bg-white text-rose-600' : 'bg-rose-100 text-rose-800'
+                  }`}
+                >
+                  {favoritesCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Reset Filters Button */}
           {isFiltered && (

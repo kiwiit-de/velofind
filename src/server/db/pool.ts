@@ -28,6 +28,44 @@ export interface PostgisHealthStatus {
 }
 
 let pool: pg.Pool | null = null;
+let onConnectionError: (() => void) | null = null;
+
+let dbOnlineStatus = false;
+let lastDbCheck = 0;
+const DB_CHECK_INTERVAL_MS = 15000;
+
+export function setDbConnectionErrorListener(fn: () => void): void {
+  onConnectionError = fn;
+}
+
+/**
+ * Checks whether PostgreSQL connection parameters (DATABASE_URL or PGHOST) are configured
+ */
+export function isDatabaseConfigured(): boolean {
+  return Boolean(process.env.DATABASE_URL || process.env.PGHOST);
+}
+
+/**
+ * Checks if the PostgreSQL database is configured and reachable
+ */
+export async function isDatabaseAvailable(): Promise<boolean> {
+  if (!isDatabaseConfigured()) {
+    return false;
+  }
+  const now = Date.now();
+  if (now - lastDbCheck < DB_CHECK_INTERVAL_MS) {
+    return dbOnlineStatus;
+  }
+  lastDbCheck = now;
+  try {
+    const status = await verifyPostgresConnection();
+    dbOnlineStatus = status.connected;
+    return dbOnlineStatus;
+  } catch {
+    dbOnlineStatus = false;
+    return false;
+  }
+}
 
 /**
  * Lazily initialize and return the PostgreSQL Connection Pool
@@ -59,7 +97,10 @@ export function getPool(): pg.Pool {
     pool = new Pool(poolConfig);
 
     pool.on('error', (err) => {
-      console.error('[PostgreSQL Pool] Unexpected error on idle client:', err.message);
+      if (isDatabaseConfigured()) {
+        console.error('[PostgreSQL Pool] Unexpected error on idle client:', err.message);
+      }
+      onConnectionError?.();
     });
   }
 
@@ -70,6 +111,14 @@ export function getPool(): pg.Pool {
  * Verify connectivity to PostgreSQL 17 on startup with latency measurement
  */
 export async function verifyPostgresConnection(): Promise<PostgresHealthStatus> {
+  if (!isDatabaseConfigured()) {
+    return {
+      connected: false,
+      error: 'PostgreSQL is not configured; running in partner registry mode',
+      latencyMs: 0
+    };
+  }
+
   const p = getPool();
   const startTime = Date.now();
 
@@ -97,6 +146,7 @@ export async function verifyPostgresConnection(): Promise<PostgresHealthStatus> 
       client.release();
     }
   } catch (err: any) {
+    onConnectionError?.();
     return {
       connected: false,
       error: err.message,
@@ -109,6 +159,13 @@ export async function verifyPostgresConnection(): Promise<PostgresHealthStatus> 
  * Verify PostGIS spatial extension availability and version
  */
 export async function verifyPostgisExtension(): Promise<PostgisHealthStatus> {
+  if (!isDatabaseConfigured()) {
+    return {
+      available: false,
+      error: 'PostgreSQL is not configured'
+    };
+  }
+
   const p = getPool();
 
   try {

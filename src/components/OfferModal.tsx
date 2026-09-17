@@ -1,21 +1,33 @@
-import React from 'react';
-import { X, ExternalLink, MessageSquare, MapPin, ShieldCheck, BatteryCharging, Gauge, Scale, Bike, Clock, Phone, Mail, AlertCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { X, ExternalLink, MessageSquare, MapPin, ShieldCheck, BatteryCharging, Gauge, Scale, Bike, Clock, Phone, Mail, AlertCircle, Heart } from 'lucide-react';
 import { Offer } from '../types';
+import { useFavorites } from '../utils/favorites';
+import { useCompare } from '../utils/compare';
 
 interface OfferModalProps {
   offer: Offer | null;
   onClose: () => void;
   onOpenLeadModal: (offer: Offer) => void;
   onTrackOutbound: (offerId: string) => void;
+  onCompareNotice?: (msg: string) => void;
 }
 
 export const OfferModal: React.FC<OfferModalProps> = ({
   offer,
   onClose,
   onOpenLeadModal,
-  onTrackOutbound
+  onTrackOutbound,
+  onCompareNotice
 }) => {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const { isInCompare, toggleCompare } = useCompare();
+  const [modalImg, setModalImg] = useState<string | null>(null);
+
   if (!offer) return null;
+
+  const isFav = isFavorite(offer.id);
+  const inCompare = isInCompare(offer.id);
+  const currentImg = modalImg || offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1000&q=80';
 
   const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
     style: 'currency',
@@ -37,14 +49,52 @@ export const OfferModal: React.FC<OfferModalProps> = ({
         id="offer-detail-modal"
         className="relative bg-white rounded-3xl max-w-3xl w-full overflow-hidden shadow-2xl border border-slate-200 animate-in fade-in zoom-in-95 duration-200"
       >
-        {/* Close Button */}
-        <button
-          id="btn-close-offer-modal"
-          onClick={onClose}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-white/90 text-slate-500 hover:text-slate-800 hover:bg-white shadow-sm transition-colors"
-        >
-          <X className="w-5 h-5" />
-        </button>
+        {/* Top Action Bar (Compare, Favorite & Close) */}
+        <div className="absolute top-4 right-4 z-10 flex items-center gap-2">
+          <button
+            id="modal-btn-compare"
+            type="button"
+            onClick={() => {
+              const res = toggleCompare(offer.id);
+              if (!res.success && res.error && onCompareNotice) {
+                onCompareNotice(res.error);
+              }
+            }}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 shadow-xs flex items-center gap-1.5 text-xs font-semibold ${
+              inCompare
+                ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-200'
+                : 'bg-white/95 text-slate-700 hover:text-emerald-700 hover:bg-white border border-slate-200 backdrop-blur-xs'
+            }`}
+            title={inCompare ? 'Im Vergleich (Klicken zum Entfernen)' : 'Zum Vergleich hinzufügen (max. 3)'}
+          >
+            <Scale className={`w-3.5 h-3.5 ${inCompare ? 'text-white' : 'text-slate-500'}`} />
+            <span>{inCompare ? 'Im Vergleich' : 'Vergleichen'}</span>
+          </button>
+
+          <button
+            id="modal-btn-favorite"
+            type="button"
+            onClick={() => toggleFavorite(offer.id)}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 shadow-xs flex items-center gap-1.5 text-xs font-semibold ${
+              isFav
+                ? 'bg-white text-rose-600 border border-rose-200 shadow-md ring-2 ring-rose-100'
+                : 'bg-white/95 text-slate-600 hover:text-rose-500 hover:bg-white border border-slate-200 backdrop-blur-xs'
+            }`}
+            title={isFav ? 'Aus Favoriten entfernen' : 'Fahrrad merken'}
+            aria-label={isFav ? 'Aus Favoriten entfernen' : 'Fahrrad merken'}
+          >
+            <Heart className={`w-4 h-4 ${isFav ? 'fill-rose-500 text-rose-500' : ''}`} />
+            <span>{isFav ? 'Gemerkt' : 'Merken'}</span>
+          </button>
+
+          <button
+            id="btn-close-offer-modal"
+            onClick={onClose}
+            className="p-2 rounded-full bg-white/90 text-slate-500 hover:text-slate-800 hover:bg-white shadow-xs border border-slate-200 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        </div>
 
         {/* Modal Body */}
         <div className="max-h-[85vh] overflow-y-auto p-6 sm:p-8 space-y-6">
@@ -60,9 +110,20 @@ export const OfferModal: React.FC<OfferModalProps> = ({
               <span className="px-2.5 py-0.5 text-xs font-semibold bg-slate-100 text-slate-700 rounded-md">
                 {offer.category}
               </span>
-              <span className="px-2.5 py-0.5 text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full">
-                ● Sofort abholbereit
-              </span>
+              {offer.quantity > 0 && (offer.quantity <= 2 || offer.availability === 'AVAILABLE_SHORT_TERM') ? (
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-amber-50 text-amber-950 border border-amber-300 rounded-full flex items-center gap-1.5 shadow-xs">
+                  <span className="relative flex h-2 w-2">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-500 opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-amber-600"></span>
+                  </span>
+                  <span>Low Stock (Nur noch {offer.quantity} Exemplar{offer.quantity === 1 ? '' : 'e'} vor Ort!)</span>
+                </span>
+              ) : (
+                <span className="px-2.5 py-0.5 text-xs font-semibold bg-emerald-50 text-emerald-950 border border-emerald-300 rounded-full flex items-center gap-1.5 shadow-xs">
+                  <span className="w-2 h-2 rounded-full bg-emerald-600"></span>
+                  <span>In Stock ({offer.quantity} Stück sofort verfügbar)</span>
+                </span>
+              )}
             </div>
             <h2 className="text-2xl font-bold text-slate-900">{offer.title}</h2>
           </div>
@@ -71,8 +132,11 @@ export const OfferModal: React.FC<OfferModalProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-center bg-slate-50 rounded-2xl p-4 border border-slate-200/80">
             <div className="aspect-4/3 rounded-xl overflow-hidden bg-white shadow-xs">
               <img
-                src={offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1000&q=80'}
+                src={currentImg}
                 alt={offer.title}
+                onError={() => {
+                  setModalImg('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1000&q=80');
+                }}
                 className="w-full h-full object-cover"
               />
             </div>

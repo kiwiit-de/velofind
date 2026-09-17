@@ -163,9 +163,9 @@ export async function verifyCriticalTables(): Promise<{ ready: boolean; error?: 
 export async function handleReadinessCheck(_req: Request, res: Response): Promise<void> {
   const pgStatus = await verifyPostgresConnection();
 
-  let postgisStatus = { available: false, error: 'Database offline' };
-  let migrationStatus = { ready: false, error: 'Database offline' };
-  let criticalTablesStatus = { ready: false, error: 'Database offline' };
+  let postgisStatus: Awaited<ReturnType<typeof verifyPostgisExtension>> = { available: false, error: 'Database offline' };
+  let migrationStatus: Awaited<ReturnType<typeof verifyFlywayMigrationState>> = { ready: false, error: 'Database offline' };
+  let criticalTablesStatus: Awaited<ReturnType<typeof verifyCriticalTables>> = { ready: false, error: 'Database offline' };
 
   if (pgStatus.connected) {
     const [pgis, migs, tables] = await Promise.all([

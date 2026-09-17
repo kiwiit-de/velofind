@@ -3,8 +3,10 @@
  */
 
 import { getKysely } from '../kysely.ts';
+import { isDatabaseAvailable } from '../pool.ts';
 import type { DealerTable, DealerLocationTable, LeasingEligibilityStatus } from '../schema.ts';
 import type { Insertable, Selectable, Updateable } from 'kysely';
+import { PARTNER_DEALERS_DATA } from '../dealer-registry.ts';
 
 export type Dealer = Selectable<DealerTable>;
 export type NewDealer = Insertable<DealerTable>;
@@ -27,105 +29,146 @@ export class DealersRepository {
   }
 
   async findAll(onlyActive: boolean = true): Promise<Dealer[]> {
-    let query = this.db.selectFrom('dealers').selectAll();
-    if (onlyActive) {
-      query = query.where('is_active', '=', true);
+    if (await isDatabaseAvailable()) {
+      try {
+        let query = this.db.selectFrom('dealers').selectAll();
+        if (onlyActive) {
+          query = query.where('is_active', '=', true);
+        }
+        const results = await query.orderBy('name', 'asc').execute();
+        if (results && results.length > 0) return results;
+      } catch {
+        // Fallback to partner dealer registry
+      }
     }
-    return await query.orderBy('name', 'asc').execute();
+
+    return (PARTNER_DEALERS_DATA as unknown as Dealer[]).filter((d) => (onlyActive ? d.is_active : true));
   }
 
   async findAllWithLocations(onlyActive: boolean = true): Promise<DealerWithRelations[]> {
-    const dealers = await this.findAll(onlyActive);
-    if (dealers.length === 0) return [];
+    if (await isDatabaseAvailable()) {
+      try {
+        const dealers = await this.findAll(onlyActive);
+        if (dealers.length > 0) {
+          const dealerIds = dealers.map((d) => d.id);
 
-    const dealerIds = dealers.map((d) => d.id);
+          const locations = await this.db
+            .selectFrom('dealer_locations')
+            .selectAll()
+            .where('dealer_id', 'in', dealerIds)
+            .orderBy('name', 'asc')
+            .execute();
 
-    const locations = await this.db
-      .selectFrom('dealer_locations')
-      .selectAll()
-      .where('dealer_id', 'in', dealerIds)
-      .orderBy('name', 'asc')
-      .execute();
+          const participations = await this.db
+            .selectFrom('dealer_provider_participation as dpp')
+            .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
+            .select([
+              'dpp.dealer_id',
+              'lp.id as provider_id',
+              'lp.slug as provider_slug',
+              'lp.name as provider_name',
+              'dpp.status',
+              'dpp.contract_reference'
+            ])
+            .where('dpp.dealer_id', 'in', dealerIds)
+            .execute();
 
-    const participations = await this.db
-      .selectFrom('dealer_provider_participation as dpp')
-      .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
-      .select([
-        'dpp.dealer_id',
-        'lp.id as provider_id',
-        'lp.slug as provider_slug',
-        'lp.name as provider_name',
-        'dpp.status',
-        'dpp.contract_reference'
-      ])
-      .where('dpp.dealer_id', 'in', dealerIds)
-      .execute();
+          return dealers.map((dealer) => ({
+            ...dealer,
+            locations: locations.filter((l) => l.dealer_id === dealer.id),
+            supported_providers: participations
+              .filter((p) => p.dealer_id === dealer.id)
+              .map((p) => ({
+                provider_id: p.provider_id,
+                provider_slug: p.provider_slug,
+                provider_name: p.provider_name,
+                status: p.status,
+                contract_reference: p.contract_reference ?? undefined
+              }))
+          }));
+        }
+      } catch {
+        // Fallback to partner dealers dataset
+      }
+    }
 
-    return dealers.map((dealer) => ({
-      ...dealer,
-      locations: locations.filter((l) => l.dealer_id === dealer.id),
-      supported_providers: participations
-        .filter((p) => p.dealer_id === dealer.id)
-        .map((p) => ({
-          provider_id: p.provider_id,
-          provider_slug: p.provider_slug,
-          provider_name: p.provider_name,
-          status: p.status,
-          contract_reference: p.contract_reference ?? undefined
-        }))
-    }));
+    return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).filter((d) => (onlyActive ? d.is_active : true));
   }
 
   async findById(id: string): Promise<Dealer | undefined> {
-    return await this.db
-      .selectFrom('dealers')
-      .selectAll()
-      .where('id', '=', id)
-      .executeTakeFirst();
+    if (await isDatabaseAvailable()) {
+      try {
+        const dealer = await this.db
+          .selectFrom('dealers')
+          .selectAll()
+          .where('id', '=', id)
+          .executeTakeFirst();
+        if (dealer) return dealer;
+      } catch {
+        // Fallback below
+      }
+    }
+    return (PARTNER_DEALERS_DATA as unknown as Dealer[]).find((d) => d.id === id);
   }
 
   async findBySlug(slug: string): Promise<Dealer | undefined> {
-    return await this.db
-      .selectFrom('dealers')
-      .selectAll()
-      .where('slug', '=', slug)
-      .executeTakeFirst();
+    if (await isDatabaseAvailable()) {
+      try {
+        const dealer = await this.db
+          .selectFrom('dealers')
+          .selectAll()
+          .where('slug', '=', slug)
+          .executeTakeFirst();
+        if (dealer) return dealer;
+      } catch {
+        // Fallback below
+      }
+    }
+    return (PARTNER_DEALERS_DATA as unknown as Dealer[]).find((d) => d.slug === slug);
   }
 
   async findBySlugWithDetails(slug: string): Promise<DealerWithRelations | undefined> {
-    const dealer = await this.findBySlug(slug);
-    if (!dealer) return undefined;
+    if (await isDatabaseAvailable()) {
+      try {
+        const dealer = await this.findBySlug(slug);
+        if (dealer) {
+          const locations = await this.db
+            .selectFrom('dealer_locations')
+            .selectAll()
+            .where('dealer_id', '=', dealer.id)
+            .execute();
 
-    const locations = await this.db
-      .selectFrom('dealer_locations')
-      .selectAll()
-      .where('dealer_id', '=', dealer.id)
-      .execute();
+          const participations = await this.db
+            .selectFrom('dealer_provider_participation as dpp')
+            .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
+            .select([
+              'lp.id as provider_id',
+              'lp.slug as provider_slug',
+              'lp.name as provider_name',
+              'dpp.status',
+              'dpp.contract_reference'
+            ])
+            .where('dpp.dealer_id', '=', dealer.id)
+            .execute();
 
-    const participations = await this.db
-      .selectFrom('dealer_provider_participation as dpp')
-      .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
-      .select([
-        'lp.id as provider_id',
-        'lp.slug as provider_slug',
-        'lp.name as provider_name',
-        'dpp.status',
-        'dpp.contract_reference'
-      ])
-      .where('dpp.dealer_id', '=', dealer.id)
-      .execute();
+          return {
+            ...dealer,
+            locations,
+            supported_providers: participations.map((p) => ({
+              provider_id: p.provider_id,
+              provider_slug: p.provider_slug,
+              provider_name: p.provider_name,
+              status: p.status,
+              contract_reference: p.contract_reference ?? undefined
+            }))
+          };
+        }
+      } catch {
+        // Fallback below
+      }
+    }
 
-    return {
-      ...dealer,
-      locations,
-      supported_providers: participations.map((p) => ({
-        provider_id: p.provider_id,
-        provider_slug: p.provider_slug,
-        provider_name: p.provider_name,
-        status: p.status,
-        contract_reference: p.contract_reference ?? undefined
-      }))
-    };
+    return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).find((d) => d.slug === slug);
   }
 
   async create(dealer: NewDealer): Promise<Dealer> {
@@ -146,11 +189,18 @@ export class DealersRepository {
   }
 
   async count(): Promise<number> {
-    const res = await this.db
-      .selectFrom('dealers')
-      .select((eb) => eb.fn.count<number>('id').as('count'))
-      .executeTakeFirst();
-    return Number(res?.count ?? 0);
+    if (await isDatabaseAvailable()) {
+      try {
+        const res = await this.db
+          .selectFrom('dealers')
+          .select((eb) => eb.fn.count<number>('id').as('count'))
+          .executeTakeFirst();
+        if (res && res.count) return Number(res.count);
+      } catch {
+        // Fallback below
+      }
+    }
+    return PARTNER_DEALERS_DATA.length;
   }
 }
 

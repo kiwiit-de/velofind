@@ -9,6 +9,7 @@
     "start": "node dist/server.cjs",
     "test:postgres": "tsx tests/postgres-connection.test.ts",
     "test:kysely": "tsx tests/kysely-repositories.test.ts",
+    "test:monitoring": "tsx tests/phase29-monitoring.test.ts",
     "test": "tsx tests/postgres-connection.test.ts && tsx tests/kysely-repositories.test.ts && tsx tests/mvp-verification.test.ts",
     "preview": "vite preview",
     "clean": "rm -rf dist server.js",

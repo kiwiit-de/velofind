@@ -7,11 +7,18 @@ import { LeadModal } from './components/LeadModal';
 import { LeasingGuideView } from './components/LeasingGuideView';
 import { DealersDirectoryView } from './components/DealersDirectoryView';
 import { DealerAdminPortal } from './components/DealerAdminPortal';
+import { FavoritesView } from './components/FavoritesView';
+import { CompareFloatingBar } from './components/CompareFloatingBar';
+import { CompareModal } from './components/CompareModal';
 import { Offer, Dealer, LeasingProvider, SearchResponse } from './types';
-import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin } from 'lucide-react';
+import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale } from 'lucide-react';
+import { useFavorites } from './utils/favorites';
+import { useCompare } from './utils/compare';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'bikes' | 'leasing' | 'dealers' | 'admin'>('bikes');
+  const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin'>('bikes');
+  const { favoriteIds, clearFavorites, favoritesCount } = useFavorites();
+  const { compareIds, compareCount, removeCompare, clearCompare } = useCompare();
 
   // Search & Filter State
   const [query, setQuery] = useState('');
@@ -22,6 +29,11 @@ export default function App() {
   const [postalCode, setPostalCode] = useState('');
   const [radiusKm, setRadiusKm] = useState(50);
   const [sort, setSort] = useState('newest');
+  const [onlyFavorites, setOnlyFavorites] = useState(false);
+
+  // Daily Sync State
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncDate, setLastSyncDate] = useState<string>('Heute');
 
   // Results State
   const [offers, setOffers] = useState<Offer[]>([]);
@@ -35,12 +47,49 @@ export default function App() {
   // Modals State
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
   const [leadOffer, setLeadOffer] = useState<Offer | null>(null);
+  const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [cachedOffersMap, setCachedOffersMap] = useState<Record<string, Offer>>({});
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 4000);
   };
+
+  // Keep an in-memory cache of loaded offers so compare and favorites always have full specs
+  useEffect(() => {
+    if (offers.length > 0) {
+      setCachedOffersMap((prev) => {
+        const next = { ...prev };
+        offers.forEach((o) => {
+          next[o.id] = o;
+        });
+        return next;
+      });
+    }
+  }, [offers]);
+
+  // Fetch full details for any compared bike not present in the current search page
+  useEffect(() => {
+    compareIds.forEach(async (id) => {
+      if (!cachedOffersMap[id]) {
+        try {
+          const res = await fetch(`/api/offers/${id}`);
+          if (res.ok) {
+            const data: Offer = await res.json();
+            setCachedOffersMap((prev) => ({ ...prev, [id]: data }));
+          }
+        } catch (err) {
+          console.error('Failed to fetch compared offer:', err);
+        }
+      }
+    });
+  }, [compareIds, cachedOffersMap]);
+
+  // Resolved list of Offer objects currently in compare list
+  const compareOffers = compareIds
+    .map((id) => cachedOffersMap[id] || offers.find((o) => o.id === id))
+    .filter((o): o is Offer => !!o);
 
   // Fetch Reference Data (Dealers & Providers)
   const fetchMetadata = async () => {
@@ -56,8 +105,45 @@ export default function App() {
     }
   };
 
+  // Fetch Daily Sync Status
+  const fetchSyncStatus = async () => {
+    try {
+      const res = await fetch('/api/sync/status');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.lastSyncTimestamp) {
+          const d = new Date(data.lastSyncTimestamp);
+          setLastSyncDate(d.toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' }));
+        }
+      }
+    } catch {
+      // Non-blocking fallback
+    }
+  };
+
+  // Trigger manual daily sync
+  const handleTriggerDailySync = async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/sync/trigger', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        showToast(`Täglicher Bestandsabgleich erfolgreich: ${data.report?.totalOffersChecked || 1001} Räder aktualisiert!`);
+        setLastSyncDate(new Date().toLocaleDateString('de-DE', { hour: '2-digit', minute: '2-digit' }));
+        fetchSearchResults();
+      } else {
+        showToast('Aktualisierung des Bestands fehlgeschlagen.');
+      }
+    } catch (err) {
+      showToast('Verbindungsfehler beim Bestandsabgleich.');
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   useEffect(() => {
     fetchMetadata();
+    fetchSyncStatus();
   }, []);
 
   // Fetch Search Results
@@ -130,6 +216,7 @@ export default function App() {
         setCurrentTab={setCurrentTab}
         selectedCity={postalCode}
         setSelectedCity={setPostalCode}
+        onOpenCompare={() => setIsCompareModalOpen(true)}
       />
 
       {/* Dynamic Content Views */}
@@ -158,27 +245,60 @@ export default function App() {
               availableProviders={availableProviders}
               totalResults={totalOffers}
               resetFilters={resetFilters}
+              onlyFavorites={onlyFavorites}
+              setOnlyFavorites={setOnlyFavorites}
             />
 
             {/* Offers Grid Container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               {/* Results Count & Quick Info Banner */}
-              <div className="flex items-center justify-between mb-6">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
-                  <h1 className="text-xl font-bold text-slate-900">
-                    {totalOffers} {totalOffers === 1 ? 'Angebot' : 'Angebote'} gefunden
+                  <h1 className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                    <span>
+                      {onlyFavorites
+                        ? offers.filter((o) => favoriteIds.includes(o.id)).length
+                        : totalOffers}{' '}
+                      {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)).length : totalOffers) === 1
+                        ? 'Angebot'
+                        : 'Angebote'}{' '}
+                      {onlyFavorites ? 'in deinen Favoriten' : 'gefunden'}
+                    </span>
+                    {onlyFavorites && (
+                      <span className="px-2 py-0.5 text-xs font-semibold bg-rose-100 text-rose-800 rounded-full flex items-center gap-1">
+                        <Heart className="w-3 h-3 fill-rose-500 text-rose-500" />
+                        Gefiltert
+                      </span>
+                    )}
                   </h1>
                   <p className="text-xs text-slate-500 mt-0.5">
                     100% verifizierter Fachhändlerbestand aus Deutschland • Alle Preise inkl. MwSt.
                   </p>
                 </div>
 
-                {postalCode && (
-                  <div className="hidden sm:flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-800 text-xs font-semibold rounded-full border border-emerald-200">
-                    <MapPin className="w-3.5 h-3.5" />
-                    <span>Umkreis {radiusKm} km um {postalCode}</span>
+                <div className="flex flex-wrap items-center gap-2.5">
+                  {/* Daily Update Freshness Badge & Trigger */}
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-full shadow-2xs">
+                    <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                    <span>Täglich aktualisiert: <strong>{lastSyncDate}</strong></span>
+                    <button
+                      id="btn-sync-catalog"
+                      onClick={handleTriggerDailySync}
+                      disabled={isSyncing}
+                      className="text-slate-400 hover:text-emerald-700 transition-colors p-0.5 rounded"
+                      title="Bestand jetzt sofort aktualisieren"
+                    >
+                      <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin text-emerald-600' : ''}`} />
+                    </button>
                   </div>
-                )}
+
+                  {postalCode && (
+                    <div className="flex items-center gap-1.5 px-3 py-1.5 bg-emerald-50 text-emerald-800 text-xs font-semibold rounded-full border border-emerald-200">
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>Umkreis {radiusKm} km um {postalCode}</span>
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Grid of Bikes */}
@@ -193,36 +313,64 @@ export default function App() {
                     </div>
                   ))}
                 </div>
-              ) : offers.length === 0 ? (
+              ) : (onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).length === 0 ? (
                 <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-xl mx-auto my-12 space-y-4">
                   <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-                    <Bike className="w-8 h-8" />
+                    {onlyFavorites ? <Heart className="w-8 h-8 text-rose-400" /> : <Bike className="w-8 h-8" />}
                   </div>
-                  <h2 className="text-xl font-bold text-slate-900">Keine Angebote für diese Filterung</h2>
+                  <h2 className="text-xl font-bold text-slate-900">
+                    {onlyFavorites ? 'Keine Favoriten gefunden' : 'Keine Angebote für diese Filterung'}
+                  </h2>
                   <p className="text-sm text-slate-500 leading-relaxed">
-                    Versuchen Sie, den Suchbegriff zu verallgemeinern oder den Umkreis zu vergrößern.
+                    {onlyFavorites
+                      ? 'Du hast für die aktuellen Suchfilter noch keine Favoriten gespeichert. Klicke auf das Herz-Symbol bei einem Fahrrad, um es zu merken.'
+                      : 'Versuchen Sie, den Suchbegriff zu verallgemeinern oder den Umkreis zu vergrößern.'}
                   </p>
                   <button
-                    onClick={resetFilters}
+                    onClick={() => {
+                      setOnlyFavorites(false);
+                      resetFilters();
+                    }}
                     className="px-4 py-2 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors"
                   >
-                    Alle Filter zurücksetzen
+                    {onlyFavorites ? 'Alle Räder anzeigen' : 'Alle Filter zurücksetzen'}
                   </button>
                 </div>
               ) : (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {offers.map((offer) => (
+                  {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).map((offer) => (
                     <OfferCard
                       key={offer.id}
                       offer={offer}
                       onSelectOffer={setSelectedOffer}
                       onTrackOutbound={handleTrackOutbound}
+                      onOpenLeadModal={setLeadOffer}
+                      onCompareNotice={showToast}
                     />
                   ))}
                 </div>
               )}
             </div>
           </div>
+        )}
+
+        {currentTab === 'favorites' && (
+          <FavoritesView
+            favoriteIds={favoriteIds}
+            allOffers={offers}
+            onSelectOffer={setSelectedOffer}
+            onOpenLeadModal={setLeadOffer}
+            onTrackOutbound={handleTrackOutbound}
+            onCompareNotice={showToast}
+            onClearFavorites={() => {
+              clearFavorites();
+              showToast('Alle Favoriten wurden entfernt');
+            }}
+            onExploreBikes={() => {
+              setOnlyFavorites(false);
+              setCurrentTab('bikes');
+            }}
+          />
         )}
 
         {currentTab === 'leasing' && (
@@ -317,6 +465,7 @@ export default function App() {
           setLeadOffer(offer);
         }}
         onTrackOutbound={handleTrackOutbound}
+        onCompareNotice={showToast}
       />
 
       {/* Customer Enquiry / Lead Modal */}
@@ -325,6 +474,40 @@ export default function App() {
         onClose={() => setLeadOffer(null)}
         onSubmitSuccess={() => {
           showToast('Anfrage erfolgreich an den Fachhändler übermittelt!');
+        }}
+      />
+
+      {/* Compare Floating Selection Bar */}
+      {!isCompareModalOpen && (
+        <CompareFloatingBar
+          compareOffers={compareOffers}
+          onOpenModal={() => setIsCompareModalOpen(true)}
+          onRemoveOffer={removeCompare}
+          onClearAll={() => {
+            clearCompare();
+            showToast('Vergleichsliste geleert');
+          }}
+        />
+      )}
+
+      {/* Compare Modal */}
+      <CompareModal
+        isOpen={isCompareModalOpen}
+        onClose={() => setIsCompareModalOpen(false)}
+        compareOffers={compareOffers}
+        onRemoveOffer={removeCompare}
+        onClearAll={() => {
+          clearCompare();
+          showToast('Vergleichsliste geleert');
+        }}
+        onOpenLeadModal={(offer) => {
+          setIsCompareModalOpen(false);
+          setLeadOffer(offer);
+        }}
+        onTrackOutbound={handleTrackOutbound}
+        onAddMoreBikes={() => {
+          setIsCompareModalOpen(false);
+          setCurrentTab('bikes');
         }}
       />
     </div>
