@@ -12,6 +12,7 @@ interface FavoritesViewProps {
   onClearFavorites: () => void;
   onExploreBikes: () => void;
   onCompareNotice?: (msg: string) => void;
+  onOpenDealer?: (dealerSlug: string) => void;
 }
 
 export const FavoritesView: React.FC<FavoritesViewProps> = ({
@@ -22,7 +23,8 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
   onTrackOutbound,
   onClearFavorites,
   onExploreBikes,
-  onCompareNotice
+  onCompareNotice,
+  onOpenDealer
 }) => {
   // Find matching offers from the loaded catalog
   const favoritedOffers = allOffers.filter((offer) => favoriteIds.includes(offer.id));
@@ -120,6 +122,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                 onOpenLeadModal={onOpenLeadModal}
                 onTrackOutbound={onTrackOutbound}
                 onCompareNotice={onCompareNotice}
+                onOpenDealer={onOpenDealer}
               />
             ))}
           </div>

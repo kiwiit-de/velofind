@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2, Heart, Scale } from 'lucide-react';
+import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2, Heart, Scale, Building2 } from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
@@ -10,6 +10,7 @@ interface OfferCardProps {
   onTrackOutbound: (offerId: string) => void;
   onOpenLeadModal?: (offer: Offer) => void;
   onCompareNotice?: (msg: string) => void;
+  onOpenDealer?: (dealerSlug: string) => void;
 }
 
 export const OfferCard: React.FC<OfferCardProps> = ({
@@ -17,7 +18,8 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   onSelectOffer,
   onTrackOutbound,
   onOpenLeadModal,
-  onCompareNotice
+  onCompareNotice,
+  onOpenDealer
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isInCompare, toggleCompare } = useCompare();
@@ -242,9 +244,24 @@ export const OfferCard: React.FC<OfferCardProps> = ({
         <div className="pt-3 border-t border-slate-100">
           {/* Dealer & Location Distance */}
           <div className="flex items-center justify-between text-xs text-slate-600 mb-2">
-            <span className="font-medium truncate max-w-[170px]" title={offer.dealer_name}>
-              {offer.dealer_name}
-            </span>
+            {onOpenDealer ? (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onOpenDealer(offer.dealer_slug);
+                }}
+                className="font-medium text-slate-700 hover:text-emerald-700 hover:underline truncate max-w-[170px] text-left flex items-center gap-1 transition-colors group/dealer"
+                title={`${offer.dealer_name} – Alle Angebote dieses Händlers ansehen`}
+              >
+                <Building2 className="w-3 h-3 text-slate-400 group-hover/dealer:text-emerald-600 shrink-0" />
+                <span className="truncate">{offer.dealer_name}</span>
+              </button>
+            ) : (
+              <span className="font-medium truncate max-w-[170px]" title={offer.dealer_name}>
+                {offer.dealer_name}
+              </span>
+            )}
             {offer.distance_km !== undefined ? (
               <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
                 <MapPin className="w-3 h-3" />

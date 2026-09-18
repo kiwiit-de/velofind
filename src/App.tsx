@@ -11,8 +11,11 @@ import { FavoritesView } from './components/FavoritesView';
 import { CompareFloatingBar } from './components/CompareFloatingBar';
 import { CompareModal } from './components/CompareModal';
 import { NearbyDealersMap } from './components/NearbyDealersMap';
+import { PartnerDealerModal } from './components/PartnerDealerModal';
+import { OfferCardSkeleton, OfferGridSkeleton } from './components/OfferCardSkeleton';
+import { BikeLoadingSpinner } from './components/BikeLoadingSpinner';
 import { Offer, Dealer, LeasingProvider, SearchResponse } from './types';
-import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass } from 'lucide-react';
+import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X } from 'lucide-react';
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
@@ -28,6 +31,7 @@ export default function App() {
   const [propulsion, setPropulsion] = useState('ALL');
   const [brand, setBrand] = useState('ALL');
   const [leasingProvider, setLeasingProvider] = useState('ALL');
+  const [selectedDealerSlug, setSelectedDealerSlug] = useState('');
   const [postalCode, setPostalCode] = useState('');
   const [radiusKm, setRadiusKm] = useState(50);
   const [sort, setSort] = useState('newest');
@@ -43,9 +47,13 @@ export default function App() {
   const [totalOffers, setTotalOffers] = useState(0);
   const [availableBrands, setAvailableBrands] = useState<{ name: string; count: number }[]>([]);
   const [availableProviders, setAvailableProviders] = useState<{ slug: string; name: string; count: number }[]>([]);
+  const [availableDealers, setAvailableDealers] = useState<{ id: string; name: string; slug: string; count: number; city?: string }[]>([]);
   const [dealers, setDealers] = useState<Dealer[]>([]);
   const [providers, setProviders] = useState<LeasingProvider[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Partner Dealer Modal State
+  const [partnerModalDealer, setPartnerModalDealer] = useState<Dealer | null>(null);
 
   // Geographic calculations based on current postalCode
   const centerLocation = useMemo(() => {
@@ -169,6 +177,7 @@ export default function App() {
       if (propulsion !== 'ALL') params.append('propulsion', propulsion);
       if (brand !== 'ALL') params.append('brand', brand);
       if (leasingProvider !== 'ALL') params.append('provider', leasingProvider);
+      if (selectedDealerSlug) params.append('dealerSlug', selectedDealerSlug);
       if (postalCode) {
         params.append('postalCode', postalCode);
         params.append('radius', String(radiusKm));
@@ -183,13 +192,14 @@ export default function App() {
         setTotalOffers(data.total);
         setAvailableBrands(data.available_brands || []);
         setAvailableProviders(data.available_providers || []);
+        setAvailableDealers(data.available_dealers || []);
       }
     } catch (err) {
       console.error('Search request failed:', err);
     } finally {
       setLoading(false);
     }
-  }, [query, category, propulsion, brand, leasingProvider, postalCode, radiusKm, sort]);
+  }, [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
 
   useEffect(() => {
     fetchSearchResults();
@@ -208,6 +218,7 @@ export default function App() {
     setPropulsion('ALL');
     setBrand('ALL');
     setLeasingProvider('ALL');
+    setSelectedDealerSlug('');
     setPostalCode('');
     setRadiusKm(50);
     setSort('newest');
@@ -248,6 +259,9 @@ export default function App() {
               setBrand={setBrand}
               leasingProvider={leasingProvider}
               setLeasingProvider={setLeasingProvider}
+              selectedDealerSlug={selectedDealerSlug}
+              setSelectedDealerSlug={setSelectedDealerSlug}
+              availableDealers={availableDealers}
               postalCode={postalCode}
               setPostalCode={setPostalCode}
               radiusKm={radiusKm}
@@ -264,6 +278,39 @@ export default function App() {
 
             {/* Offers Grid Container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+              {/* Partner Dealer Filter Banner */}
+              {selectedDealerSlug && (
+                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-300/80 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-950">
+                    <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                    <span>
+                      Gefiltert nach Partner-Händler:{' '}
+                      <strong>{dealers.find((d) => d.slug === selectedDealerSlug)?.name || selectedDealerSlug}</strong>
+                      {dealers.find((d) => d.slug === selectedDealerSlug)?.locations?.[0]?.city
+                        ? ` in ${dealers.find((d) => d.slug === selectedDealerSlug)?.locations?.[0]?.city}`
+                        : ''}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      onClick={() => {
+                        const d = dealers.find((x) => x.slug === selectedDealerSlug);
+                        if (d) setPartnerModalDealer(d);
+                      }}
+                      className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline"
+                    >
+                      Händlerprofil öffnen
+                    </button>
+                    <button
+                      onClick={() => setSelectedDealerSlug('')}
+                      className="px-2 py-1 text-xs font-semibold bg-white hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 transition-colors flex items-center gap-1"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                      <span>Händler-Filter aufheben</span>
+                    </button>
+                  </div>
+                </div>
+              )}
               {/* Results Count & Quick Info Banner */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
@@ -388,15 +435,25 @@ export default function App() {
               ) : (
                 /* Grid of Bikes */
                 loading ? (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {[...Array(8)].map((_, i) => (
-                      <div key={i} className="bg-white rounded-2xl p-4 border border-slate-200 space-y-3 animate-pulse">
-                        <div className="aspect-4/3 bg-slate-200 rounded-xl"></div>
-                        <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                        <div className="h-5 bg-slate-200 rounded w-3/4"></div>
-                        <div className="h-8 bg-slate-200 rounded w-1/2"></div>
+                  <div className="space-y-4 animate-in fade-in duration-200">
+                    <div className="flex items-center justify-between px-4 py-2.5 bg-white border border-slate-200/90 rounded-2xl shadow-2xs">
+                      <div className="flex items-center gap-3">
+                        <BikeLoadingSpinner size="sm" variant="emerald" showRoad={true} />
+                        <div>
+                          <p className="text-xs font-bold text-slate-900">
+                            Fahrrad-Angebote werden geladen...
+                          </p>
+                          <p className="text-[11px] text-slate-500">
+                            Bestände und Verfügbarkeiten von autorisierten Fachhändlern werden abgeglichen
+                          </p>
+                        </div>
                       </div>
-                    ))}
+                      <div className="hidden sm:flex items-center gap-2 text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200">
+                        <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                        <span>Bestandsabgleich läuft</span>
+                      </div>
+                    </div>
+                    <OfferGridSkeleton count={8} />
                   </div>
                 ) : (onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).length === 0 ? (
                   <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-xl mx-auto my-12 space-y-4">
@@ -431,6 +488,10 @@ export default function App() {
                         onTrackOutbound={handleTrackOutbound}
                         onOpenLeadModal={setLeadOffer}
                         onCompareNotice={showToast}
+                        onOpenDealer={(dealerSlug) => {
+                          const d = dealers.find((x) => x.slug === dealerSlug);
+                          if (d) setPartnerModalDealer(d);
+                        }}
                       />
                     ))}
                   </div>
@@ -448,6 +509,10 @@ export default function App() {
             onOpenLeadModal={setLeadOffer}
             onTrackOutbound={handleTrackOutbound}
             onCompareNotice={showToast}
+            onOpenDealer={(dealerSlug) => {
+              const d = dealers.find((x) => x.slug === dealerSlug);
+              if (d) setPartnerModalDealer(d);
+            }}
             onClearFavorites={() => {
               clearFavorites();
               showToast('Alle Favoriten wurden entfernt');
@@ -477,7 +542,18 @@ export default function App() {
             radiusKm={radiusKm}
             setRadiusKm={setRadiusKm}
             onFilterByDealer={(dealerName) => {
-              setQuery(dealerName);
+              const matched = dealers.find((d) => d.name.toLowerCase() === dealerName.toLowerCase());
+              if (matched) {
+                setSelectedDealerSlug(matched.slug);
+              } else {
+                setQuery(dealerName);
+              }
+              setBikesViewMode('grid');
+              setCurrentTab('bikes');
+            }}
+            onOpenPartnerModal={(dealer) => setPartnerModalDealer(dealer)}
+            onApplyDealerSlugFilter={(dealerSlug) => {
+              setSelectedDealerSlug(dealerSlug);
               setBikesViewMode('grid');
               setCurrentTab('bikes');
             }}
@@ -557,6 +633,10 @@ export default function App() {
         }}
         onTrackOutbound={handleTrackOutbound}
         onCompareNotice={showToast}
+        onOpenDealer={(dealerSlug) => {
+          const d = dealers.find((x) => x.slug === dealerSlug);
+          if (d) setPartnerModalDealer(d);
+        }}
       />
 
       {/* Customer Enquiry / Lead Modal */}
@@ -600,6 +680,30 @@ export default function App() {
           setIsCompareModalOpen(false);
           setCurrentTab('bikes');
         }}
+      />
+
+      {/* Partner Dealer Inventory Modal */}
+      <PartnerDealerModal
+        dealer={partnerModalDealer}
+        onClose={() => setPartnerModalDealer(null)}
+        onSelectOffer={(offer) => {
+          setPartnerModalDealer(null);
+          setSelectedOffer(offer);
+        }}
+        onTrackOutbound={handleTrackOutbound}
+        onOpenLeadModal={(offer) => {
+          setPartnerModalDealer(null);
+          setLeadOffer(offer);
+        }}
+        onApplyDealerFilterToMainCatalog={(dealerSlug) => {
+          setSelectedDealerSlug(dealerSlug);
+          setBikesViewMode('grid');
+          setCurrentTab('bikes');
+          setPartnerModalDealer(null);
+          const matched = dealers.find((d) => d.slug === dealerSlug);
+          showToast(`Hauptkatalog nach ${matched?.name || 'Partner-Händler'} gefiltert`);
+        }}
+        onCompareNotice={showToast}
       />
     </div>
   );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, ExternalLink, MessageSquare, MapPin, ShieldCheck, BatteryCharging, Gauge, Scale, Bike, Clock, Phone, Mail, AlertCircle, Heart } from 'lucide-react';
+import { X, ExternalLink, MessageSquare, MapPin, ShieldCheck, BatteryCharging, Gauge, Scale, Bike, Clock, Phone, Mail, AlertCircle, Heart, Building2 } from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
@@ -10,6 +10,7 @@ interface OfferModalProps {
   onOpenLeadModal: (offer: Offer) => void;
   onTrackOutbound: (offerId: string) => void;
   onCompareNotice?: (msg: string) => void;
+  onOpenDealer?: (dealerSlug: string) => void;
 }
 
 export const OfferModal: React.FC<OfferModalProps> = ({
@@ -17,7 +18,8 @@ export const OfferModal: React.FC<OfferModalProps> = ({
   onClose,
   onOpenLeadModal,
   onTrackOutbound,
-  onCompareNotice
+  onCompareNotice,
+  onOpenDealer
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
   const { isInCompare, toggleCompare } = useCompare();
@@ -298,6 +300,23 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                   </div>
                 )}
               </div>
+
+              {onOpenDealer && (
+                <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-between">
+                  <span className="text-xs text-slate-500">Alle Räder dieses Partners durchsuchen:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      onClose();
+                      onOpenDealer(offer.dealer_slug);
+                    }}
+                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-xs"
+                  >
+                    <Building2 className="w-3.5 h-3.5" />
+                    <span>Alle Angebote von {offer.dealer_name} ansehen</span>
+                  </button>
+                </div>
+              )}
             </div>
           )}
         </div>

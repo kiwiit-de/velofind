@@ -14,6 +14,9 @@ interface SearchFiltersBarProps {
   setBrand: (b: string) => void;
   leasingProvider: string;
   setLeasingProvider: (lp: string) => void;
+  selectedDealerSlug?: string;
+  setSelectedDealerSlug?: (slug: string) => void;
+  availableDealers?: { id: string; name: string; slug: string; count: number; city?: string }[];
   postalCode: string;
   setPostalCode: (plz: string) => void;
   radiusKm: number;
@@ -68,6 +71,9 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   setBrand,
   leasingProvider,
   setLeasingProvider,
+  selectedDealerSlug,
+  setSelectedDealerSlug,
+  availableDealers,
   postalCode,
   setPostalCode,
   radiusKm,
@@ -82,7 +88,7 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   setOnlyFavorites
 }) => {
   const { favoritesCount } = useFavorites();
-  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || leasingProvider !== 'ALL' || postalCode || onlyFavorites;
+  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || leasingProvider !== 'ALL' || selectedDealerSlug || postalCode || onlyFavorites;
 
   return (
     <div className="bg-white border-b border-slate-200 shadow-xs">
@@ -215,6 +221,27 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               <option key={lp.slug} value={lp.slug}>✓ {lp.name} ({lp.count})</option>
             ))}
           </select>
+
+          {/* Partner-Händler Select */}
+          {availableDealers && availableDealers.length > 0 && setSelectedDealerSlug && (
+            <select
+              id="filter-dealer-select"
+              value={selectedDealerSlug || 'ALL'}
+              onChange={(e) => setSelectedDealerSlug(e.target.value === 'ALL' ? '' : e.target.value)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                selectedDealerSlug
+                  ? 'bg-emerald-100 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-slate-50 text-slate-700 border-slate-200'
+              }`}
+            >
+              <option value="ALL">Alle Partner-Händler ({availableDealers.length})</option>
+              {availableDealers.map(d => (
+                <option key={d.slug} value={d.slug}>
+                  {d.name} {d.city ? `(${d.city})` : ''} ({d.count})
+                </option>
+              ))}
+            </select>
+          )}
 
           {/* Quick Favorites Filter Toggle */}
           {setOnlyFavorites && (

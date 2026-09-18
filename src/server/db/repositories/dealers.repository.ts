@@ -6,7 +6,7 @@ import { getKysely } from '../kysely.ts';
 import { isDatabaseAvailable } from '../pool.ts';
 import type { DealerTable, DealerLocationTable, LeasingEligibilityStatus } from '../schema.ts';
 import type { Insertable, Selectable, Updateable } from 'kysely';
-import { PARTNER_DEALERS_DATA } from '../dealer-registry.ts';
+import { PARTNER_DEALERS_DATA, PARTNER_OFFERS_DATA } from '../dealer-registry.ts';
 
 export type Dealer = Selectable<DealerTable>;
 export type NewDealer = Insertable<DealerTable>;
@@ -21,6 +21,7 @@ export interface DealerWithRelations extends Dealer {
     status: LeasingEligibilityStatus;
     contract_reference?: string;
   }[];
+  offers_count?: number;
 }
 
 export class DealersRepository {
@@ -92,7 +93,19 @@ export class DealersRepository {
       }
     }
 
-    return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).filter((d) => (onlyActive ? d.is_active : true));
+    const offerCountMap = new Map<string, number>();
+    PARTNER_OFFERS_DATA.forEach((o) => {
+      if (o.is_active) {
+        offerCountMap.set(o.dealer_id, (offerCountMap.get(o.dealer_id) || 0) + 1);
+      }
+    });
+
+    return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[])
+      .filter((d) => (onlyActive ? d.is_active : true))
+      .map((d) => ({
+        ...d,
+        offers_count: offerCountMap.get(d.id) || 0
+      }));
   }
 
   async findById(id: string): Promise<Dealer | undefined> {
@@ -168,7 +181,13 @@ export class DealersRepository {
       }
     }
 
-    return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).find((d) => d.slug === slug);
+    const dealer = (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).find((d) => d.slug === slug);
+    if (!dealer) return undefined;
+    const offersCount = PARTNER_OFFERS_DATA.filter((o) => o.dealer_id === dealer.id && o.is_active).length;
+    return {
+      ...dealer,
+      offers_count: offersCount
+    };
   }
 
   async create(dealer: NewDealer): Promise<Dealer> {

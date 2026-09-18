@@ -115,6 +115,7 @@ export interface Dealer {
     status: LeasingEligibilityStatus;
     contract_reference?: string;
   }[];
+  offers_count?: number;
   created_at: string;
 }
 
@@ -256,6 +257,7 @@ export interface SearchFilters {
   query?: string;
   dealerId?: string;
   dealerSlug?: string;
+  dealerName?: string;
   category?: BikeCategory | 'ALL';
   propulsion?: PropulsionType | 'ALL';
   brand?: string;
@@ -282,6 +284,7 @@ export interface SearchResponse {
   available_brands: { name: string; count: number }[];
   available_categories: { category: BikeCategory; count: number }[];
   available_providers: { slug: string; name: string; count: number }[];
+  available_dealers?: { id: string; name: string; slug: string; count: number; city?: string }[];
 }
 
 export interface OverviewStats {

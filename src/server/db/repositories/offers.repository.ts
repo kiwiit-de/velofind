@@ -371,6 +371,7 @@ export class OffersRepository {
     const brandCounts = new Map<string, number>();
     const catCounts = new Map<string, number>();
     const providerCounts = new Map<string, { name: string; count: number }>();
+    const dealerCounts = new Map<string, { id: string; name: string; slug: string; count: number; city?: string }>();
 
     domainOffers.forEach((o) => {
       if (o.brand_name) {
@@ -378,6 +379,17 @@ export class OffersRepository {
       }
       if (o.category) {
         catCounts.set(o.category, (catCounts.get(o.category) || 0) + 1);
+      }
+      if (o.dealer_id && o.dealer_name) {
+        const cur = dealerCounts.get(o.dealer_id) || {
+          id: o.dealer_id,
+          name: o.dealer_name,
+          slug: o.dealer_slug,
+          count: 0,
+          city: o.dealer_locations?.[0]?.city
+        };
+        cur.count++;
+        dealerCounts.set(o.dealer_id, cur);
       }
       o.leasing_compatibilities.forEach((lc) => {
         const cur = providerCounts.get(lc.provider_slug) || { name: lc.provider_name, count: 0 };
@@ -398,7 +410,8 @@ export class OffersRepository {
       offset,
       available_brands: Array.from(brandCounts.entries()).map(([name, count]) => ({ name, count })),
       available_categories: Array.from(catCounts.entries()).map(([category, count]) => ({ category: category as BikeCategory, count })),
-      available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count }))
+      available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count })),
+      available_dealers: Array.from(dealerCounts.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     };
   }
 
@@ -422,6 +435,10 @@ export class OffersRepository {
     }
     if (filters.dealerSlug) {
       items = items.filter((o) => o.dealer_slug === filters.dealerSlug);
+    }
+    if (filters.dealerName) {
+      const dn = filters.dealerName.toLowerCase().trim();
+      items = items.filter((o) => o.dealer_name.toLowerCase().includes(dn));
     }
     if (filters.query && filters.query.trim() !== '') {
       const q = filters.query.toLowerCase().trim();
@@ -498,6 +515,7 @@ export class OffersRepository {
     const brandCounts = new Map<string, number>();
     const catCounts = new Map<string, number>();
     const providerCounts = new Map<string, { name: string; count: number }>();
+    const dealerCounts = new Map<string, { id: string; name: string; slug: string; count: number; city?: string }>();
 
     items.forEach((o) => {
       if (o.brand_name) {
@@ -505,6 +523,17 @@ export class OffersRepository {
       }
       if (o.category) {
         catCounts.set(o.category, (catCounts.get(o.category) || 0) + 1);
+      }
+      if (o.dealer_id && o.dealer_name) {
+        const cur = dealerCounts.get(o.dealer_id) || {
+          id: o.dealer_id,
+          name: o.dealer_name,
+          slug: o.dealer_slug,
+          count: 0,
+          city: o.dealer_locations?.[0]?.city
+        };
+        cur.count++;
+        dealerCounts.set(o.dealer_id, cur);
       }
       o.leasing_compatibilities.forEach((lc) => {
         const cur = providerCounts.get(lc.provider_slug) || { name: lc.provider_name, count: 0 };
@@ -525,7 +554,8 @@ export class OffersRepository {
       offset,
       available_brands: Array.from(brandCounts.entries()).map(([name, count]) => ({ name, count })),
       available_categories: Array.from(catCounts.entries()).map(([category, count]) => ({ category: category as BikeCategory, count })),
-      available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count }))
+      available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count })),
+      available_dealers: Array.from(dealerCounts.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
     };
   }
 
