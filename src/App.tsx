@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import { Header } from './components/Header';
 import { SearchFiltersBar } from './components/SearchFiltersBar';
 import { OfferCard } from './components/OfferCard';
@@ -10,10 +10,12 @@ import { DealerAdminPortal } from './components/DealerAdminPortal';
 import { FavoritesView } from './components/FavoritesView';
 import { CompareFloatingBar } from './components/CompareFloatingBar';
 import { CompareModal } from './components/CompareModal';
+import { NearbyDealersMap } from './components/NearbyDealersMap';
 import { Offer, Dealer, LeasingProvider, SearchResponse } from './types';
-import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale } from 'lucide-react';
+import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass } from 'lucide-react';
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
+import { resolveLocation, getNearbyDealers } from './utils/geo';
 
 export default function App() {
   const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin'>('bikes');
@@ -30,6 +32,7 @@ export default function App() {
   const [radiusKm, setRadiusKm] = useState(50);
   const [sort, setSort] = useState('newest');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
+  const [bikesViewMode, setBikesViewMode] = useState<'grid' | 'map'>('grid');
 
   // Daily Sync State
   const [isSyncing, setIsSyncing] = useState(false);
@@ -43,6 +46,16 @@ export default function App() {
   const [dealers, setDealers] = useState<Dealer[]>([]);
   const [providers, setProviders] = useState<LeasingProvider[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Geographic calculations based on current postalCode
+  const centerLocation = useMemo(() => {
+    return postalCode ? resolveLocation(postalCode, dealers) : null;
+  }, [postalCode, dealers]);
+
+  const nearbyDealersCount = useMemo(() => {
+    if (!centerLocation) return dealers.length;
+    return getNearbyDealers(dealers, centerLocation.lat, centerLocation.lng, radiusKm).length;
+  }, [dealers, centerLocation, radiusKm]);
 
   // Modals State
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
@@ -277,6 +290,34 @@ export default function App() {
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2.5">
+                  {/* View Mode Switcher: Grid vs Map */}
+                  <div className="flex items-center bg-slate-100 p-1 rounded-2xl border border-slate-200 text-xs font-semibold">
+                    <button
+                      id="btn-view-mode-grid"
+                      onClick={() => setBikesViewMode('grid')}
+                      className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all ${
+                        bikesViewMode === 'grid'
+                          ? 'bg-white text-slate-900 shadow-2xs font-bold'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <Bike className="w-3.5 h-3.5" />
+                      <span>Angebote ({totalOffers})</span>
+                    </button>
+                    <button
+                      id="btn-view-mode-map"
+                      onClick={() => setBikesViewMode('map')}
+                      className={`px-3 py-1.5 rounded-xl flex items-center gap-1.5 transition-all ${
+                        bikesViewMode === 'map'
+                          ? 'bg-white text-emerald-800 shadow-2xs font-bold'
+                          : 'text-slate-600 hover:text-slate-900'
+                      }`}
+                    >
+                      <MapPin className="w-3.5 h-3.5 text-emerald-600" />
+                      <span>Händler-Karte {postalCode ? `(${nearbyDealersCount})` : ''}</span>
+                    </button>
+                  </div>
+
                   {/* Daily Update Freshness Badge & Trigger */}
                   <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-slate-200 text-slate-700 text-xs font-medium rounded-full shadow-2xs">
                     <Clock className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
@@ -301,54 +342,99 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Grid of Bikes */}
-              {loading ? (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {[...Array(8)].map((_, i) => (
-                    <div key={i} className="bg-white rounded-2xl p-4 border border-slate-200 space-y-3 animate-pulse">
-                      <div className="aspect-4/3 bg-slate-200 rounded-xl"></div>
-                      <div className="h-4 bg-slate-200 rounded w-1/3"></div>
-                      <div className="h-5 bg-slate-200 rounded w-3/4"></div>
-                      <div className="h-8 bg-slate-200 rounded w-1/2"></div>
+              {/* Postal code active proximity banner (shown in grid mode) */}
+              {postalCode && bikesViewMode === 'grid' && (
+                <div className="mb-6 p-4 bg-gradient-to-r from-emerald-50/90 via-teal-50/50 to-white rounded-2xl border border-emerald-200/80 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs">
+                  <div className="flex items-center gap-3">
+                    <div className="w-9 h-9 rounded-xl bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+                      <MapPin className="w-4 h-4" />
                     </div>
-                  ))}
-                </div>
-              ) : (onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).length === 0 ? (
-                <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-xl mx-auto my-12 space-y-4">
-                  <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
-                    {onlyFavorites ? <Heart className="w-8 h-8 text-rose-400" /> : <Bike className="w-8 h-8" />}
+                    <div>
+                      <p className="text-xs font-bold text-slate-900">
+                        {nearbyDealersCount} Fahrrad-Fachhändler im Umkreis von {radiusKm} km um {postalCode}
+                      </p>
+                      <p className="text-[11px] text-slate-500">
+                        Entdecke autorisierte Werkstätten, Probefahrten vor Ort und Leasing-Partner auf der interaktiven Deutschland-Karte.
+                      </p>
+                    </div>
                   </div>
-                  <h2 className="text-xl font-bold text-slate-900">
-                    {onlyFavorites ? 'Keine Favoriten gefunden' : 'Keine Angebote für diese Filterung'}
-                  </h2>
-                  <p className="text-sm text-slate-500 leading-relaxed">
-                    {onlyFavorites
-                      ? 'Du hast für die aktuellen Suchfilter noch keine Favoriten gespeichert. Klicke auf das Herz-Symbol bei einem Fahrrad, um es zu merken.'
-                      : 'Versuchen Sie, den Suchbegriff zu verallgemeinern oder den Umkreis zu vergrößern.'}
-                  </p>
                   <button
-                    onClick={() => {
-                      setOnlyFavorites(false);
-                      resetFilters();
-                    }}
-                    className="px-4 py-2 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors"
+                    id="btn-open-map-from-banner"
+                    onClick={() => setBikesViewMode('map')}
+                    className="px-3.5 py-1.5 bg-white hover:bg-emerald-50 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-300 transition-colors flex items-center justify-center gap-1.5 shrink-0 shadow-2xs"
                   >
-                    {onlyFavorites ? 'Alle Räder anzeigen' : 'Alle Filter zurücksetzen'}
+                    <Compass className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Auf Karte ansehen</span>
                   </button>
                 </div>
-              ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                  {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).map((offer) => (
-                    <OfferCard
-                      key={offer.id}
-                      offer={offer}
-                      onSelectOffer={setSelectedOffer}
-                      onTrackOutbound={handleTrackOutbound}
-                      onOpenLeadModal={setLeadOffer}
-                      onCompareNotice={showToast}
-                    />
-                  ))}
+              )}
+
+              {/* Content depending on View Mode (Map or Bike Grid) */}
+              {bikesViewMode === 'map' ? (
+                <div className="mb-8">
+                  <NearbyDealersMap
+                    postalCode={postalCode}
+                    setPostalCode={setPostalCode}
+                    radiusKm={radiusKm}
+                    setRadiusKm={setRadiusKm}
+                    dealers={dealers}
+                    onFilterByDealer={(dealerName) => {
+                      setQuery(dealerName);
+                      setBikesViewMode('grid');
+                    }}
+                    showHeader={true}
+                  />
                 </div>
+              ) : (
+                /* Grid of Bikes */
+                loading ? (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {[...Array(8)].map((_, i) => (
+                      <div key={i} className="bg-white rounded-2xl p-4 border border-slate-200 space-y-3 animate-pulse">
+                        <div className="aspect-4/3 bg-slate-200 rounded-xl"></div>
+                        <div className="h-4 bg-slate-200 rounded w-1/3"></div>
+                        <div className="h-5 bg-slate-200 rounded w-3/4"></div>
+                        <div className="h-8 bg-slate-200 rounded w-1/2"></div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).length === 0 ? (
+                  <div className="bg-white rounded-3xl border border-slate-200 p-12 text-center max-w-xl mx-auto my-12 space-y-4">
+                    <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto">
+                      {onlyFavorites ? <Heart className="w-8 h-8 text-rose-400" /> : <Bike className="w-8 h-8" />}
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-900">
+                      {onlyFavorites ? 'Keine Favoriten gefunden' : 'Keine Angebote für diese Filterung'}
+                    </h2>
+                    <p className="text-sm text-slate-500 leading-relaxed">
+                      {onlyFavorites
+                        ? 'Du hast für die aktuellen Suchfilter noch keine Favoriten gespeichert. Klicke auf das Herz-Symbol bei einem Fahrrad, um es zu merken.'
+                        : 'Versuchen Sie, den Suchbegriff zu verallgemeinern oder den Umkreis zu vergrößern.'}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setOnlyFavorites(false);
+                        resetFilters();
+                      }}
+                      className="px-4 py-2 text-xs font-semibold bg-slate-900 text-white rounded-xl hover:bg-slate-800 transition-colors"
+                    >
+                      {onlyFavorites ? 'Alle Räder anzeigen' : 'Alle Filter zurücksetzen'}
+                    </button>
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                    {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).map((offer) => (
+                      <OfferCard
+                        key={offer.id}
+                        offer={offer}
+                        onSelectOffer={setSelectedOffer}
+                        onTrackOutbound={handleTrackOutbound}
+                        onOpenLeadModal={setLeadOffer}
+                        onCompareNotice={showToast}
+                      />
+                    ))}
+                  </div>
+                )
               )}
             </div>
           </div>
@@ -386,8 +472,13 @@ export default function App() {
         {currentTab === 'dealers' && (
           <DealersDirectoryView
             dealers={dealers}
+            postalCode={postalCode}
+            setPostalCode={setPostalCode}
+            radiusKm={radiusKm}
+            setRadiusKm={setRadiusKm}
             onFilterByDealer={(dealerName) => {
               setQuery(dealerName);
+              setBikesViewMode('grid');
               setCurrentTab('bikes');
             }}
           />
