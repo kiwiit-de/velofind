@@ -12,9 +12,11 @@ import { CompareFloatingBar } from './components/CompareFloatingBar';
 import { CompareModal } from './components/CompareModal';
 import { NearbyDealersMap } from './components/NearbyDealersMap';
 import { PartnerDealerModal } from './components/PartnerDealerModal';
+import { MarketTrendsSection } from './components/MarketTrendsSection';
 import { OfferCardSkeleton, OfferGridSkeleton } from './components/OfferCardSkeleton';
 import { BikeLoadingSpinner } from './components/BikeLoadingSpinner';
-import { Offer, Dealer, LeasingProvider, SearchResponse } from './types';
+import { apiUrl } from './lib/api';
+import { Offer, Dealer, LeasingProvider, SearchResponse, BikeCategory } from './types';
 import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X } from 'lucide-react';
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
@@ -46,6 +48,7 @@ export default function App() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [totalOffers, setTotalOffers] = useState(0);
   const [availableBrands, setAvailableBrands] = useState<{ name: string; count: number }[]>([]);
+  const [availableCategories, setAvailableCategories] = useState<{ category: BikeCategory; count: number }[]>([]);
   const [availableProviders, setAvailableProviders] = useState<{ slug: string; name: string; count: number }[]>([]);
   const [availableDealers, setAvailableDealers] = useState<{ id: string; name: string; slug: string; count: number; city?: string }[]>([]);
   const [dealers, setDealers] = useState<Dealer[]>([]);
@@ -95,7 +98,7 @@ export default function App() {
     compareIds.forEach(async (id) => {
       if (!cachedOffersMap[id]) {
         try {
-          const res = await fetch(`/api/offers/${id}`);
+          const res = await fetch(apiUrl(`/api/offers/${id}`));
           if (res.ok) {
             const data: Offer = await res.json();
             setCachedOffersMap((prev) => ({ ...prev, [id]: data }));
@@ -116,8 +119,8 @@ export default function App() {
   const fetchMetadata = async () => {
     try {
       const [dealersRes, providersRes] = await Promise.all([
-        fetch('/api/dealers'),
-        fetch('/api/leasing-providers')
+        fetch(apiUrl('/api/dealers')),
+        fetch(apiUrl('/api/leasing-providers'))
       ]);
       if (dealersRes.ok) setDealers(await dealersRes.json());
       if (providersRes.ok) setProviders(await providersRes.json());
@@ -129,7 +132,7 @@ export default function App() {
   // Fetch Daily Sync Status
   const fetchSyncStatus = async () => {
     try {
-      const res = await fetch('/api/sync/status');
+      const res = await fetch(apiUrl('/api/sync/status'));
       if (res.ok) {
         const data = await res.json();
         if (data.lastSyncTimestamp) {
@@ -146,7 +149,7 @@ export default function App() {
   const handleTriggerDailySync = async () => {
     setIsSyncing(true);
     try {
-      const res = await fetch('/api/sync/trigger', { method: 'POST' });
+      const res = await fetch(apiUrl('/api/sync/trigger'), { method: 'POST' });
       if (res.ok) {
         const data = await res.json();
         showToast(`Täglicher Bestandsabgleich erfolgreich: ${data.report?.totalOffersChecked || 1001} Räder aktualisiert!`);
@@ -185,12 +188,13 @@ export default function App() {
       params.append('sort', sort);
       params.append('limit', '48');
 
-      const res = await fetch(`/api/search?${params.toString()}`);
+      const res = await fetch(apiUrl(`/api/search?${params.toString()}`));
       if (res.ok) {
         const data: SearchResponse = await res.json();
         setOffers(data.offers);
         setTotalOffers(data.total);
         setAvailableBrands(data.available_brands || []);
+        setAvailableCategories(data.available_categories || []);
         setAvailableProviders(data.available_providers || []);
         setAvailableDealers(data.available_dealers || []);
       }
@@ -269,6 +273,7 @@ export default function App() {
               sort={sort}
               setSort={setSort}
               availableBrands={availableBrands}
+              availableCategories={availableCategories}
               availableProviders={availableProviders}
               totalResults={totalOffers}
               resetFilters={resetFilters}
@@ -414,6 +419,21 @@ export default function App() {
                     <span>Auf Karte ansehen</span>
                   </button>
                 </div>
+              )}
+
+              {/* AI-Powered Market Trends & Regional Price Intelligence */}
+              {bikesViewMode === 'grid' && (
+                <MarketTrendsSection
+                  postalCode={postalCode}
+                  radiusKm={radiusKm}
+                  category={category as any}
+                  propulsion={propulsion as any}
+                  brand={brand}
+                  leasingProvider={leasingProvider}
+                  query={query}
+                  dealerSlug={selectedDealerSlug}
+                  totalOffersCount={totalOffers}
+                />
               )}
 
               {/* Content depending on View Mode (Map or Bike Grid) */}

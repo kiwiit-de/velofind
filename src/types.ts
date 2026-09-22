@@ -294,3 +294,19 @@ export interface OverviewStats {
   totalOutboundClicks: number;
   totalImportRuns: number;
 }
+
+export interface UserAlert {
+  id: string;
+  user_id?: string | null;
+  offer_id: string;
+  email: string;
+  initial_price_cents: number;
+  target_price_cents?: number | null;
+  is_triggered: boolean;
+  triggered_at?: string | null;
+  created_at: string;
+  updated_at?: string;
+  offer_title?: string;
+  current_price_cents?: number;
+}
+

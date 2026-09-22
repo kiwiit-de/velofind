@@ -3,6 +3,7 @@ import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCi
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
+import { resolveImageUrl } from '../lib/api';
 
 interface OfferCardProps {
   offer: Offer;
@@ -26,7 +27,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const isFav = isFavorite(offer.id);
   const inCompare = isInCompare(offer.id);
   const [imgSrc, setImgSrc] = useState(
-    offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=800&q=80'
+    resolveImageUrl(offer.image_url)
   );
 
   const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
@@ -59,7 +60,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
           src={imgSrc}
           alt={offer.title}
           onError={() => {
-            setImgSrc('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=800&q=80');
+            setImgSrc(resolveImageUrl('/images/bikes/cube_stereo_hybrid.jpg'));
           }}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           loading="lazy"

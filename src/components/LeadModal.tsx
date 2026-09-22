@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Send, CheckCircle2, AlertCircle, Shield } from 'lucide-react';
 import { Offer } from '../types';
+import { apiUrl } from '../lib/api';
 
 interface LeadModalProps {
   offer: Offer | null;
@@ -38,7 +39,7 @@ export const LeadModal: React.FC<LeadModalProps> = ({
     setLoading(true);
 
     try {
-      const res = await fetch('/api/leads', {
+      const res = await fetch(apiUrl('/api/leads'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({

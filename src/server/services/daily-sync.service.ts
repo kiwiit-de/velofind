@@ -84,8 +84,8 @@ export class DailySyncService {
         offer.last_seen_at = nowIso;
         updatedCount++;
 
-        // 2. Refresh image if missing or placeholder
-        if (!offer.image_url || offer.image_url.includes('placeholder')) {
+        // 2. Refresh image if missing, placeholder, or unsplash stock
+        if (!offer.image_url || offer.image_url.includes('placeholder') || offer.image_url.includes('unsplash.com')) {
           const verifiedImg = imageFetcherService.getVerifiedModelImage(
             offer.brand_name,
             offer.title,

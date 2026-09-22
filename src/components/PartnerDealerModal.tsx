@@ -20,6 +20,7 @@ import {
 import { Dealer, Offer, BikeCategory } from '../types';
 import { OfferCard } from './OfferCard';
 import { BikeLoadingSpinner } from './BikeLoadingSpinner';
+import { apiUrl } from '../lib/api';
 
 interface PartnerDealerModalProps {
   dealer: Dealer | null;
@@ -56,7 +57,7 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
     const fetchDealerOffers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`/api/search?dealerSlug=${encodeURIComponent(dealer.slug)}&limit=100`);
+        const res = await fetch(apiUrl(`/api/search?dealerSlug=${encodeURIComponent(dealer.slug)}&limit=100`));
         if (res.ok) {
           const data = await res.json();
           if (isMounted) {

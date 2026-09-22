@@ -26,6 +26,8 @@ export type OfferUpdate = Updateable<OfferTable>;
 export interface OfferSearchFilterParams {
   query?: string;
   dealerId?: string;
+  dealerSlug?: string;
+  dealerName?: string;
   variantId?: string;
   category?: BikeCategory | 'ALL';
   propulsion?: PropulsionType | 'ALL';
@@ -239,6 +241,10 @@ export class OffersRepository {
     if (filters.dealerSlug) {
       baseQuery = baseQuery.where('d.slug', '=', filters.dealerSlug);
     }
+    if (filters.dealerName) {
+      const dn = `%${filters.dealerName.trim().toLowerCase()}%`;
+      baseQuery = baseQuery.where(sql<boolean>`LOWER(d.name) LIKE ${dn}`);
+    }
 
     // Text query
     if (filters.query && filters.query.trim() !== '') {
@@ -248,7 +254,10 @@ export class OffersRepository {
           sql<boolean>`LOWER(o.title) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(b.name, '')) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(bm.name, '')) LIKE ${q}`,
-          sql<boolean>`LOWER(COALESCE(bv.color, '')) LIKE ${q}`
+          sql<boolean>`LOWER(COALESCE(bv.color, '')) LIKE ${q}`,
+          sql<boolean>`LOWER(COALESCE(d.name, '')) LIKE ${q}`,
+          sql<boolean>`LOWER(COALESCE(d.website_url, '')) LIKE ${q}`,
+          sql<boolean>`LOWER(COALESCE(o.source_url, '')) LIKE ${q}`
         ])
       );
     }
@@ -438,7 +447,7 @@ export class OffersRepository {
     }
     if (filters.dealerName) {
       const dn = filters.dealerName.toLowerCase().trim();
-      items = items.filter((o) => o.dealer_name.toLowerCase().includes(dn));
+      items = items.filter((o) => o.dealer_name.toLowerCase().includes(dn) || o.dealer_slug.toLowerCase().includes(dn));
     }
     if (filters.query && filters.query.trim() !== '') {
       const q = filters.query.toLowerCase().trim();
@@ -447,7 +456,8 @@ export class OffersRepository {
         o.brand_name.toLowerCase().includes(q) ||
         o.model_name.toLowerCase().includes(q) ||
         (o.variant_details?.color && o.variant_details.color.toLowerCase().includes(q)) ||
-        o.dealer_name.toLowerCase().includes(q)
+        o.dealer_name.toLowerCase().includes(q) ||
+        (o.source_url && o.source_url.toLowerCase().includes(q))
       );
     }
     if (filters.category && filters.category !== 'ALL') {

@@ -281,6 +281,20 @@ export interface OfferProviderEligibilityTable {
   calculated_at: Generated<Date>;
 }
 
+// User Alerts (V010)
+export interface UserAlertTable {
+  id: Generated<string>;
+  user_id: string | null;
+  offer_id: string;
+  email: string;
+  initial_price_cents: number;
+  target_price_cents: number | null;
+  is_triggered: Generated<boolean>;
+  triggered_at: Date | null;
+  created_at: Generated<Date>;
+  updated_at: Generated<Date>;
+}
+
 // Master Database Type
 export interface Database {
   brands: BrandTable;
@@ -303,4 +317,5 @@ export interface Database {
   leasing_providers: LeasingProviderTable;
   dealer_provider_participation: DealerProviderParticipationTable;
   offer_provider_eligibility: OfferProviderEligibilityTable;
+  user_alerts: UserAlertTable;
 }

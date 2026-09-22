@@ -1154,3 +1154,39 @@ sqlContent += sourceValues.join(',\n') + '\nON CONFLICT (id) DO NOTHING;\n';
 
 fs.writeFileSync(path.join(__dirname, '../database/migrations/V008__seed_partner_dealer_websites.sql'), sqlContent);
 console.log('Saved database/migrations/V008__seed_partner_dealer_websites.sql');
+
+// 4. Generate V009__seed_partner_offers.sql with provider participations and offers
+let v009Content = `-- V009__seed_partner_offers.sql
+-- VeloFind Flyway Migration: 1,001 Partner Offers across all 334 verified partner dealers
+
+-- 1. Dealer Provider Participation
+INSERT INTO dealer_provider_participation (id, dealer_id, provider_id, status, contract_reference)
+VALUES
+`;
+
+const participationValues = [];
+dealers.forEach(d => {
+  d.supported_providers.forEach(p => {
+    const partId = uuidFromStr(`part-${d.id}-${p.provider_id}`);
+    const safeRef = (p.contract_reference || '').replace(/'/g, "''");
+    participationValues.push(`  ('${partId}', '${d.id}', '${p.provider_id}', 'CONFIRMED', '${safeRef}')`);
+  });
+});
+
+v009Content += participationValues.join(',\n') + '\nON CONFLICT (dealer_id, provider_id) DO NOTHING;\n\n';
+
+// 2. Partner Offers (1,001 offers across 334 dealers)
+v009Content += `-- 2. Partner Offers from 334 Dealer Feeds\nINSERT INTO offers (id, dealer_id, source_id, external_id, title, price_cents, compare_at_price_cents, currency, availability, quantity, condition, source_url, image_url, content_hash, is_active)\nVALUES\n`;
+
+const offerValues = offers.map(o => {
+  const safeTitle = o.title.replace(/'/g, "''");
+  const safeSourceUrl = o.source_url.replace(/'/g, "''");
+  const safeImgUrl = (o.image_url || '').replace(/'/g, "''");
+  const comparePrice = o.compare_at_price_cents ? o.compare_at_price_cents : 'NULL';
+  return `  ('${o.id}', '${o.dealer_id}', '${o.source_id}', '${o.external_id}', '${safeTitle}', ${o.price_cents}, ${comparePrice}, 'EUR', 'IN_STOCK', 1, 'NEW', '${safeSourceUrl}', '${safeImgUrl}', '${o.content_hash}', true)`;
+});
+
+v009Content += offerValues.join(',\n') + '\nON CONFLICT (source_id, external_id) DO UPDATE SET is_active = true, price_cents = EXCLUDED.price_cents, compare_at_price_cents = EXCLUDED.compare_at_price_cents, image_url = EXCLUDED.image_url, updated_at = CURRENT_TIMESTAMP;\n';
+
+fs.writeFileSync(path.join(__dirname, '../database/migrations/V009__seed_partner_offers.sql'), v009Content);
+console.log('Saved database/migrations/V009__seed_partner_offers.sql');

@@ -18,6 +18,7 @@ import {
   Info
 } from 'lucide-react';
 import { Offer } from '../types';
+import { resolveImageUrl } from '../lib/api';
 
 interface CompareModalProps {
   isOpen: boolean;
@@ -212,15 +213,11 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                         {/* Image */}
                         <div className="relative aspect-16/10 rounded-xl overflow-hidden bg-white mb-3 shadow-2xs border border-slate-100">
                           <img
-                            src={
-                              offer.image_url ||
-                              'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=600&q=80'
-                            }
+                            src={resolveImageUrl(offer.image_url)}
                             alt={offer.title}
                             className="w-full h-full object-cover"
                             onError={(e) => {
-                              (e.target as HTMLImageElement).src =
-                                'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=600&q=80';
+                              (e.target as HTMLImageElement).src = resolveImageUrl('/images/bikes/cube_stereo_hybrid.jpg');
                             }}
                           />
                           {isBestPrice && (

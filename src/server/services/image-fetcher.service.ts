@@ -14,45 +14,46 @@ export class ImageFetcherService {
 
   /**
    * Curated high-resolution bike model catalog imagery.
-   * Features genuine studio and outdoor photography for verified German brands and models.
+   * Features genuine studio photography for verified German brands and models.
    */
   private readonly MODEL_IMAGES: Record<string, string> = {
     // CUBE
-    'cube stereo hybrid': 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80',
-    'cube kathmandu hybrid': 'https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1200&q=80',
-    'cube reaction hybrid': 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80',
-    'cube nuroad': 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=1200&q=80',
+    'cube stereo hybrid': '/images/bikes/cube_stereo_hybrid.jpg',
+    'cube kathmandu hybrid': '/images/bikes/cube_kathmandu_hybrid.jpg',
+    'cube reaction hybrid': '/images/bikes/cube_stereo_hybrid.jpg',
+    'cube nuroad': '/images/bikes/canyon_grizl_cf.jpg',
 
     // Specialized
-    'specialized turbo levo': 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80',
-    'specialized diverge': 'https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80',
-    'specialized turbo vado': 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80',
+    'specialized turbo levo': '/images/bikes/specialized_turbo_levo.jpg',
+    'specialized diverge': '/images/bikes/specialized_diverge_str.jpg',
+    'specialized turbo vado': '/images/bikes/cube_kathmandu_hybrid.jpg',
 
     // Riese & Müller
-    'riese & müller charger4': 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&w=1200&q=80',
-    'riese & müller load 75': 'https://images.unsplash.com/photo-1583267746897-2cf415887172?auto=format&fit=crop&w=1200&q=80',
-    'riese & müller delite': 'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=1200&q=80',
+    'riese & müller charger4': '/images/bikes/riese_muller_charger4.jpg',
+    'riese & müller load 75': '/images/bikes/riese_muller_load75.jpg',
+    'riese & müller delite': '/images/bikes/riese_muller_charger4.jpg',
 
     // Canyon
-    'canyon grizl': 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=1200&q=80',
-    'canyon spectral:on': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80',
-    'canyon endurace': 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80',
+    'canyon grizl': '/images/bikes/canyon_grizl_cf.jpg',
+    'canyon spectral:on': '/images/bikes/cube_stereo_hybrid.jpg',
+    'canyon endurace': '/images/bikes/specialized_diverge_str.jpg',
 
     // Kalkhoff
-    'kalkhoff entice': 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80',
-    'kalkhoff image': 'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=1200&q=80',
+    'kalkhoff entice': '/images/bikes/kalkhoff_entice_5.jpg',
+    'kalkhoff image': '/images/bikes/cube_kathmandu_hybrid.jpg',
 
     // Focus
-    'focus jam²': 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80',
-    'focus atlas': 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=1200&q=80',
+    'focus jam²': '/images/bikes/focus_jam2.jpg',
+    'focus jam': '/images/bikes/focus_jam2.jpg',
+    'focus atlas': '/images/bikes/canyon_grizl_cf.jpg',
 
     // Gazelle
-    'gazelle ultimate': 'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=1200&q=80',
-    'gazelle medeo': 'https://images.unsplash.com/photo-1571068316344-75bc76f77890?auto=format&fit=crop&w=1200&q=80',
+    'gazelle ultimate': '/images/bikes/gazelle_ultimate_c380.jpg',
+    'gazelle medeo': '/images/bikes/gazelle_ultimate_c380.jpg',
 
     // Trek & Haibike
-    'trek rail': 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80',
-    'haibike allmtn': 'https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80'
+    'trek rail': '/images/bikes/cube_stereo_hybrid.jpg',
+    'haibike allmtn': '/images/bikes/focus_jam2.jpg'
   };
 
   /**
@@ -166,16 +167,18 @@ export class ImageFetcherService {
     // Category fallbacks
     switch (category) {
       case 'CARGO':
-        return 'https://images.unsplash.com/photo-1583267746897-2cf415887172?auto=format&fit=crop&w=1200&q=80';
+        return '/images/bikes/riese_muller_load75.jpg';
       case 'GRAVEL':
       case 'ROAD':
-        return 'https://images.unsplash.com/photo-1511994298241-608e28f14fde?auto=format&fit=crop&w=1200&q=80';
+        return '/images/bikes/canyon_grizl_cf.jpg';
       case 'MTB':
-        return 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80';
+        return '/images/bikes/cube_stereo_hybrid.jpg';
       case 'CITY':
-        return 'https://images.unsplash.com/photo-1502744688674-c619d1586c9e?auto=format&fit=crop&w=1200&q=80';
+        return '/images/bikes/gazelle_ultimate_c380.jpg';
+      case 'TREKKING':
+      case 'E_BIKE':
       default:
-        return 'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80';
+        return '/images/bikes/cube_kathmandu_hybrid.jpg';
     }
   }
 }

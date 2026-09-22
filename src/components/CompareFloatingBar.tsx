@@ -1,6 +1,7 @@
 import React from 'react';
 import { Scale, X, ArrowRight, Trash2 } from 'lucide-react';
 import { Offer } from '../types';
+import { resolveImageUrl } from '../lib/api';
 
 interface CompareFloatingBarProps {
   compareOffers: Offer[];
@@ -52,15 +53,11 @@ export const CompareFloatingBar: React.FC<CompareFloatingBarProps> = ({
               title={offer.title}
             >
               <img
-                src={
-                  offer.image_url ||
-                  'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=150&q=80'
-                }
+                src={resolveImageUrl(offer.image_url)}
                 alt={offer.title}
                 className="w-full h-full object-cover"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    'https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=150&q=80';
+                  (e.target as HTMLImageElement).src = resolveImageUrl('/images/bikes/cube_stereo_hybrid.jpg');
                 }}
               />
               <button

@@ -12,13 +12,15 @@ export type Dealer = Selectable<DealerTable>;
 export type NewDealer = Insertable<DealerTable>;
 export type DealerUpdate = Updateable<DealerTable>;
 
-export interface DealerWithRelations extends Dealer {
-  locations: Selectable<DealerLocationTable>[];
+export interface DealerWithRelations extends Omit<Dealer, 'created_at' | 'updated_at'> {
+  created_at?: Date | string;
+  updated_at?: Date | string;
+  locations: (Selectable<DealerLocationTable> | any)[];
   supported_providers: {
     provider_id: string;
     provider_slug: string;
     provider_name: string;
-    status: LeasingEligibilityStatus;
+    status: LeasingEligibilityStatus | string;
     contract_reference?: string;
   }[];
   offers_count?: number;
@@ -37,7 +39,15 @@ export class DealersRepository {
           query = query.where('is_active', '=', true);
         }
         const results = await query.orderBy('name', 'asc').execute();
-        if (results && results.length > 0) return results;
+        if (results && results.length >= PARTNER_DEALERS_DATA.length) {
+          return results;
+        }
+        // If DB contains fewer dealers than the complete partner registry (e.g. initial migrations or partial seed),
+        // merge in the full verified partner network so all 334 dealer websites are completely available!
+        const dbSlugs = new Set((results || []).map((r) => r.slug));
+        const missingPartners = (PARTNER_DEALERS_DATA as unknown as Dealer[])
+          .filter((d) => !dbSlugs.has(d.slug) && (onlyActive ? d.is_active : true));
+        return [...(results || []), ...missingPartners].sort((a, b) => a.name.localeCompare(b.name, 'de-DE'));
       } catch {
         // Fallback to partner dealer registry
       }
@@ -47,6 +57,13 @@ export class DealersRepository {
   }
 
   async findAllWithLocations(onlyActive: boolean = true): Promise<DealerWithRelations[]> {
+    const offerCountMap = new Map<string, number>();
+    PARTNER_OFFERS_DATA.forEach((o) => {
+      if (o.is_active) {
+        offerCountMap.set(o.dealer_id, (offerCountMap.get(o.dealer_id) || 0) + 1);
+      }
+    });
+
     if (await isDatabaseAvailable()) {
       try {
         const dealers = await this.findAll(onlyActive);
@@ -74,31 +91,43 @@ export class DealersRepository {
             .where('dpp.dealer_id', 'in', dealerIds)
             .execute();
 
-          return dealers.map((dealer) => ({
-            ...dealer,
-            locations: locations.filter((l) => l.dealer_id === dealer.id),
-            supported_providers: participations
-              .filter((p) => p.dealer_id === dealer.id)
-              .map((p) => ({
-                provider_id: p.provider_id,
-                provider_slug: p.provider_slug,
-                provider_name: p.provider_name,
-                status: p.status,
-                contract_reference: p.contract_reference ?? undefined
-              }))
-          }));
+          const dbDealersWithRelations: DealerWithRelations[] = dealers.map((dealer) => {
+            const dealerLocs = locations.filter((l) => l.dealer_id === dealer.id);
+            const fallbackDealer = PARTNER_DEALERS_DATA.find((p) => p.slug === dealer.slug);
+            const resolvedLocs = dealerLocs.length > 0 ? dealerLocs : (fallbackDealer?.locations || []);
+            const resolvedProviders = participations.filter((p) => p.dealer_id === dealer.id);
+
+            return {
+              ...dealer,
+              locations: resolvedLocs,
+              supported_providers: resolvedProviders.length > 0
+                ? resolvedProviders.map((p) => ({
+                    provider_id: p.provider_id,
+                    provider_slug: p.provider_slug,
+                    provider_name: p.provider_name,
+                    status: p.status,
+                    contract_reference: p.contract_reference ?? undefined
+                  }))
+                : (fallbackDealer?.supported_providers || []),
+              offers_count: offerCountMap.get(dealer.id) || (fallbackDealer ? offerCountMap.get(fallbackDealer.id) || 0 : 0)
+            };
+          });
+
+          // Ensure all 334 verified partner dealers are present
+          const existingSlugs = new Set(dbDealersWithRelations.map((d) => d.slug));
+          const missingPartners = (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[])
+            .filter((d) => !existingSlugs.has(d.slug) && (onlyActive ? d.is_active : true))
+            .map((d) => ({
+              ...d,
+              offers_count: offerCountMap.get(d.id) || 0
+            }));
+
+          return [...dbDealersWithRelations, ...missingPartners].sort((a, b) => a.name.localeCompare(b.name, 'de-DE'));
         }
       } catch {
         // Fallback to partner dealers dataset
       }
     }
-
-    const offerCountMap = new Map<string, number>();
-    PARTNER_OFFERS_DATA.forEach((o) => {
-      if (o.is_active) {
-        offerCountMap.set(o.dealer_id, (offerCountMap.get(o.dealer_id) || 0) + 1);
-      }
-    });
 
     return (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[])
       .filter((d) => (onlyActive ? d.is_active : true))
@@ -214,7 +243,7 @@ export class DealersRepository {
           .selectFrom('dealers')
           .select((eb) => eb.fn.count<number>('id').as('count'))
           .executeTakeFirst();
-        if (res && res.count) return Number(res.count);
+        if (res && res.count) return Math.max(Number(res.count), PARTNER_DEALERS_DATA.length);
       } catch {
         // Fallback below
       }

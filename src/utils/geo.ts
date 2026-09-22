@@ -5,6 +5,7 @@
  */
 
 import { Dealer, DealerLocation } from '../types';
+import { ALL_GERMAN_CITIES } from '../data/germanCities';
 
 export interface GeoLocation {
   lat: number;
@@ -131,6 +132,21 @@ export const GERMAN_GEO_REFERENCE: Record<string, { lat: number; lng: number; na
   '97070': { lat: 49.7913, lng: 9.9534, name: 'Würzburg' },
   '99084': { lat: 50.9848, lng: 11.0299, name: 'Erfurt' }
 };
+
+// Automatically enrich reference with all cities from ALL_GERMAN_CITIES
+ALL_GERMAN_CITIES.forEach((c) => {
+  const norm = c.name.toLowerCase().trim();
+  if (!GERMAN_GEO_REFERENCE[norm]) {
+    GERMAN_GEO_REFERENCE[norm] = { lat: c.lat, lng: c.lng, name: c.name };
+  }
+  if (!GERMAN_GEO_REFERENCE[c.code]) {
+    GERMAN_GEO_REFERENCE[c.code] = { lat: c.lat, lng: c.lng, name: `${c.name} (${c.code})` };
+  }
+  const cleanUmlaut = norm.replace(/ä/g, 'ae').replace(/ö/g, 'oe').replace(/ü/g, 'ue').replace(/ß/g, 'ss');
+  if (cleanUmlaut !== norm && !GERMAN_GEO_REFERENCE[cleanUmlaut]) {
+    GERMAN_GEO_REFERENCE[cleanUmlaut] = { lat: c.lat, lng: c.lng, name: c.name };
+  }
+});
 
 // Approximate coordinates by 2-digit German Leitregion (PLZ zone)
 export const PLZ_2DIGIT_REGIONS: Record<string, { lat: number; lng: number; name: string }> = {

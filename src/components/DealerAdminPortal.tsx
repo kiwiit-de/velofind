@@ -15,6 +15,7 @@ import {
   Database
 } from 'lucide-react';
 import { Dealer, Lead, ImportRun, OverviewStats } from '../types';
+import { apiUrl } from '../lib/api';
 
 interface DealerAdminPortalProps {
   dealers: Dealer[];
@@ -55,9 +56,9 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
   const fetchPortalData = async () => {
     try {
       const [statsRes, leadsRes, auditRes] = await Promise.all([
-        fetch('/api/admin/overview'),
-        fetch(`/api/admin/leads?dealer_id=${selectedDealerId}`),
-        fetch('/api/admin/audit-logs')
+        fetch(apiUrl('/api/admin/overview')),
+        fetch(apiUrl(`/api/admin/leads?dealer_id=${selectedDealerId}`)),
+        fetch(apiUrl('/api/admin/audit-logs'))
       ]);
 
       if (statsRes.ok) setStats(await statsRes.json());
@@ -77,7 +78,7 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
     setImportReport(null);
 
     try {
-      const res = await fetch('/api/dealers/import-feed', {
+      const res = await fetch(apiUrl('/api/dealers/import-feed'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -103,7 +104,7 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
 
   const handleUpdateLeadStatus = async (leadId: string, newStatus: string) => {
     try {
-      const res = await fetch(`/api/admin/leads/${leadId}`, {
+      const res = await fetch(apiUrl(`/api/admin/leads/${leadId}`), {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ status: newStatus })

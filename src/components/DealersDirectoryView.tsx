@@ -7,13 +7,15 @@ import {
   ShieldCheck, 
   ArrowRight, 
   CheckCircle2, 
-  Navigation,
-  Search,
-  ExternalLink,
-  Bike,
-  Sparkles,
-  Layers,
-  X
+  Navigation, 
+  Search, 
+  ExternalLink, 
+  Bike, 
+  Sparkles, 
+  Layers, 
+  X,
+  Globe,
+  ChevronDown
 } from 'lucide-react';
 import { Dealer } from '../types';
 import { NearbyDealersMap } from './NearbyDealersMap';
@@ -43,6 +45,7 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
   const [partnerSearch, setPartnerSearch] = useState('');
   const [providerFilter, setProviderFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState<'distance' | 'offers' | 'name'>('distance');
+  const [visibleCount, setVisibleCount] = useState<number>(36);
 
   const centerLocation = useMemo(() => {
     if (!postalCode) return null;
@@ -79,7 +82,8 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
         const matchCity = loc?.city.toLowerCase().includes(q) || false;
         const matchPlz = loc?.postal_code.includes(q) || false;
         const matchAddress = loc?.address_line1.toLowerCase().includes(q) || false;
-        return matchName || matchCity || matchPlz || matchAddress;
+        const matchWebsite = d.website_url?.toLowerCase().includes(q) || false;
+        return matchName || matchCity || matchPlz || matchAddress || matchWebsite;
       });
     }
 
@@ -101,6 +105,10 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
 
     return list;
   }, [dealers, centerLocation, partnerSearch, providerFilter, sortBy]);
+
+  const pagedDealers = useMemo(() => {
+    return displayedDealers.slice(0, visibleCount);
+  }, [displayedDealers, visibleCount]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
@@ -153,13 +161,19 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
               id="search-partner-directory"
               type="text"
               value={partnerSearch}
-              onChange={(e) => setPartnerSearch(e.target.value)}
-              placeholder="Partner suchen nach Name, Stadt oder PLZ (z.B. Radhaus, 80331, Berlin)..."
+              onChange={(e) => {
+                setPartnerSearch(e.target.value);
+                setVisibleCount(36);
+              }}
+              placeholder="Partner nach Name, Website (Domain/URL), Stadt oder PLZ suchen (z.B. lucky-bike.de, Berlin)..."
               className="w-full pl-10 pr-9 py-2.5 rounded-xl border border-slate-300 text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 text-slate-800 placeholder:text-slate-400 shadow-2xs"
             />
             {partnerSearch && (
               <button
-                onClick={() => setPartnerSearch('')}
+                onClick={() => {
+                  setPartnerSearch('');
+                  setVisibleCount(36);
+                }}
                 className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs"
               >
                 <X className="w-4 h-4" />
@@ -223,9 +237,23 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
       </div>
 
       {/* Dealers Cards Grid */}
-      <div className="space-y-4">
+      <div className="space-y-6">
+        <div className="flex items-center justify-between text-xs text-slate-500 px-1">
+          <span>
+            Zeige <strong className="text-slate-800">{Math.min(visibleCount, displayedDealers.length)}</strong> von <strong className="text-slate-800">{displayedDealers.length}</strong> Partner-Fachhändlern
+          </span>
+          {displayedDealers.length > visibleCount && (
+            <button
+              onClick={() => setVisibleCount(displayedDealers.length)}
+              className="text-emerald-700 hover:text-emerald-800 font-semibold underline"
+            >
+              Alle {displayedDealers.length} auf einmal anzeigen
+            </button>
+          )}
+        </div>
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {displayedDealers.map((dealer: any) => {
+          {pagedDealers.map((dealer: any) => {
             const loc = dealer.locations?.[0];
             const offersCount = dealer.offers_count;
 
@@ -252,6 +280,21 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
                           <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
                           <span>{loc.address_line1}, {loc.postal_code} {loc.city}</span>
                         </div>
+                      )}
+                      {dealer.website_url && (
+                        <a
+                          href={dealer.website_url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 mt-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100/90 px-2.5 py-1 rounded-lg border border-emerald-200/70 transition-colors shadow-2xs group/link"
+                          title={`Offizielle Händler-Website aufrufen: ${dealer.website_url}`}
+                        >
+                          <Globe className="w-3 h-3 text-emerald-600 shrink-0" />
+                          <span className="truncate max-w-[200px] sm:max-w-[260px]">
+                            {dealer.website_url.replace(/^https?:\/\/(www\.)?/, '').replace(/\/$/, '')}
+                          </span>
+                          <ExternalLink className="w-2.5 h-2.5 text-emerald-500 shrink-0 ml-0.5 group-hover/link:translate-x-0.5 transition-transform" />
+                        </a>
                       )}
                     </div>
 
@@ -373,6 +416,25 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
             );
           })}
         </div>
+
+        {displayedDealers.length > visibleCount && (
+          <div className="pt-6 pb-2 text-center flex flex-col sm:flex-row items-center justify-center gap-3">
+            <button
+              id="btn-load-more-dealers"
+              onClick={() => setVisibleCount((prev) => prev + 36)}
+              className="w-full sm:w-auto px-6 py-3 bg-white hover:bg-slate-50 text-slate-800 font-bold text-sm rounded-2xl border border-slate-300 shadow-xs flex items-center justify-center gap-2 transition-all hover:border-emerald-400"
+            >
+              <ChevronDown className="w-4 h-4 text-emerald-600" />
+              <span>Weitere 36 Fachhändler laden ({displayedDealers.length - visibleCount} verbleibend)</span>
+            </button>
+            <button
+              onClick={() => setVisibleCount(displayedDealers.length)}
+              className="text-xs font-semibold text-slate-500 hover:text-slate-800 underline py-2"
+            >
+              Alle {displayedDealers.length} Händler anzeigen
+            </button>
+          </div>
+        )}
 
         {displayedDealers.length === 0 && (
           <div className="text-center py-16 bg-white rounded-3xl border border-slate-200 p-8 max-w-md mx-auto">

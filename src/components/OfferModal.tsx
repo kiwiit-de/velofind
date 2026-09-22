@@ -1,8 +1,30 @@
 import React, { useState } from 'react';
-import { X, ExternalLink, MessageSquare, MapPin, ShieldCheck, BatteryCharging, Gauge, Scale, Bike, Clock, Phone, Mail, AlertCircle, Heart, Building2 } from 'lucide-react';
+import {
+  X,
+  ExternalLink,
+  MessageSquare,
+  MapPin,
+  ShieldCheck,
+  BatteryCharging,
+  Gauge,
+  Scale,
+  Bike,
+  Clock,
+  Phone,
+  Mail,
+  AlertCircle,
+  Heart,
+  Building2,
+  Bell,
+  BellRing,
+  CheckCircle2,
+  TrendingDown
+} from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
+import { usePriceAlert } from '../utils/alerts';
+import { resolveImageUrl } from '../lib/api';
 
 interface OfferModalProps {
   offer: Offer | null;
@@ -25,11 +47,50 @@ export const OfferModal: React.FC<OfferModalProps> = ({
   const { isInCompare, toggleCompare } = useCompare();
   const [modalImg, setModalImg] = useState<string | null>(null);
 
+  const {
+    hasAlert,
+    subscribersCount,
+    loading: alertLoading,
+    error: alertError,
+    successMessage: alertSuccess,
+    subscribeAlert,
+    savedEmail
+  } = usePriceAlert(offer?.id, offer?.price_cents);
+
+  const [showAlertForm, setShowAlertForm] = useState(false);
+  const [alertEmail, setAlertEmail] = useState('');
+  const [targetDiscountPct, setTargetDiscountPct] = useState<number | 'any'>('any');
+
+  // Prepopulate saved email if available
+  React.useEffect(() => {
+    if (savedEmail && !alertEmail) {
+      setAlertEmail(savedEmail);
+    }
+  }, [savedEmail, alertEmail]);
+
   if (!offer) return null;
 
   const isFav = isFavorite(offer.id);
   const inCompare = isInCompare(offer.id);
-  const currentImg = modalImg || offer.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1000&q=80';
+  const currentImg = modalImg || resolveImageUrl(offer.image_url);
+
+  const handleAlertSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    let targetPriceCents: number | null = null;
+    if (targetDiscountPct === 5) {
+      targetPriceCents = Math.round(offer.price_cents * 0.95);
+    } else if (targetDiscountPct === 10) {
+      targetPriceCents = Math.round(offer.price_cents * 0.9);
+    }
+
+    const success = await subscribeAlert(alertEmail, targetPriceCents);
+    if (success) {
+      setTimeout(() => {
+        setShowAlertForm(false);
+      }, 2400);
+    }
+  };
+
 
   const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
     style: 'currency',
@@ -90,6 +151,22 @@ export const OfferModal: React.FC<OfferModalProps> = ({
           </button>
 
           <button
+            id="modal-btn-top-alert"
+            type="button"
+            onClick={() => setShowAlertForm((prev) => !prev)}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 shadow-xs flex items-center gap-1.5 text-xs font-semibold ${
+              hasAlert
+                ? 'bg-amber-500 text-white shadow-md ring-2 ring-amber-200'
+                : 'bg-white/95 text-slate-700 hover:text-amber-700 hover:bg-white border border-slate-200 backdrop-blur-xs'
+            }`}
+            title={hasAlert ? 'Preisalarm ist aktiv (Klicken zum Bearbeiten)' : 'Alert me on price drop (Preisalarm scharfschalten)'}
+            aria-label="Alert me on price drop"
+          >
+            <Bell className={`w-3.5 h-3.5 ${hasAlert ? 'fill-white text-white' : 'text-amber-500'}`} />
+            <span>{hasAlert ? 'Alarm aktiv' : 'Preisalarm'}</span>
+          </button>
+
+          <button
             id="btn-close-offer-modal"
             onClick={onClose}
             className="p-2 rounded-full bg-white/90 text-slate-500 hover:text-slate-800 hover:bg-white shadow-xs border border-slate-200 transition-colors"
@@ -137,7 +214,7 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                 src={currentImg}
                 alt={offer.title}
                 onError={() => {
-                  setModalImg('https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1000&q=80');
+                  setModalImg(resolveImageUrl('/images/bikes/cube_stereo_hybrid.jpg'));
                 }}
                 className="w-full h-full object-cover"
               />
@@ -174,6 +251,178 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                   <MessageSquare className="w-4 h-4 text-emerald-600" />
                   <span>Probefahrt / Händler-Anfrage stellen</span>
                 </button>
+
+                {/* 'Alert me on price drop' CTA */}
+                <div className="pt-1">
+                  {!showAlertForm && !hasAlert && (
+                    <button
+                      id="modal-btn-price-alert"
+                      type="button"
+                      onClick={() => setShowAlertForm(true)}
+                      className="w-full py-2.5 px-4 rounded-xl border border-amber-300/80 hover:border-amber-400 bg-amber-50/70 hover:bg-amber-100/70 text-amber-950 font-semibold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-all duration-150 group"
+                    >
+                      <Bell className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
+                      <span>Alert me on price drop</span>
+                      {subscribersCount > 0 && (
+                        <span className="ml-1 text-[11px] font-normal text-amber-900 bg-amber-200/60 px-2 py-0.5 rounded-full">
+                          {subscribersCount} {subscribersCount === 1 ? 'Beobachter' : 'Beobachter'}
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Active alert indicator */}
+                  {hasAlert && !showAlertForm && (
+                    <div
+                      id="modal-price-alert-active-banner"
+                      className="w-full py-2.5 px-3.5 rounded-xl bg-emerald-50 border border-emerald-300 text-emerald-950 text-xs flex items-center justify-between shadow-xs"
+                    >
+                      <div className="flex items-center gap-2">
+                        <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <div>
+                          <span className="font-semibold block">Preisalarm aktiv</span>
+                          <span className="text-slate-600 text-[11px]">Wir benachrichtigen dich, sobald der Preis fällt.</span>
+                        </div>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setShowAlertForm(true)}
+                        className="text-emerald-700 hover:text-emerald-900 font-medium underline text-[11px] ml-2 shrink-0"
+                      >
+                        Anpassen
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Interactive subscription panel */}
+                  {showAlertForm && (
+                    <div
+                      id="modal-price-alert-form"
+                      className="p-4 rounded-2xl bg-amber-50/90 border border-amber-300/90 shadow-sm space-y-3 animate-in fade-in zoom-in-98 duration-150"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 rounded-lg bg-amber-500 text-white shadow-xs">
+                            <BellRing className="w-4 h-4" />
+                          </div>
+                          <div>
+                            <h4 className="text-xs font-bold text-slate-900 uppercase tracking-wide">
+                              Alert me on price drop
+                            </h4>
+                            <p className="text-[11px] text-slate-600">
+                              Erhalte eine E-Mail, sobald der Fachhändler den Preis senkt.
+                            </p>
+                          </div>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => setShowAlertForm(false)}
+                          className="text-slate-400 hover:text-slate-700 p-1 rounded-md"
+                          title="Schließen"
+                        >
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
+
+                      {alertSuccess && (
+                        <div className="p-2.5 rounded-xl bg-emerald-100/90 border border-emerald-300 text-emerald-900 text-xs flex items-center gap-2">
+                          <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                          <span>{alertSuccess}</span>
+                        </div>
+                      )}
+
+                      {alertError && (
+                        <div className="p-2.5 rounded-xl bg-rose-100/90 border border-rose-300 text-rose-900 text-xs flex items-center gap-2">
+                          <AlertCircle className="w-4 h-4 text-rose-600 shrink-0" />
+                          <span>{alertError}</span>
+                        </div>
+                      )}
+
+                      <form onSubmit={handleAlertSubmit} className="space-y-3">
+                        <div>
+                          <label htmlFor="price-alert-email" className="block text-[11px] font-semibold text-slate-700 mb-1">
+                            Deine E-Mail-Adresse *
+                          </label>
+                          <input
+                            id="price-alert-email"
+                            type="email"
+                            required
+                            placeholder="name@beispiel.de"
+                            value={alertEmail}
+                            onChange={(e) => setAlertEmail(e.target.value)}
+                            className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 bg-white text-slate-900 focus:outline-none focus:ring-2 focus:ring-amber-500"
+                          />
+                        </div>
+
+                        <div>
+                          <span className="block text-[11px] font-semibold text-slate-700 mb-1">
+                            Benachrichtigungsschwelle
+                          </span>
+                          <div className="grid grid-cols-3 gap-1.5 text-xs">
+                            <button
+                              type="button"
+                              onClick={() => setTargetDiscountPct('any')}
+                              className={`py-1.5 px-2 rounded-lg font-medium text-[11px] border transition-colors ${
+                                targetDiscountPct === 'any'
+                                  ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              Jeder Rabatt
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setTargetDiscountPct(5)}
+                              className={`py-1.5 px-2 rounded-lg font-medium text-[11px] border transition-colors ${
+                                targetDiscountPct === 5
+                                  ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              ab -5%
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => setTargetDiscountPct(10)}
+                              className={`py-1.5 px-2 rounded-lg font-medium text-[11px] border transition-colors ${
+                                targetDiscountPct === 10
+                                  ? 'bg-amber-600 text-white border-amber-600 shadow-xs'
+                                  : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50'
+                              }`}
+                            >
+                              ab -10%
+                            </button>
+                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 pt-1">
+                          <button
+                            id="btn-submit-price-alert"
+                            type="submit"
+                            disabled={alertLoading}
+                            className="flex-1 py-2 px-3 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 shadow-sm transition-colors disabled:opacity-50"
+                          >
+                            {alertLoading ? (
+                              <span>Wird aktiviert...</span>
+                            ) : (
+                              <>
+                                <Bell className="w-3.5 h-3.5" />
+                                <span>Preisalarm scharfschalten</span>
+                              </>
+                            )}
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setShowAlertForm(false)}
+                            className="py-2 px-3 rounded-xl bg-slate-200/80 hover:bg-slate-300 text-slate-700 font-semibold text-xs transition-colors"
+                          >
+                            Abbrechen
+                          </button>
+                        </div>
+                      </form>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </div>

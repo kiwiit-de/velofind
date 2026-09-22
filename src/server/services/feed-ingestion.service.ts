@@ -16,6 +16,9 @@ import {
 } from '../db/repositories/index.ts';
 import { sanitizeCSVField, generateUUID } from '../db/utils.ts';
 import type { ImportStatus, AvailabilityStatus, OfferCondition } from '../db/schema.ts';
+import { imageFetcherService } from './image-fetcher.service.ts';
+import { priceAlertService } from './price-alert.service.ts';
+
 
 export interface FeedImportError {
   line: number;
@@ -193,6 +196,13 @@ export class FeedIngestionService {
           old_price_cents: existingOffer.price_cents,
           new_price_cents: priceCents
         });
+
+        // If price dropped, trigger UserAlerts notifications
+        if (priceCents < existingOffer.price_cents) {
+          priceAlertService
+            .checkAndTriggerAlertsForPriceDrop(existingOffer.id, existingOffer.price_cents, priceCents)
+            .catch((err) => console.error('[FeedIngestionService] Price drop notification error:', err));
+        }
       }
 
       // Upsert offer directly into PostgreSQL
@@ -209,7 +219,7 @@ export class FeedIngestionService {
         quantity,
         condition,
         source_url: sourceUrl,
-        image_url: row.image_url || 'https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80',
+        image_url: row.image_url || imageFetcherService.getVerifiedModelImage(brand, row.model || row.title, row.category),
         content_hash: 'hash-' + generateUUID().slice(0, 10),
         is_active: true
       });
