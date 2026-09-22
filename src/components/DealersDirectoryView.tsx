@@ -66,24 +66,34 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
   // Filtered and sorted dealers
   const displayedDealers = useMemo(() => {
     let list = dealers.map((d) => {
-      const loc = d.locations?.[0];
-      const dist =
-        centerLocation && loc?.latitude && loc?.longitude
-          ? calculateDistanceKm(centerLocation.lat, centerLocation.lng, loc.latitude, loc.longitude)
-          : undefined;
+      let dist: number | undefined = undefined;
+      if (centerLocation && d.locations && d.locations.length > 0) {
+        let minD = 99999;
+        d.locations.forEach((loc) => {
+          if (loc.latitude && loc.longitude) {
+            const dKm = calculateDistanceKm(centerLocation.lat, centerLocation.lng, loc.latitude, loc.longitude);
+            if (dKm < minD) minD = dKm;
+          }
+        });
+        if (minD < 99999) dist = minD;
+      }
       return { ...d, distanceKm: dist };
     });
 
     if (partnerSearch.trim()) {
-      const q = partnerSearch.toLowerCase().trim();
+      let q = partnerSearch.toLowerCase().trim();
+      q = q.replace(/\bbohcum\b/g, 'bochum');
+      const tokens = q
+        .split(/\s+/)
+        .filter((t) => t.length > 1 && !['in', 'der', 'die', 'das', 'und', 'mit', 'fuer', 'für', 'filiale', 'filialen'].includes(t));
+
       list = list.filter((d) => {
-        const loc = d.locations?.[0];
-        const matchName = d.name.toLowerCase().includes(q);
-        const matchCity = loc?.city.toLowerCase().includes(q) || false;
-        const matchPlz = loc?.postal_code.includes(q) || false;
-        const matchAddress = loc?.address_line1.toLowerCase().includes(q) || false;
-        const matchWebsite = d.website_url?.toLowerCase().includes(q) || false;
-        return matchName || matchCity || matchPlz || matchAddress || matchWebsite;
+        const locationsStr = d.locations?.map((l) => `${l.name} ${l.city} ${l.postal_code} ${l.address_line1}`).join(' ') || '';
+        const corpus = `${d.name} ${d.slug} ${d.website_url ?? ''} ${locationsStr}`.toLowerCase();
+
+        if (corpus.includes(q)) return true;
+        if (tokens.length > 0 && tokens.every((t) => corpus.includes(t))) return true;
+        return false;
       });
     }
 

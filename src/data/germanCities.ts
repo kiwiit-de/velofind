@@ -246,10 +246,15 @@ export const TOP_GERMAN_METROPOLES: GermanCity[] = ALL_GERMAN_CITIES.filter((c) 
  */
 export function findCity(query: string): GermanCity | undefined {
   if (!query) return undefined;
-  const clean = query.trim().toLowerCase();
+  let clean = query.trim().toLowerCase();
+  if (clean === 'bohcum') clean = 'bochum';
   // 1. Match code
   const codeMatch = ALL_GERMAN_CITIES.find((c) => c.code === clean);
   if (codeMatch) return codeMatch;
+  if (clean.startsWith('448') || clean.startsWith('447')) {
+    const bochum = ALL_GERMAN_CITIES.find((c) => c.name === 'Bochum');
+    if (bochum) return bochum;
+  }
   // 2. Match name exactly
   const nameMatch = ALL_GERMAN_CITIES.find((c) => c.name.toLowerCase() === clean);
   if (nameMatch) return nameMatch;

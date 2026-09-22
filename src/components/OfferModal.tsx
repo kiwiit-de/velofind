@@ -25,6 +25,7 @@ import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
 import { usePriceAlert } from '../utils/alerts';
 import { resolveImageUrl } from '../lib/api';
+import { LeasingProviderLogo } from './LeasingProviderLogo';
 
 interface OfferModalProps {
   offer: Offer | null;
@@ -505,14 +506,17 @@ export const OfferModal: React.FC<OfferModalProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 mb-3">
               {offer.leasing_compatibilities.map(lc => (
-                <div key={lc.provider_slug} className="bg-white p-3 rounded-xl border border-emerald-200 flex flex-col justify-between">
+                <div key={lc.provider_slug} className="bg-white p-3 rounded-xl border border-emerald-200 flex flex-col justify-between shadow-2xs">
                   <div className="flex items-center justify-between">
-                    <span className="font-semibold text-slate-900 text-sm">{lc.provider_name}</span>
+                    <div className="flex items-center gap-2">
+                      <LeasingProviderLogo slug={lc.provider_slug} name={lc.provider_name} size="sm" />
+                      <span className="font-semibold text-slate-900 text-sm">{lc.provider_name}</span>
+                    </div>
                     <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-100 text-emerald-800 rounded">
                       {lc.status}
                     </span>
                   </div>
-                  <span className="text-xs text-slate-500 mt-1">{lc.evidence_reason}</span>
+                  <span className="text-xs text-slate-500 mt-2">{lc.evidence_reason}</span>
                 </div>
               ))}
             </div>

@@ -91,23 +91,27 @@ export const NearbyDealersMap: React.FC<NearbyDealersMapProps> = ({
   const dealersWithCoords = useMemo(() => {
     const list: DealerWithDistance[] = [];
     dealers.forEach((dealer) => {
-      const loc = dealer.locations?.[0];
-      if (loc && typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
-        let dist = 0;
-        if (centerLocation) {
-          dist = calculateDistanceKm(
-            centerLocation.lat,
-            centerLocation.lng,
-            loc.latitude,
-            loc.longitude
-          );
+      const locations = dealer.locations && dealer.locations.length > 0 ? dealer.locations : [];
+      locations.forEach((loc, idx) => {
+        if (loc && typeof loc.latitude === 'number' && typeof loc.longitude === 'number') {
+          let dist = 0;
+          if (centerLocation) {
+            dist = calculateDistanceKm(
+              centerLocation.lat,
+              centerLocation.lng,
+              loc.latitude,
+              loc.longitude
+            );
+          }
+          list.push({
+            ...dealer,
+            id: idx === 0 ? dealer.id : `${dealer.id}#loc-${idx}`,
+            name: locations.length > 1 && !dealer.name.includes(loc.city) ? `${dealer.name} - ${loc.city}` : dealer.name,
+            primaryLocation: loc,
+            distanceKm: dist
+          });
         }
-        list.push({
-          ...dealer,
-          primaryLocation: loc,
-          distanceKm: dist
-        });
-      }
+      });
     });
 
     if (centerLocation) {
@@ -125,8 +129,11 @@ export const NearbyDealersMap: React.FC<NearbyDealersMapProps> = ({
   // Selected dealer record
   const selectedDealer = useMemo(() => {
     if (!selectedDealerId) return null;
-    return dealers.find((d) => d.id === selectedDealerId) || null;
-  }, [dealers, selectedDealerId]);
+    const directMatch = dealersWithCoords.find((d) => d.id === selectedDealerId);
+    if (directMatch) return directMatch;
+    const baseId = selectedDealerId.split('#')[0];
+    return dealers.find((d) => d.id === baseId) || null;
+  }, [dealers, dealersWithCoords, selectedDealerId]);
 
   // 1. Initialize Leaflet Map once
   useEffect(() => {

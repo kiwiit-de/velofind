@@ -4,6 +4,7 @@ import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
 import { resolveImageUrl } from '../lib/api';
+import { LeasingProviderLogo } from './LeasingProviderLogo';
 
 interface OfferCardProps {
   offer: Offer;
@@ -225,10 +226,11 @@ export const OfferCard: React.FC<OfferCardProps> = ({
                 {offer.leasing_compatibilities.slice(0, 3).map((lc) => (
                   <span
                     key={lc.provider_slug}
-                    className="px-1.5 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-900 border border-emerald-200 rounded"
+                    className="inline-flex items-center gap-1 px-1.5 py-0.5 text-[10px] font-medium bg-emerald-50 text-emerald-900 border border-emerald-200 rounded"
                     title={lc.evidence_reason}
                   >
-                    ✓ {lc.provider_name}
+                    <LeasingProviderLogo slug={lc.provider_slug} size="xs" />
+                    <span>{lc.provider_name}</span>
                   </span>
                 ))}
                 {offer.leasing_compatibilities.length > 3 && (

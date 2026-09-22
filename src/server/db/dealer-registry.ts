@@ -17919,6 +17919,1854 @@ export const PARTNER_DEALERS_DATA: Dealer[] = [
     ],
     "created_at": "2026-09-01T00:00:00.000Z"
   }
+
+,
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "name": "Fahrrad XXL Meinhövel Bochum",
+  "slug": "fahrrad-xxl-meinhoevel-bochum",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/bochum/",
+  "phone": "+49 234 958040",
+  "email": "bochum@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b1",
+  "name": "Fahrrad XXL Meinhövel Gelsenkirchen",
+  "slug": "fahrrad-xxl-meinhoevel-gelsenkirchen",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/gelsenkirchen/",
+  "phone": "+49 209 977500",
+  "email": "gelsenkirchen@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-gelsenkirchen-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b1",
+      "name": "Fahrrad XXL Meinhövel Gelsenkirchen",
+      "address_line1": "Willy-Brandt-Allee 54",
+      "postal_code": "45891",
+      "city": "Gelsenkirchen",
+      "country_code": "DE",
+      "latitude": 51.5542,
+      "longitude": 7.0789,
+      "phone": "+49 209 977500",
+      "email": "gelsenkirchen@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b2",
+  "name": "Fahrrad XXL Feld Sankt Augustin",
+  "slug": "fahrrad-xxl-feld-sankt-augustin",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/sankt-augustin/",
+  "phone": "+49 2241 87800",
+  "email": "sankt-augustin@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-sankt-augustin-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b2",
+      "name": "Fahrrad XXL Feld Sankt Augustin (Köln/Bonn)",
+      "address_line1": "Einsteinstraße 35",
+      "postal_code": "53757",
+      "city": "Sankt Augustin",
+      "country_code": "DE",
+      "latitude": 50.7719,
+      "longitude": 7.1873,
+      "phone": "+49 2241 87800",
+      "email": "sankt-augustin@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b3",
+  "name": "Fahrrad XXL Walcher Esslingen",
+  "slug": "fahrrad-xxl-walcher-esslingen",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/esslingen/",
+  "phone": "+49 711 351270",
+  "email": "esslingen@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-esslingen-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b3",
+      "name": "Fahrrad XXL Walcher Esslingen (Stuttgart)",
+      "address_line1": "Pliensaustraße 40",
+      "postal_code": "73728",
+      "city": "Esslingen am Neckar",
+      "country_code": "DE",
+      "latitude": 48.7428,
+      "longitude": 9.3073,
+      "phone": "+49 711 351270",
+      "email": "esslingen@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b4",
+  "name": "Fahrrad XXL Emporon Dresden",
+  "slug": "fahrrad-xxl-emporon-dresden",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/dresden/",
+  "phone": "+49 351 288580",
+  "email": "dresden@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-dresden-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b4",
+      "name": "Fahrrad XXL Emporon Dresden Nord",
+      "address_line1": "Washingtonstraße 65",
+      "postal_code": "01139",
+      "city": "Dresden",
+      "country_code": "DE",
+      "latitude": 51.0772,
+      "longitude": 13.6895,
+      "phone": "+49 351 288580",
+      "email": "dresden@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b5",
+  "name": "Fahrrad XXL Kalker Ludwigshafen",
+  "slug": "fahrrad-xxl-kalker-ludwigshafen",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/ludwigshafen/",
+  "phone": "+49 621 570080",
+  "email": "ludwigshafen@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-ludwigshafen-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b5",
+      "name": "Fahrrad XXL Kalker Ludwigshafen (Mannheim)",
+      "address_line1": "Karl-Krämer-Straße 12",
+      "postal_code": "67061",
+      "city": "Ludwigshafen am Rhein",
+      "country_code": "DE",
+      "latitude": 49.4811,
+      "longitude": 8.4464,
+      "phone": "+49 621 570080",
+      "email": "ludwigshafen@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b6",
+  "name": "Fahrrad XXL Marcks Hamburg",
+  "slug": "fahrrad-xxl-marcks-hamburg",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/hamburg/",
+  "phone": "+49 40 7660090",
+  "email": "hamburg@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-hamburg-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b6",
+      "name": "Fahrrad XXL Marcks Hamburg Harburg",
+      "address_line1": "Großmoorbogen 9",
+      "postal_code": "21079",
+      "city": "Hamburg",
+      "country_code": "DE",
+      "latitude": 53.4542,
+      "longitude": 9.9986,
+      "phone": "+49 40 7660090",
+      "email": "hamburg@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "f778f310-1d9c-4f73-af4d-63331bd064b7",
+  "name": "Fahrrad XXL Franz Mainz",
+  "slug": "fahrrad-xxl-franz-mainz",
+  "website_url": "https://www.fahrrad-xxl.de/filialen/mainz/",
+  "phone": "+49 6131 62220",
+  "email": "mainz@fahrrad-xxl.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-xxl-mainz-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b7",
+      "name": "Fahrrad XXL Franz Mainz Mombach",
+      "address_line1": "Rheinallee 128",
+      "postal_code": "55120",
+      "city": "Mainz",
+      "country_code": "DE",
+      "latitude": 50.0211,
+      "longitude": 8.2415,
+      "phone": "+49 6131 62220",
+      "email": "mainz@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+  "name": "Lucky Bike Filiale Dortmund",
+  "slug": "lucky-bike-dortmund",
+  "website_url": "https://www.lucky-bike.de/filialen/dortmund/",
+  "phone": "+49 231 655290",
+  "email": "dortmund@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-dortmund-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+      "name": "Lucky Bike Filiale Dortmund (Kley - Nähe Bochum)",
+      "address_line1": "Kleyer Weg 27",
+      "postal_code": "44149",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.4988,
+      "longitude": 7.3789,
+      "phone": "+49 231 655290",
+      "email": "dortmund@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+  "name": "Lucky Bike Filiale Essen",
+  "slug": "lucky-bike-essen",
+  "website_url": "https://www.lucky-bike.de/filialen/essen/",
+  "phone": "+49 201 320390",
+  "email": "essen@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-essen-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+      "name": "Lucky Bike Filiale Essen",
+      "address_line1": "Gladbecker Str. 415",
+      "postal_code": "45329",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4889,
+      "longitude": 7.0092,
+      "phone": "+49 201 320390",
+      "email": "essen@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c3",
+  "name": "Lucky Bike Filiale Düsseldorf",
+  "slug": "lucky-bike-duesseldorf",
+  "website_url": "https://www.lucky-bike.de/filialen/duesseldorf/",
+  "phone": "+49 211 506690",
+  "email": "duesseldorf@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-duesseldorf-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c3",
+      "name": "Lucky Bike Filiale Düsseldorf Heerdt",
+      "address_line1": "Schiessstraße 43",
+      "postal_code": "40549",
+      "city": "Düsseldorf",
+      "country_code": "DE",
+      "latitude": 51.2389,
+      "longitude": 6.7214,
+      "phone": "+49 211 506690",
+      "email": "duesseldorf@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c4",
+  "name": "Lucky Bike Filiale Bielefeld",
+  "slug": "lucky-bike-bielefeld",
+  "website_url": "https://www.lucky-bike.de/filialen/bielefeld/",
+  "phone": "+49 521 329240",
+  "email": "bielefeld@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-bielefeld-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c4",
+      "name": "Lucky Bike Filiale Bielefeld",
+      "address_line1": "Herforder Str. 182",
+      "postal_code": "33609",
+      "city": "Bielefeld",
+      "country_code": "DE",
+      "latitude": 52.0367,
+      "longitude": 8.5578,
+      "phone": "+49 521 329240",
+      "email": "bielefeld@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c5",
+  "name": "Lucky Bike Filiale Köln Süd",
+  "slug": "lucky-bike-koeln",
+  "website_url": "https://www.lucky-bike.de/filialen/koeln/",
+  "phone": "+49 221 348080",
+  "email": "koeln@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-koeln-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c5",
+      "name": "Lucky Bike Filiale Köln Bayenthal",
+      "address_line1": "Alteburger Str. 361",
+      "postal_code": "50968",
+      "city": "Köln",
+      "country_code": "DE",
+      "latitude": 50.9067,
+      "longitude": 6.9745,
+      "phone": "+49 221 348080",
+      "email": "koeln@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c6",
+  "name": "Lucky Bike Filiale Münster",
+  "slug": "lucky-bike-muenster",
+  "website_url": "https://www.lucky-bike.de/filialen/muenster/",
+  "phone": "+49 251 71830",
+  "email": "muenster@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-muenster-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c6",
+      "name": "Lucky Bike Filiale Münster",
+      "address_line1": "Weseler Str. 539",
+      "postal_code": "48163",
+      "city": "Münster",
+      "country_code": "DE",
+      "latitude": 51.9289,
+      "longitude": 7.5978,
+      "phone": "+49 251 71830",
+      "email": "muenster@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "caf305aa-5f65-4aee-b008-179eaf9287c7",
+  "name": "Lucky Bike Radlbauer München",
+  "slug": "lucky-bike-radlbauer-muenchen",
+  "website_url": "https://www.lucky-bike.de/filialen/muenchen/",
+  "phone": "+49 89 87180",
+  "email": "muenchen@lucky-bike.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-lucky-muenchen-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c7",
+      "name": "Lucky Bike / Radlbauer München Neuaubing",
+      "address_line1": "Limesstraße 69",
+      "postal_code": "81243",
+      "city": "München",
+      "country_code": "DE",
+      "latitude": 48.1489,
+      "longitude": 11.4312,
+      "phone": "+49 89 87180",
+      "email": "muenchen@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000001",
+  "name": "Decathlon Bochum (Ruhr Park)",
+  "slug": "decathlon-bochum",
+  "website_url": "https://www.decathlon.de/filiale/bochum/",
+  "phone": "+49 234 927800",
+  "email": "bochum@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000002",
+  "name": "Decathlon Dortmund",
+  "slug": "decathlon-dortmund",
+  "website_url": "https://www.decathlon.de/filiale/dortmund/",
+  "phone": "+49 231 950800",
+  "email": "dortmund@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-dortmund-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000002",
+      "name": "Decathlon Dortmund Thier-Galerie / City",
+      "address_line1": "Westenhellweg 85",
+      "postal_code": "44137",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.5145,
+      "longitude": 7.4612,
+      "phone": "+49 231 950800",
+      "email": "dortmund@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000003",
+  "name": "Decathlon Essen",
+  "slug": "decathlon-essen",
+  "website_url": "https://www.decathlon.de/filiale/essen/",
+  "phone": "+49 201 848500",
+  "email": "essen@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-essen-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000003",
+      "name": "Decathlon Essen Rathaus Galerie",
+      "address_line1": "Porscheplatz 2",
+      "postal_code": "45127",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4589,
+      "longitude": 7.0145,
+      "phone": "+49 201 848500",
+      "email": "essen@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000004",
+  "name": "Decathlon Düsseldorf",
+  "slug": "decathlon-duesseldorf",
+  "website_url": "https://www.decathlon.de/filiale/duesseldorf/",
+  "phone": "+49 211 862900",
+  "email": "duesseldorf@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-duesseldorf-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000004",
+      "name": "Decathlon Düsseldorf Schadow-Arkaden",
+      "address_line1": "Schadowstraße 78",
+      "postal_code": "40212",
+      "city": "Düsseldorf",
+      "country_code": "DE",
+      "latitude": 51.2267,
+      "longitude": 6.7845,
+      "phone": "+49 211 862900",
+      "email": "duesseldorf@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000005",
+  "name": "Decathlon Köln Marsdorf",
+  "slug": "decathlon-koeln",
+  "website_url": "https://www.decathlon.de/filiale/koeln/",
+  "phone": "+49 221 789400",
+  "email": "koeln@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-koeln-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000005",
+      "name": "Decathlon Köln Marsdorf Großfiliale",
+      "address_line1": "Marsdorfer Str. 1",
+      "postal_code": "50858",
+      "city": "Köln",
+      "country_code": "DE",
+      "latitude": 50.9167,
+      "longitude": 6.8645,
+      "phone": "+49 221 789400",
+      "email": "koeln@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000006",
+  "name": "Decathlon Berlin Alexanderplatz",
+  "slug": "decathlon-berlin",
+  "website_url": "https://www.decathlon.de/filiale/berlin/",
+  "phone": "+49 30 240800",
+  "email": "berlin@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-berlin-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000006",
+      "name": "Decathlon Berlin Alexanderplatz",
+      "address_line1": "Alexanderplatz 9",
+      "postal_code": "10178",
+      "city": "Berlin",
+      "country_code": "DE",
+      "latitude": 52.5218,
+      "longitude": 13.4132,
+      "phone": "+49 30 240800",
+      "email": "berlin@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "d0000000-0000-4000-a000-000000000007",
+  "name": "Decathlon München Elisenhof",
+  "slug": "decathlon-muenchen",
+  "website_url": "https://www.decathlon.de/filiale/muenchen/",
+  "phone": "+49 89 552700",
+  "email": "muenchen@decathlon.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-decathlon-muenchen-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000007",
+      "name": "Decathlon München Elisenhof Hauptbahnhof",
+      "address_line1": "Elisenstraße 3",
+      "postal_code": "80335",
+      "city": "München",
+      "country_code": "DE",
+      "latitude": 48.1412,
+      "longitude": 11.5623,
+      "phone": "+49 89 552700",
+      "email": "muenchen@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "b0c00000-0000-4000-a000-000000000001",
+  "name": "B.O.C. Bochum",
+  "slug": "boc-bochum",
+  "website_url": "https://www.boc24.de/filialen/bochum/",
+  "phone": "+49 234 516900",
+  "email": "bochum@boc24.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-boc-bochum-001",
+      "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+      "name": "B.O.C. Filiale Bochum Harpen",
+      "address_line1": "Hanielstraße 1",
+      "postal_code": "44805",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4989,
+      "longitude": 7.2712,
+      "phone": "+49 234 516900",
+      "email": "bochum@boc24.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "b0c00000-0000-4000-a000-000000000002",
+  "name": "B.O.C. Dortmund",
+  "slug": "boc-dortmund",
+  "website_url": "https://www.boc24.de/filialen/dortmund/",
+  "phone": "+49 231 847900",
+  "email": "dortmund@boc24.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-boc-dortmund-001",
+      "dealer_id": "b0c00000-0000-4000-a000-000000000002",
+      "name": "B.O.C. Filiale Dortmund Nord",
+      "address_line1": "Bornstraße 160",
+      "postal_code": "44145",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.5245,
+      "longitude": 7.4645,
+      "phone": "+49 231 847900",
+      "email": "dortmund@boc24.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "57ad1e00-0000-4000-a000-000000000001",
+  "name": "Zweirad-Center Stadler Essen",
+  "slug": "stadler-essen",
+  "website_url": "https://www.zweirad-center-stadler.de/filialen/essen/",
+  "phone": "+49 201 83030",
+  "email": "essen@zweirad-stadler.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-stadler-essen-001",
+      "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+      "name": "Zweirad-Center Stadler Essen (Ruhrgebiet)",
+      "address_line1": "Gladbecker Str. 19",
+      "postal_code": "45141",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4645,
+      "longitude": 7.0112,
+      "phone": "+49 201 83030",
+      "email": "essen@zweirad-stadler.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:30 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+},
+  {
+  "id": "57ad1e00-0000-4000-a000-000000000002",
+  "name": "Zweirad-Center Stadler Mülheim an der Ruhr",
+  "slug": "stadler-muelheim",
+  "website_url": "https://www.zweirad-center-stadler.de/filialen/muelheim/",
+  "phone": "+49 208 48480",
+  "email": "muelheim@zweirad-stadler.de",
+  "is_verified": true,
+  "is_active": true,
+  "locations": [
+    {
+      "id": "loc-stadler-muelheim-001",
+      "dealer_id": "57ad1e00-0000-4000-a000-000000000002",
+      "name": "Zweirad-Center Stadler Mülheim an der Ruhr",
+      "address_line1": "Mannesmannallee 21",
+      "postal_code": "45475",
+      "city": "Mülheim an der Ruhr",
+      "country_code": "DE",
+      "latitude": 51.4312,
+      "longitude": 6.8612,
+      "phone": "+49 208 48480",
+      "email": "muelheim@zweirad-stadler.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:30 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "supported_providers": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-JOB"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BIK"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-BUS"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-DEU"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-EUR"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "contract_reference": "VF-CTR-PARTNER-LEA"
+    }
+  ],
+  "created_at": "2026-09-01T00:00:00.000Z"
+}
 ];
 
 export const PARTNER_OFFERS_DATA: Offer[] = [
@@ -105658,4 +107506,2814 @@ export const PARTNER_OFFERS_DATA: Offer[] = [
       }
     ]
   }
+
+,
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-01",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-01",
+  "title": "CUBE Stereo Hybrid 140 HPC SLX 750 (L (20\"))",
+  "brand_name": "CUBE",
+  "model_name": "Stereo Hybrid 140 HPC SLX 750",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 459900,
+  "compare_at_price_cents": 499900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L (20\")",
+    "frame_type": "DIAMOND",
+    "color": "Liquidblue´n´blue",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-01-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-01",
+      "old_price_cents": 499900,
+      "new_price_cents": 459900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-02",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-02",
+  "title": "Kalkhoff Entice 5.B Advance+ ABS (Diamant 53cm)",
+  "brand_name": "Kalkhoff",
+  "model_name": "Entice 5.B Advance+ ABS",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 429900,
+  "compare_at_price_cents": 469900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Diamant 53cm",
+    "frame_type": "DIAMOND",
+    "color": "Jetgrey matt",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-02-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-02",
+      "old_price_cents": 469900,
+      "new_price_cents": 429900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-03",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-03",
+  "title": "Trek Rail 7 Gen 3 E-MTB (M (43cm))",
+  "brand_name": "Trek",
+  "model_name": "Rail 7 Gen 3 E-MTB",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 549900,
+  "compare_at_price_cents": 619900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-03",
+  "image_url": "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-03",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (43cm)",
+    "frame_type": "DIAMOND",
+    "color": "Crimson / Lithium Grey",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX",
+    "torque_nm": 85,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-03"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-03-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-03",
+      "old_price_cents": 619900,
+      "new_price_cents": 549900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-04",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-04",
+  "title": "Specialized Turbo Tero 4.0 Step-Through (M (Wave))",
+  "brand_name": "Specialized",
+  "model_name": "Turbo Tero 4.0 Step-Through",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 380000,
+  "compare_at_price_cents": 420000,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-04",
+  "image_url": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-04",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (Wave)",
+    "frame_type": "STEP_THROUGH",
+    "color": "Cast Black / Smoke",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 710,
+    "motor_brand": "Specialized",
+    "motor_model": "Full Power 2.0",
+    "torque_nm": 70,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-04"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-04-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-04",
+      "old_price_cents": 420000,
+      "new_price_cents": 380000,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-05",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-05",
+  "title": "Haibike ALLMTN 3 All-Mountain (XL (50cm))",
+  "brand_name": "Haibike",
+  "model_name": "ALLMTN 3 All-Mountain",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 449900,
+  "compare_at_price_cents": 499900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-05",
+  "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-05",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "XL (50cm)",
+    "frame_type": "DIAMOND",
+    "color": "Glossy Grey / Lava",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 720,
+    "motor_brand": "Yamaha",
+    "motor_model": "PW-X3",
+    "torque_nm": 85,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-05"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-05-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-05",
+      "old_price_cents": 499900,
+      "new_price_cents": 449900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-06",
+  "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+  "dealer_name": "Fahrrad XXL Meinhövel Bochum",
+  "dealer_slug": "fahrrad-xxl-meinhoevel-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-xxl-bochum-001",
+      "dealer_id": "f778f310-1d9c-4f73-af4d-63331bd064b0",
+      "name": "Fahrrad XXL Meinhövel Bochum (Hauptfiliale)",
+      "address_line1": "Dorstener Str. 400",
+      "postal_code": "44809",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.5034,
+      "longitude": 7.1953,
+      "phone": "+49 234 958040",
+      "email": "bochum@fahrrad-xxl.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-fahrrad-xxl-meinhoevel-bochum",
+  "external_id": "EXT-FAHRRAD--XXL-BOC-06",
+  "title": "Bergamont E-Horizon Premium Expert (Trapez 52cm)",
+  "brand_name": "Bergamont",
+  "model_name": "E-Horizon Premium Expert",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 369900,
+  "compare_at_price_cents": 409900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.fahrrad-xxl.de/filialen/bochum/?ref=velofind&offer=XXL-BOC-06",
+  "image_url": "https://images.unsplash.com/photo-1502744688674-c619d3864003?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-fahrrad-xxl-meinhoevel-bochum-xxl-boc-06",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Trapez 52cm",
+    "frame_type": "TRAPEZE",
+    "color": "Anthracite Matt",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-06"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-fahrrad-xxl-meinhoevel-bochum-XXL-BOC-06-1",
+      "offer_id": "off-fahrrad-xxl-meinhoevel-bochum-xxl-boc-06",
+      "old_price_cents": 409900,
+      "new_price_cents": 369900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-01",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-01",
+  "title": "Rockrider E-ST 900 27.5\" Plus E-MTB (L (175-184cm))",
+  "brand_name": "Rockrider",
+  "model_name": "E-ST 900 27.5\" Plus E-MTB",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 219900,
+  "compare_at_price_cents": 239900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L (175-184cm)",
+    "frame_type": "DIAMOND",
+    "color": "Titan / Neon Orange",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 504,
+    "motor_brand": "Brose",
+    "motor_model": "Drive T Aluminium",
+    "torque_nm": 70,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-01-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-01",
+      "old_price_cents": 239900,
+      "new_price_cents": 219900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-02",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-02",
+  "title": "Riverside 520 E Allroad E-Bike (M (166-177cm))",
+  "brand_name": "Riverside",
+  "model_name": "520 E Allroad E-Bike",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 139900,
+  "compare_at_price_cents": 159900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (166-177cm)",
+    "frame_type": "TRAPEZE",
+    "color": "Mineral Blue",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Decathlon Vision",
+    "motor_model": "Hinterrad-Nabenmotor 45Nm",
+    "torque_nm": 45,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-02-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-02",
+      "old_price_cents": 159900,
+      "new_price_cents": 139900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-03",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-03",
+  "title": "Elops 920 E Connect Automatik (L/XL (Tiefeinsteiger))",
+  "brand_name": "Elops",
+  "model_name": "920 E Connect Automatik",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 169900,
+  "compare_at_price_cents": 189900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-03",
+  "image_url": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-03",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L/XL (Tiefeinsteiger)",
+    "frame_type": "STEP_THROUGH",
+    "color": "Dunkelgrün Matt",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 417,
+    "motor_brand": "Brose",
+    "motor_model": "Drive C Mittelmotor",
+    "torque_nm": 50,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-03"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-03-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-03",
+      "old_price_cents": 189900,
+      "new_price_cents": 169900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-04",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-04",
+  "title": "Stilus E-All Mountain 29 Fully (M (43cm))",
+  "brand_name": "Stilus",
+  "model_name": "E-All Mountain 29 Fully",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 379900,
+  "compare_at_price_cents": 429900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-04",
+  "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-04",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (43cm)",
+    "frame_type": "DIAMOND",
+    "color": "Stealth Grey",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 625,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance Line CX",
+    "torque_nm": 85,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-04"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-04-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-04",
+      "old_price_cents": 429900,
+      "new_price_cents": 379900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-05",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-05",
+  "title": "B'Twin E-Fold 500 Faltrad (Unisize (20\"))",
+  "brand_name": "B'Twin",
+  "model_name": "E-Fold 500 Faltrad",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 109900,
+  "compare_at_price_cents": 119900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-05",
+  "image_url": "https://images.unsplash.com/photo-1502744688674-c619d3864003?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-05",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Unisize (20\")",
+    "frame_type": "STEP_THROUGH",
+    "color": "Ockergelb",
+    "wheel_size_in": 20,
+    "weight_kg": 21.4,
+    "battery_wh": 252,
+    "motor_brand": "B'Twin",
+    "motor_model": "Brushless 250W",
+    "torque_nm": 35,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-05"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-05-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-05",
+      "old_price_cents": 119900,
+      "new_price_cents": 109900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-bochum-dec-boc-06",
+  "dealer_id": "d0000000-0000-4000-a000-000000000001",
+  "dealer_name": "Decathlon Bochum (Ruhr Park)",
+  "dealer_slug": "decathlon-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-bochum-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000001",
+      "name": "Decathlon Bochum Ruhr Park (Radsport & E-Bike Center)",
+      "address_line1": "Am Einkaufszentrum 1",
+      "postal_code": "44791",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4921,
+      "longitude": 7.2845,
+      "phone": "+49 234 927800",
+      "email": "bochum@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-bochum",
+  "external_id": "EXT-DECATHLO-DEC-BOC-06",
+  "title": "Van Rysel E-EDR AF 105 Gravel & Road (M (54cm))",
+  "brand_name": "Van Rysel",
+  "model_name": "E-EDR AF 105 Gravel & Road",
+  "model_year": 2025,
+  "category": "GRAVEL",
+  "propulsion": "PEDELEC",
+  "price_cents": 279900,
+  "compare_at_price_cents": 299900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/bochum/?ref=velofind&offer=DEC-BOC-06",
+  "image_url": "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-bochum-dec-boc-06",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (54cm)",
+    "frame_type": "DIAMOND",
+    "color": "Glanz Bordeaux",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 250,
+    "motor_brand": "Mahle",
+    "motor_model": "Ebikemotion X35+",
+    "torque_nm": 40,
+    "sku": "SKU-decathlon-bochum-DEC-BOC-06"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-bochum-DEC-BOC-06-1",
+      "offer_id": "off-decathlon-bochum-dec-boc-06",
+      "old_price_cents": 299900,
+      "new_price_cents": 279900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-dortmund-dec-dtm-01",
+  "dealer_id": "d0000000-0000-4000-a000-000000000002",
+  "dealer_name": "Decathlon Dortmund",
+  "dealer_slug": "decathlon-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-dortmund-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000002",
+      "name": "Decathlon Dortmund Thier-Galerie / City",
+      "address_line1": "Westenhellweg 85",
+      "postal_code": "44137",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.5145,
+      "longitude": 7.4612,
+      "phone": "+49 231 950800",
+      "email": "dortmund@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-dortmund",
+  "external_id": "EXT-DECATHLO-DEC-DTM-01",
+  "title": "Rockrider E-EXPL 520 Trail E-MTB (XL)",
+  "brand_name": "Rockrider",
+  "model_name": "E-EXPL 520 Trail E-MTB",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 199900,
+  "compare_at_price_cents": 219900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/dortmund/?ref=velofind&offer=DEC-DTM-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-dortmund-dec-dtm-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "XL",
+    "frame_type": "DIAMOND",
+    "color": "Olive Green",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Brose",
+    "motor_model": "Drive T Alu",
+    "torque_nm": 70,
+    "sku": "SKU-decathlon-dortmund-DEC-DTM-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-dortmund-DEC-DTM-01-1",
+      "offer_id": "off-decathlon-dortmund-dec-dtm-01",
+      "old_price_cents": 219900,
+      "new_price_cents": 199900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-decathlon-dortmund-dec-dtm-02",
+  "dealer_id": "d0000000-0000-4000-a000-000000000002",
+  "dealer_name": "Decathlon Dortmund",
+  "dealer_slug": "decathlon-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-decathlon-dortmund-001",
+      "dealer_id": "d0000000-0000-4000-a000-000000000002",
+      "name": "Decathlon Dortmund Thier-Galerie / City",
+      "address_line1": "Westenhellweg 85",
+      "postal_code": "44137",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.5145,
+      "longitude": 7.4612,
+      "phone": "+49 231 950800",
+      "email": "dortmund@decathlon.de",
+      "opening_hours": "Mo-Sa: 10:00 - 20:00 Uhr"
+    }
+  ],
+  "source_id": "src-decathlon-dortmund",
+  "external_id": "EXT-DECATHLO-DEC-DTM-02",
+  "title": "Riverside 540 E Shimano Steps E-Bike (L (53cm))",
+  "brand_name": "Riverside",
+  "model_name": "540 E Shimano Steps E-Bike",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 189900,
+  "compare_at_price_cents": 209900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.decathlon.de/filiale/dortmund/?ref=velofind&offer=DEC-DTM-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-decathlon-dortmund-dec-dtm-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L (53cm)",
+    "frame_type": "DIAMOND",
+    "color": "Space Grey",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 504,
+    "motor_brand": "Shimano",
+    "motor_model": "STEPS E6100",
+    "torque_nm": 60,
+    "sku": "SKU-decathlon-dortmund-DEC-DTM-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-decathlon-dortmund-DEC-DTM-02-1",
+      "offer_id": "off-decathlon-dortmund-dec-dtm-02",
+      "old_price_cents": 209900,
+      "new_price_cents": 189900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-dortmund-luk-dtm-01",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+  "dealer_name": "Lucky Bike Filiale Dortmund",
+  "dealer_slug": "lucky-bike-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-dortmund-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+      "name": "Lucky Bike Filiale Dortmund (Kley - Nähe Bochum)",
+      "address_line1": "Kleyer Weg 27",
+      "postal_code": "44149",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.4988,
+      "longitude": 7.3789,
+      "phone": "+49 231 655290",
+      "email": "dortmund@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-dortmund",
+  "external_id": "EXT-LUCKY-BI-LUK-DTM-01",
+  "title": "CUBE Reaction Hybrid Pro 750 (XL (22\"))",
+  "brand_name": "CUBE",
+  "model_name": "Reaction Hybrid Pro 750",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 319900,
+  "compare_at_price_cents": 349900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/dortmund/?ref=velofind&offer=LUK-DTM-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-dortmund-luk-dtm-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "XL (22\")",
+    "frame_type": "DIAMOND",
+    "color": "Flashgrey´n´green",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart System",
+    "torque_nm": 85,
+    "sku": "SKU-lucky-bike-dortmund-LUK-DTM-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-dortmund-LUK-DTM-01-1",
+      "offer_id": "off-lucky-bike-dortmund-luk-dtm-01",
+      "old_price_cents": 349900,
+      "new_price_cents": 319900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-dortmund-luk-dtm-02",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+  "dealer_name": "Lucky Bike Filiale Dortmund",
+  "dealer_slug": "lucky-bike-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-dortmund-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+      "name": "Lucky Bike Filiale Dortmund (Kley - Nähe Bochum)",
+      "address_line1": "Kleyer Weg 27",
+      "postal_code": "44149",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.4988,
+      "longitude": 7.3789,
+      "phone": "+49 231 655290",
+      "email": "dortmund@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-dortmund",
+  "external_id": "EXT-LUCKY-BI-LUK-DTM-02",
+  "title": "KTM Macina Tour CX 610 (Trapez 51cm)",
+  "brand_name": "KTM",
+  "model_name": "Macina Tour CX 610",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 349900,
+  "compare_at_price_cents": 389900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/dortmund/?ref=velofind&offer=LUK-DTM-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-dortmund-luk-dtm-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Trapez 51cm",
+    "frame_type": "TRAPEZE",
+    "color": "Metallic White (Black)",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 625,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX",
+    "torque_nm": 85,
+    "sku": "SKU-lucky-bike-dortmund-LUK-DTM-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-dortmund-LUK-DTM-02-1",
+      "offer_id": "off-lucky-bike-dortmund-luk-dtm-02",
+      "old_price_cents": 389900,
+      "new_price_cents": 349900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-dortmund-luk-dtm-03",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+  "dealer_name": "Lucky Bike Filiale Dortmund",
+  "dealer_slug": "lucky-bike-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-dortmund-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+      "name": "Lucky Bike Filiale Dortmund (Kley - Nähe Bochum)",
+      "address_line1": "Kleyer Weg 27",
+      "postal_code": "44149",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.4988,
+      "longitude": 7.3789,
+      "phone": "+49 231 655290",
+      "email": "dortmund@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-dortmund",
+  "external_id": "EXT-LUCKY-BI-LUK-DTM-03",
+  "title": "Gazelle Arroyo C7 HMB Elite (Wave 53cm)",
+  "brand_name": "Gazelle",
+  "model_name": "Arroyo C7 HMB Elite",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 279900,
+  "compare_at_price_cents": 299900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/dortmund/?ref=velofind&offer=LUK-DTM-03",
+  "image_url": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-dortmund-luk-dtm-03",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Wave 53cm",
+    "frame_type": "STEP_THROUGH",
+    "color": "Ivory White Gloss",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Bosch",
+    "motor_model": "Active Line Plus",
+    "torque_nm": 50,
+    "sku": "SKU-lucky-bike-dortmund-LUK-DTM-03"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-dortmund-LUK-DTM-03-1",
+      "offer_id": "off-lucky-bike-dortmund-luk-dtm-03",
+      "old_price_cents": 299900,
+      "new_price_cents": 279900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-dortmund-luk-dtm-04",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+  "dealer_name": "Lucky Bike Filiale Dortmund",
+  "dealer_slug": "lucky-bike-dortmund",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-dortmund-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c1",
+      "name": "Lucky Bike Filiale Dortmund (Kley - Nähe Bochum)",
+      "address_line1": "Kleyer Weg 27",
+      "postal_code": "44149",
+      "city": "Dortmund",
+      "country_code": "DE",
+      "latitude": 51.4988,
+      "longitude": 7.3789,
+      "phone": "+49 231 655290",
+      "email": "dortmund@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-dortmund",
+  "external_id": "EXT-LUCKY-BI-LUK-DTM-04",
+  "title": "Focus Thron² 6.8 E-All Mountain (M (42cm))",
+  "brand_name": "Focus",
+  "model_name": "Thron² 6.8 E-All Mountain",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 439900,
+  "compare_at_price_cents": 489900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/dortmund/?ref=velofind&offer=LUK-DTM-04",
+  "image_url": "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-dortmund-luk-dtm-04",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (42cm)",
+    "frame_type": "DIAMOND",
+    "color": "Slategrey",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-lucky-bike-dortmund-LUK-DTM-04"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-dortmund-LUK-DTM-04-1",
+      "offer_id": "off-lucky-bike-dortmund-luk-dtm-04",
+      "old_price_cents": 489900,
+      "new_price_cents": 439900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-essen-luk-ess-01",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+  "dealer_name": "Lucky Bike Filiale Essen",
+  "dealer_slug": "lucky-bike-essen",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-essen-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+      "name": "Lucky Bike Filiale Essen",
+      "address_line1": "Gladbecker Str. 415",
+      "postal_code": "45329",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4889,
+      "longitude": 7.0092,
+      "phone": "+49 201 320390",
+      "email": "essen@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-essen",
+  "external_id": "EXT-LUCKY-BI-LUK-ESS-01",
+  "title": "Trek Allant+ 7 Lowstep City E-Bike (M (Wave))",
+  "brand_name": "Trek",
+  "model_name": "Allant+ 7 Lowstep City E-Bike",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 359900,
+  "compare_at_price_cents": 399900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/essen/?ref=velofind&offer=LUK-ESS-01",
+  "image_url": "https://images.unsplash.com/photo-1502744688674-c619d3864003?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-essen-luk-ess-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (Wave)",
+    "frame_type": "STEP_THROUGH",
+    "color": "Nautical Navy",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 625,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX",
+    "torque_nm": 85,
+    "sku": "SKU-lucky-bike-essen-LUK-ESS-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-essen-LUK-ESS-01-1",
+      "offer_id": "off-lucky-bike-essen-luk-ess-01",
+      "old_price_cents": 399900,
+      "new_price_cents": 359900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-lucky-bike-essen-luk-ess-02",
+  "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+  "dealer_name": "Lucky Bike Filiale Essen",
+  "dealer_slug": "lucky-bike-essen",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-lucky-essen-001",
+      "dealer_id": "caf305aa-5f65-4aee-b008-179eaf9287c2",
+      "name": "Lucky Bike Filiale Essen",
+      "address_line1": "Gladbecker Str. 415",
+      "postal_code": "45329",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4889,
+      "longitude": 7.0092,
+      "phone": "+49 201 320390",
+      "email": "essen@lucky-bike.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-lucky-bike-essen",
+  "external_id": "EXT-LUCKY-BI-LUK-ESS-02",
+  "title": "Kalkhoff Image 3.B Advance Wave (Wave 48cm)",
+  "brand_name": "Kalkhoff",
+  "model_name": "Image 3.B Advance Wave",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 329900,
+  "compare_at_price_cents": 359900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.lucky-bike.de/filialen/essen/?ref=velofind&offer=LUK-ESS-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-lucky-bike-essen-luk-ess-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Wave 48cm",
+    "frame_type": "STEP_THROUGH",
+    "color": "Mustard Gloss",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance Line",
+    "torque_nm": 65,
+    "sku": "SKU-lucky-bike-essen-LUK-ESS-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-lucky-bike-essen-LUK-ESS-02-1",
+      "offer_id": "off-lucky-bike-essen-luk-ess-02",
+      "old_price_cents": 359900,
+      "new_price_cents": 329900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-boc-bochum-boc-boc-01",
+  "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+  "dealer_name": "B.O.C. Bochum",
+  "dealer_slug": "boc-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-boc-bochum-001",
+      "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+      "name": "B.O.C. Filiale Bochum Harpen",
+      "address_line1": "Hanielstraße 1",
+      "postal_code": "44805",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4989,
+      "longitude": 7.2712,
+      "phone": "+49 234 516900",
+      "email": "bochum@boc24.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-boc-bochum",
+  "external_id": "EXT-BOC-BOCH-BOC-BOC-01",
+  "title": "Merida eOne-Sixty 500 Enduro (L (47cm))",
+  "brand_name": "Merida",
+  "model_name": "eOne-Sixty 500 Enduro",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 419900,
+  "compare_at_price_cents": 469900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.boc24.de/filialen/bochum/?ref=velofind&offer=BOC-BOC-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-boc-bochum-boc-boc-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L (47cm)",
+    "frame_type": "DIAMOND",
+    "color": "Silk Anthracite",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 630,
+    "motor_brand": "Shimano",
+    "motor_model": "EP801",
+    "torque_nm": 85,
+    "sku": "SKU-boc-bochum-BOC-BOC-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-boc-bochum-BOC-BOC-01-1",
+      "offer_id": "off-boc-bochum-boc-boc-01",
+      "old_price_cents": 469900,
+      "new_price_cents": 419900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-boc-bochum-boc-boc-02",
+  "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+  "dealer_name": "B.O.C. Bochum",
+  "dealer_slug": "boc-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-boc-bochum-001",
+      "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+      "name": "B.O.C. Filiale Bochum Harpen",
+      "address_line1": "Hanielstraße 1",
+      "postal_code": "44805",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4989,
+      "longitude": 7.2712,
+      "phone": "+49 234 516900",
+      "email": "bochum@boc24.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-boc-bochum",
+  "external_id": "EXT-BOC-BOCH-BOC-BOC-02",
+  "title": "Winora Sinus N8f Eco Wave (Wave 46cm)",
+  "brand_name": "Winora",
+  "model_name": "Sinus N8f Eco Wave",
+  "model_year": 2025,
+  "category": "CITY",
+  "propulsion": "PEDELEC",
+  "price_cents": 259900,
+  "compare_at_price_cents": 289900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.boc24.de/filialen/bochum/?ref=velofind&offer=BOC-BOC-02",
+  "image_url": "https://images.unsplash.com/photo-1485965120184-e220f721d03e?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-boc-bochum-boc-boc-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Wave 46cm",
+    "frame_type": "STEP_THROUGH",
+    "color": "Nightblue Matt",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Bosch",
+    "motor_model": "Active Line Plus",
+    "torque_nm": 50,
+    "sku": "SKU-boc-bochum-BOC-BOC-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-boc-bochum-BOC-BOC-02-1",
+      "offer_id": "off-boc-bochum-boc-boc-02",
+      "old_price_cents": 289900,
+      "new_price_cents": 259900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-boc-bochum-boc-boc-03",
+  "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+  "dealer_name": "B.O.C. Bochum",
+  "dealer_slug": "boc-bochum",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-boc-bochum-001",
+      "dealer_id": "b0c00000-0000-4000-a000-000000000001",
+      "name": "B.O.C. Filiale Bochum Harpen",
+      "address_line1": "Hanielstraße 1",
+      "postal_code": "44805",
+      "city": "Bochum",
+      "country_code": "DE",
+      "latitude": 51.4989,
+      "longitude": 7.2712,
+      "phone": "+49 234 516900",
+      "email": "bochum@boc24.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:00 Uhr, Sa: 10:00 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-boc-bochum",
+  "external_id": "EXT-BOC-BOCH-BOC-BOC-03",
+  "title": "Haibike Trekking 4 HIGH (Diamant L (52cm))",
+  "brand_name": "Haibike",
+  "model_name": "Trekking 4 HIGH",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 299900,
+  "compare_at_price_cents": 329900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.boc24.de/filialen/bochum/?ref=velofind&offer=BOC-BOC-03",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-boc-bochum-boc-boc-03",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Diamant L (52cm)",
+    "frame_type": "DIAMOND",
+    "color": "Warm Grey / Black",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 500,
+    "motor_brand": "Yamaha",
+    "motor_model": "PW-TE",
+    "torque_nm": 60,
+    "sku": "SKU-boc-bochum-BOC-BOC-03"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-boc-bochum-BOC-BOC-03-1",
+      "offer_id": "off-boc-bochum-boc-boc-03",
+      "old_price_cents": 329900,
+      "new_price_cents": 299900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-stadler-essen-std-ess-01",
+  "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+  "dealer_name": "Zweirad-Center Stadler Essen",
+  "dealer_slug": "stadler-essen",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-stadler-essen-001",
+      "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+      "name": "Zweirad-Center Stadler Essen (Ruhrgebiet)",
+      "address_line1": "Gladbecker Str. 19",
+      "postal_code": "45141",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4645,
+      "longitude": 7.0112,
+      "phone": "+49 201 83030",
+      "email": "essen@zweirad-stadler.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:30 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-stadler-essen",
+  "external_id": "EXT-STADLER--STD-ESS-01",
+  "title": "Bulls Sonic EVO TR 1 Carbon 29 (L (48cm))",
+  "brand_name": "Bulls",
+  "model_name": "Sonic EVO TR 1 Carbon 29",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 439900,
+  "compare_at_price_cents": 499900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.zweirad-center-stadler.de/filialen/essen/?ref=velofind&offer=STD-ESS-01",
+  "image_url": "https://images.unsplash.com/photo-1576435728678-68d0fbf94e91?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-stadler-essen-std-ess-01",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "L (48cm)",
+    "frame_type": "DIAMOND",
+    "color": "Raw Carbon / Neon Red",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-stadler-essen-STD-ESS-01"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-stadler-essen-STD-ESS-01-1",
+      "offer_id": "off-stadler-essen-std-ess-01",
+      "old_price_cents": 499900,
+      "new_price_cents": 439900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-stadler-essen-std-ess-02",
+  "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+  "dealer_name": "Zweirad-Center Stadler Essen",
+  "dealer_slug": "stadler-essen",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-stadler-essen-001",
+      "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+      "name": "Zweirad-Center Stadler Essen (Ruhrgebiet)",
+      "address_line1": "Gladbecker Str. 19",
+      "postal_code": "45141",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4645,
+      "longitude": 7.0112,
+      "phone": "+49 201 83030",
+      "email": "essen@zweirad-stadler.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:30 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-stadler-essen",
+  "external_id": "EXT-STADLER--STD-ESS-02",
+  "title": "Pegasus Premio EVO 10 Lite Wave (Wave 50cm)",
+  "brand_name": "Pegasus",
+  "model_name": "Premio EVO 10 Lite Wave",
+  "model_year": 2025,
+  "category": "TREKKING",
+  "propulsion": "PEDELEC",
+  "price_cents": 369900,
+  "compare_at_price_cents": 399900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.zweirad-center-stadler.de/filialen/essen/?ref=velofind&offer=STD-ESS-02",
+  "image_url": "https://images.unsplash.com/photo-1507035895480-2b3156c31fc8?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-stadler-essen-std-ess-02",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "Wave 50cm",
+    "frame_type": "STEP_THROUGH",
+    "color": "Black Matt / Chrome",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 750,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX Smart",
+    "torque_nm": 85,
+    "sku": "SKU-stadler-essen-STD-ESS-02"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-stadler-essen-STD-ESS-02-1",
+      "offer_id": "off-stadler-essen-std-ess-02",
+      "old_price_cents": 399900,
+      "new_price_cents": 369900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+},
+  {
+  "id": "off-stadler-essen-std-ess-03",
+  "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+  "dealer_name": "Zweirad-Center Stadler Essen",
+  "dealer_slug": "stadler-essen",
+  "dealer_verified": true,
+  "dealer_locations": [
+    {
+      "id": "loc-stadler-essen-001",
+      "dealer_id": "57ad1e00-0000-4000-a000-000000000001",
+      "name": "Zweirad-Center Stadler Essen (Ruhrgebiet)",
+      "address_line1": "Gladbecker Str. 19",
+      "postal_code": "45141",
+      "city": "Essen",
+      "country_code": "DE",
+      "latitude": 51.4645,
+      "longitude": 7.0112,
+      "phone": "+49 201 83030",
+      "email": "essen@zweirad-stadler.de",
+      "opening_hours": "Mo-Fr: 10:00 - 19:30 Uhr, Sa: 09:30 - 18:00 Uhr"
+    }
+  ],
+  "source_id": "src-stadler-essen",
+  "external_id": "EXT-STADLER--STD-ESS-03",
+  "title": "Scott Aspect eRIDE 920 E-MTB (M (44cm))",
+  "brand_name": "Scott",
+  "model_name": "Aspect eRIDE 920 E-MTB",
+  "model_year": 2025,
+  "category": "MTB",
+  "propulsion": "PEDELEC",
+  "price_cents": 339900,
+  "compare_at_price_cents": 379900,
+  "currency": "EUR",
+  "availability": "IN_STOCK",
+  "quantity": 2,
+  "condition": "NEW",
+  "source_url": "https://www.zweirad-center-stadler.de/filialen/essen/?ref=velofind&offer=STD-ESS-03",
+  "image_url": "https://images.unsplash.com/photo-1532298229144-0ec0c57515c7?auto=format&fit=crop&w=1200&q=80",
+  "content_hash": "ch-stadler-essen-std-ess-03",
+  "first_seen_at": "2026-09-01T00:00:00.000Z",
+  "last_seen_at": "2026-09-22T06:00:00.000Z",
+  "is_active": true,
+  "variant_details": {
+    "frame_size": "M (44cm)",
+    "frame_type": "DIAMOND",
+    "color": "Granite Grey / Orange",
+    "wheel_size_in": 29,
+    "weight_kg": 23.8,
+    "battery_wh": 625,
+    "motor_brand": "Bosch",
+    "motor_model": "Performance CX",
+    "torque_nm": 85,
+    "sku": "SKU-stadler-essen-STD-ESS-03"
+  },
+  "leasing_compatibilities": [
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000001",
+      "provider_slug": "jobrad",
+      "provider_name": "JobRad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-JOB)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000002",
+      "provider_slug": "bikeleasing",
+      "provider_name": "Bikeleasing-Service",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BIK)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000003",
+      "provider_slug": "businessbike",
+      "provider_name": "BusinessBike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-BUS)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000004",
+      "provider_slug": "deutsche-dienstrad",
+      "provider_name": "Deutsche Dienstrad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-DEU)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000005",
+      "provider_slug": "eurorad",
+      "provider_name": "Eurorad",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-EUR)"
+    },
+    {
+      "provider_id": "b0000000-0000-0000-0000-000000000006",
+      "provider_slug": "lease-a-bike",
+      "provider_name": "Lease a Bike",
+      "status": "CONFIRMED",
+      "evidence_reason": "Autorisierter Händlervertrag (VF-CTR-PARTNER-LEA)"
+    }
+  ],
+  "price_history": [
+    {
+      "id": "ph-stadler-essen-STD-ESS-03-1",
+      "offer_id": "off-stadler-essen-std-ess-03",
+      "old_price_cents": 379900,
+      "new_price_cents": 339900,
+      "recorded_at": "2026-09-15T08:00:00.000Z"
+    }
+  ]
+}
 ];

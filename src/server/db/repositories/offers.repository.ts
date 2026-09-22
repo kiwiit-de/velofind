@@ -450,15 +450,31 @@ export class OffersRepository {
       items = items.filter((o) => o.dealer_name.toLowerCase().includes(dn) || o.dealer_slug.toLowerCase().includes(dn));
     }
     if (filters.query && filters.query.trim() !== '') {
-      const q = filters.query.toLowerCase().trim();
-      items = items.filter((o) =>
-        o.title.toLowerCase().includes(q) ||
-        o.brand_name.toLowerCase().includes(q) ||
-        o.model_name.toLowerCase().includes(q) ||
-        (o.variant_details?.color && o.variant_details.color.toLowerCase().includes(q)) ||
-        o.dealer_name.toLowerCase().includes(q) ||
-        (o.source_url && o.source_url.toLowerCase().includes(q))
-      );
+      let q = filters.query.toLowerCase().trim();
+      q = q.replace(/\bbohcum\b/g, 'bochum');
+
+      const tokens = q
+        .split(/\s+/)
+        .filter((t) => t.length > 1 && !['in', 'der', 'die', 'das', 'und', 'mit', 'fuer', 'für', 'filiale', 'filialen'].includes(t));
+
+      items = items.filter((o) => {
+        const locationsStr = o.dealer_locations
+          .map((loc) => `${loc.name} ${loc.city} ${loc.postal_code} ${loc.address_line1}`)
+          .join(' ')
+          .toLowerCase();
+
+        const searchCorpus = `${o.title} ${o.brand_name} ${o.model_name} ${o.dealer_name} ${o.dealer_slug} ${locationsStr} ${o.variant_details?.color ?? ''} ${o.source_url ?? ''}`.toLowerCase();
+
+        // Direct phrase match
+        if (searchCorpus.includes(q)) return true;
+
+        // All meaningful tokens match
+        if (tokens.length > 0 && tokens.every((token) => searchCorpus.includes(token))) {
+          return true;
+        }
+
+        return false;
+      });
     }
     if (filters.category && filters.category !== 'ALL') {
       items = items.filter((o) => o.category === filters.category);

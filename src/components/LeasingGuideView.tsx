@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ShieldCheck, Calculator, ArrowRight, CheckCircle2, HelpCircle, FileText, Info } from 'lucide-react';
 import { LeasingProvider } from '../types';
+import { LeasingProviderLogo } from './LeasingProviderLogo';
 
 interface LeasingGuideViewProps {
   providers: LeasingProvider[];
@@ -146,8 +147,14 @@ export const LeasingGuideView: React.FC<LeasingGuideViewProps> = ({
               className="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col justify-between hover:border-emerald-300 transition-colors"
             >
               <div>
-                <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-lg font-bold text-slate-900">{p.name}</h3>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <LeasingProviderLogo slug={p.slug} name={p.name} size="md" />
+                    <div>
+                      <h3 className="text-base font-bold text-slate-900 leading-tight">{p.name}</h3>
+                      <span className="text-[11px] text-slate-400">Autorisierter Partner</span>
+                    </div>
+                  </div>
                   <span className="px-2 py-0.5 text-xs font-semibold bg-emerald-100 text-emerald-800 rounded-md">
                     Aktiv
                   </span>
