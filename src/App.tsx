@@ -17,7 +17,7 @@ import { OfferCardSkeleton, OfferGridSkeleton } from './components/OfferCardSkel
 import { BikeLoadingSpinner } from './components/BikeLoadingSpinner';
 import { apiUrl } from './lib/api';
 import { Offer, Dealer, LeasingProvider, SearchResponse, BikeCategory } from './types';
-import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X } from 'lucide-react';
+import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X, ChevronLeft, ChevronRight, Layers, Globe, ExternalLink } from 'lucide-react';
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
@@ -57,6 +57,11 @@ export default function App() {
   const [sort, setSort] = useState(() => initialParams.get('sort') || 'newest');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [bikesViewMode, setBikesViewMode] = useState<'grid' | 'map'>('grid');
+
+  // Pagination & Loading State
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number | 'all'>(48);
+  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
 
   // Daily Sync State
   const [isSyncing, setIsSyncing] = useState(false);
@@ -188,44 +193,112 @@ export default function App() {
     fetchSyncStatus();
   }, []);
 
-  // Fetch Search Results
-  const fetchSearchResults = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = new URLSearchParams();
-      if (query.trim()) params.append('q', query.trim());
-      if (category !== 'ALL') params.append('category', category);
-      if (propulsion !== 'ALL') params.append('propulsion', propulsion);
-      if (brand !== 'ALL') params.append('brand', brand);
-      if (leasingProvider !== 'ALL') params.append('provider', leasingProvider);
-      if (selectedDealerSlug) params.append('dealerSlug', selectedDealerSlug);
-      if (postalCode) {
-        params.append('postalCode', postalCode);
-        params.append('radius', String(radiusKm));
+  // Fetch Search Results with Pagination & Full Catalog Retrieval Support
+  const fetchSearchResults = useCallback(
+    async (pageToLoad = 1, append = false, requestedPageSize: number | 'all' = pageSize) => {
+      if (append) {
+        setIsLoadingMore(true);
+      } else {
+        setLoading(true);
       }
-      params.append('sort', sort);
-      params.append('limit', '48');
+      try {
+        const params = new URLSearchParams();
+        if (query.trim()) params.append('q', query.trim());
+        if (category !== 'ALL') params.append('category', category);
+        if (propulsion !== 'ALL') params.append('propulsion', propulsion);
+        if (brand !== 'ALL') params.append('brand', brand);
+        if (leasingProvider !== 'ALL') params.append('provider', leasingProvider);
+        if (selectedDealerSlug) params.append('dealerSlug', selectedDealerSlug);
+        if (postalCode) {
+          params.append('postalCode', postalCode);
+          params.append('radius', String(radiusKm));
+        }
+        params.append('sort', sort);
 
-      const res = await fetch(apiUrl(`/api/search?${params.toString()}`));
-      if (res.ok) {
-        const data: SearchResponse = await res.json();
-        setOffers(data.offers);
-        setTotalOffers(data.total);
-        setAvailableBrands(data.available_brands || []);
-        setAvailableCategories(data.available_categories || []);
-        setAvailableProviders(data.available_providers || []);
-        setAvailableDealers(data.available_dealers || []);
+        if (requestedPageSize === 'all') {
+          params.append('limit', 'all');
+        } else {
+          params.append('limit', String(requestedPageSize));
+          const offset = (pageToLoad - 1) * requestedPageSize;
+          params.append('offset', String(offset));
+        }
+
+        const res = await fetch(apiUrl(`/api/search?${params.toString()}`));
+        if (res.ok) {
+          const data: SearchResponse = await res.json();
+          if (append) {
+            setOffers((prev) => {
+              const existingIds = new Set(prev.map((o) => o.id));
+              const newOffers = (data.offers || []).filter((o) => !existingIds.has(o.id));
+              return [...prev, ...newOffers];
+            });
+          } else {
+            setOffers(data.offers || []);
+          }
+          setTotalOffers(data.total);
+          setCurrentPage(pageToLoad);
+          setAvailableBrands(data.available_brands || []);
+          setAvailableCategories(data.available_categories || []);
+          setAvailableProviders(data.available_providers || []);
+          setAvailableDealers(data.available_dealers || []);
+        }
+      } catch (err) {
+        console.error('Search request failed:', err);
+      } finally {
+        setLoading(false);
+        setIsLoadingMore(false);
       }
-    } catch (err) {
-      console.error('Search request failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  }, [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
+    },
+    [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort, pageSize]
+  );
 
   useEffect(() => {
-    fetchSearchResults();
-  }, [fetchSearchResults]);
+    setCurrentPage(1);
+    fetchSearchResults(1, false, pageSize);
+  }, [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
+
+  const totalPages = typeof pageSize === 'number' ? Math.max(1, Math.ceil(totalOffers / pageSize)) : 1;
+
+  const paginationRange = useMemo(() => {
+    if (totalPages <= 7) {
+      return Array.from({ length: totalPages }, (_, i) => i + 1);
+    }
+    const pages: (number | '...')[] = [];
+    pages.push(1);
+    if (currentPage > 3) pages.push('...');
+    const start = Math.max(2, currentPage - 1);
+    const end = Math.min(totalPages - 1, currentPage + 1);
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+    if (currentPage < totalPages - 2) pages.push('...');
+    pages.push(totalPages);
+    return pages;
+  }, [totalPages, currentPage]);
+
+  const handleLoadMore = () => {
+    if (pageSize === 'all' || isLoadingMore) return;
+    const nextPage = currentPage + 1;
+    fetchSearchResults(nextPage, true, pageSize);
+  };
+
+  const handleShowAllOffers = () => {
+    setPageSize('all');
+    setCurrentPage(1);
+    fetchSearchResults(1, false, 'all');
+  };
+
+  const handleSetPageSize = (newSize: number | 'all') => {
+    setPageSize(newSize);
+    setCurrentPage(1);
+    fetchSearchResults(1, false, newSize);
+  };
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchSearchResults(page, false, pageSize);
+    window.scrollTo({ top: 380, behavior: 'smooth' });
+  };
 
   // Tracked Outbound Safe Redirect
   const handleTrackOutbound = (offerId: string) => {
@@ -517,22 +590,174 @@ export default function App() {
                     </button>
                   </div>
                 ) : (
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                    {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).map((offer) => (
-                      <OfferCard
-                        key={offer.id}
-                        offer={offer}
-                        onSelectOffer={setSelectedOffer}
-                        onTrackOutbound={handleTrackOutbound}
-                        onOpenLeadModal={setLeadOffer}
-                        onCompareNotice={showToast}
-                        onOpenDealer={(dealerSlug) => {
-                          const d = dealers.find((x) => x.slug === dealerSlug);
-                          if (d) setPartnerModalDealer(d);
-                        }}
-                      />
-                    ))}
-                  </div>
+                  <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                      {(onlyFavorites ? offers.filter((o) => favoriteIds.includes(o.id)) : offers).map((offer) => (
+                        <OfferCard
+                          key={offer.id}
+                          offer={offer}
+                          onSelectOffer={setSelectedOffer}
+                          onTrackOutbound={handleTrackOutbound}
+                          onOpenLeadModal={setLeadOffer}
+                          onCompareNotice={showToast}
+                          onOpenDealer={(dealerSlug) => {
+                            const d = dealers.find((x) => x.slug === dealerSlug);
+                            if (d) setPartnerModalDealer(d);
+                          }}
+                        />
+                      ))}
+                    </div>
+
+                    {/* Catalog Progress & Pagination Controls */}
+                    {!onlyFavorites && totalOffers > 0 && (
+                      <div className="mt-10 pt-8 border-t border-slate-200 space-y-5">
+                        {/* Progress Bar & Counter Card */}
+                        <div className="bg-white p-5 sm:p-6 rounded-2xl border border-slate-200/90 shadow-2xs">
+                          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-3">
+                            <div className="flex items-center gap-2.5 text-xs text-slate-700 font-medium">
+                              <div className="w-6 h-6 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-700 shrink-0">
+                                <Layers className="w-3.5 h-3.5" />
+                              </div>
+                              <span>
+                                Geladen: <strong className="text-slate-950 font-bold">{offers.length}</strong> von <strong className="text-slate-950 font-bold">{totalOffers.toLocaleString('de-DE')}</strong> Angeboten aus allen 361 verifizierten Händler-Websites
+                              </span>
+                            </div>
+                            <div className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 shrink-0 self-start sm:self-auto flex items-center gap-1.5">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>{Math.min(100, Math.round((offers.length / totalOffers) * 100))}% des Bestands sichtbar</span>
+                            </div>
+                          </div>
+
+                          {/* Progress Track */}
+                          <div className="w-full bg-slate-100 rounded-full h-2.5 overflow-hidden">
+                            <div
+                              className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 h-2.5 rounded-full transition-all duration-300"
+                              style={{ width: `${Math.min(100, Math.max(3, (offers.length / totalOffers) * 100))}%` }}
+                            />
+                          </div>
+
+                          {/* Load More & Show All Action Buttons */}
+                          {offers.length < totalOffers && (
+                            <div className="mt-5 pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3">
+                              <button
+                                id="btn-load-more-offers"
+                                type="button"
+                                onClick={handleLoadMore}
+                                disabled={isLoadingMore}
+                                className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white text-xs font-bold rounded-xl shadow-xs hover:shadow transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                              >
+                                {isLoadingMore ? (
+                                  <>
+                                    <RefreshCw className="w-4 h-4 animate-spin" />
+                                    <span>Nächste Angebote werden geladen...</span>
+                                  </>
+                                ) : (
+                                  <>
+                                    <Bike className="w-4 h-4" />
+                                    <span>Mehr Angebote laden (+{Math.min(48, totalOffers - offers.length)})</span>
+                                  </>
+                                )}
+                              </button>
+
+                              <button
+                                id="btn-show-all-offers"
+                                type="button"
+                                onClick={handleShowAllOffers}
+                                disabled={isLoadingMore}
+                                className="w-full sm:w-auto px-5 py-3 bg-white hover:bg-emerald-50/50 active:bg-slate-100 text-slate-800 hover:text-emerald-700 text-xs font-bold rounded-xl border border-slate-300 hover:border-emerald-400 shadow-2xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                              >
+                                <Sparkles className="w-4 h-4 text-emerald-600" />
+                                <span>Alle {totalOffers.toLocaleString('de-DE')} Angebote auf einmal anzeigen</span>
+                              </button>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Pagination Bar & Items-per-Page Selector */}
+                        {totalPages > 1 && (
+                          <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/90 shadow-2xs">
+                            {/* Page size selector */}
+                            <div className="flex items-center gap-2 text-xs text-slate-600">
+                              <span className="font-semibold text-slate-700">Pro Seite:</span>
+                              {([48, 96] as const).map((sz) => (
+                                <button
+                                  key={sz}
+                                  type="button"
+                                  onClick={() => handleSetPageSize(sz)}
+                                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                                    pageSize === sz
+                                      ? 'bg-slate-900 text-white shadow-2xs'
+                                      : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                  }`}
+                                >
+                                  {sz}
+                                </button>
+                              ))}
+                              <button
+                                type="button"
+                                onClick={handleShowAllOffers}
+                                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                                  pageSize === 'all'
+                                    ? 'bg-emerald-600 text-white shadow-2xs'
+                                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                                }`}
+                              >
+                                Alle ({totalOffers.toLocaleString('de-DE')})
+                              </button>
+                            </div>
+
+                            {/* Numbered Pagination Buttons (when paged) */}
+                            {pageSize !== 'all' && (
+                              <div className="flex items-center gap-1.5">
+                                <button
+                                  id="btn-prev-page"
+                                  type="button"
+                                  onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+                                  disabled={currentPage === 1}
+                                  className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                  title="Vorherige Seite"
+                                >
+                                  <ChevronLeft className="w-4 h-4" />
+                                </button>
+
+                                {paginationRange.map((p, idx) =>
+                                  p === '...' ? (
+                                    <span key={`dots-${idx}`} className="px-2 text-slate-400 text-xs select-none">
+                                      ...
+                                    </span>
+                                  ) : (
+                                    <button
+                                      key={`page-${p}`}
+                                      type="button"
+                                      onClick={() => handlePageChange(p as number)}
+                                      className={`min-w-[34px] h-8 px-2 rounded-lg text-xs font-semibold transition-all cursor-pointer ${
+                                        currentPage === p
+                                          ? 'bg-emerald-600 text-white shadow-2xs font-bold'
+                                          : 'hover:bg-slate-100 text-slate-700'
+                                      }`}
+                                    >
+                                      {p}
+                                    </button>
+                                  )
+                                )}
+
+                                <button
+                                  id="btn-next-page"
+                                  type="button"
+                                  onClick={() => handlePageChange(Math.min(totalPages, currentPage + 1))}
+                                  disabled={currentPage === totalPages}
+                                  className="p-2 rounded-lg border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-100 disabled:opacity-30 disabled:pointer-events-none transition-colors"
+                                  title="Nächste Seite"
+                                >
+                                  <ChevronRight className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </>
                 )
               )}
             </div>

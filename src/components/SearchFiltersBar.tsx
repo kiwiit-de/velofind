@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check, Globe } from 'lucide-react';
 import { BikeCategory, PropulsionType } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { ALL_GERMAN_CITIES, TOP_GERMAN_METROPOLES, CITIES_BY_STATE, findCity } from '../data/germanCities';
@@ -19,7 +19,7 @@ interface SearchFiltersBarProps {
   setLeasingProvider: (lp: string) => void;
   selectedDealerSlug?: string;
   setSelectedDealerSlug?: (slug: string) => void;
-  availableDealers?: { id: string; name: string; slug: string; count: number; city?: string }[];
+  availableDealers?: { id: string; name: string; slug: string; count: number; city?: string; website_url?: string }[];
   postalCode: string;
   setPostalCode: (plz: string) => void;
   radiusKm: number;
@@ -359,6 +359,47 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               </select>
             </div>
           </div>
+        </div>
+
+        {/* Quick Partner Website Filter Strip */}
+        <div className="mt-3 pt-2.5 border-t border-slate-100 flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5 text-xs">
+          <div className="flex items-center gap-1.5 text-[11px] font-bold text-slate-500 uppercase tracking-wider shrink-0">
+            <Globe className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Top Händler-Websites:</span>
+          </div>
+          {[
+            { label: 'lucky-bike.de', query: 'lucky-bike.de' },
+            { label: 'fahrrad-xxl.de', query: 'fahrrad-xxl.de' },
+            { label: 'boc24.de', query: 'boc24.de' },
+            { label: 'emotion-technologies.de', query: 'emotion-technologies.de' },
+            { label: 'radwelt-bielefeld.de', query: 'radwelt-bielefeld.de' },
+            { label: 'zweiradhaus-westerfeld.de', query: 'zweiradhaus-westerfeld.de' },
+            { label: '2rad-schroeder.de', query: '2rad-schroeder.de' },
+            { label: 'fahrrad-schwarz.de', query: 'fahrrad-schwarz.de' }
+          ].map((shop) => {
+            const isShopActive = query.toLowerCase().includes(shop.query);
+            return (
+              <button
+                key={shop.query}
+                type="button"
+                onClick={() => {
+                  if (isShopActive) {
+                    setQuery('');
+                  } else {
+                    setQuery(shop.query);
+                  }
+                }}
+                className={`px-2.5 py-1 rounded-lg text-xs font-semibold shrink-0 transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isShopActive
+                    ? 'bg-emerald-600 text-white shadow-2xs font-bold'
+                    : 'bg-slate-100 hover:bg-slate-200/80 text-slate-700 hover:text-emerald-800'
+                }`}
+              >
+                <span>{shop.label}</span>
+                {isShopActive && <X className="w-3 h-3 ml-0.5" />}
+              </button>
+            );
+          })}
         </div>
 
         {/* Filters Row (Category, Propulsion, Brand, Leasing Provider) */}
@@ -810,10 +851,10 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
                   : 'bg-slate-50 text-slate-700 border-slate-200'
               }`}
             >
-              <option value="ALL">Alle Partner-Händler ({availableDealers.length})</option>
+              <option value="ALL">Alle 361 Partner-Händler & Websites ({availableDealers.length})</option>
               {availableDealers.map(d => (
                 <option key={d.slug} value={d.slug}>
-                  {d.name} {d.city ? `(${d.city})` : ''} ({d.count})
+                  {d.name} {d.website_url ? `(${d.website_url})` : (d.city ? `(${d.city})` : '')} ({d.count} Angebote)
                 </option>
               ))}
             </select>

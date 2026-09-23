@@ -437,7 +437,8 @@ export class OffersRepository {
           name: o.dealer_name,
           slug: o.dealer_slug,
           count: 0,
-          city: o.dealer_locations?.[0]?.city
+          city: o.dealer_locations?.[0]?.city,
+          website_url: o.source_url ? o.source_url.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '') : undefined
         };
         cur.count++;
         dealerCounts.set(o.dealer_id, cur);
@@ -450,9 +451,11 @@ export class OffersRepository {
     });
 
     const total = domainOffers.length;
-    const limit = filters.limit ?? 24;
-    const offset = filters.offset ?? 0;
-    const paginated = domainOffers.slice(offset, offset + limit);
+    const offset = Math.max(0, filters.offset ?? 0);
+    const limit = filters.limit === 0 ? total : (filters.limit ?? 48);
+    const paginated = (filters.limit === 0 || limit >= total)
+      ? domainOffers.slice(offset)
+      : domainOffers.slice(offset, offset + limit);
 
     return {
       offers: paginated,
@@ -698,7 +701,8 @@ export class OffersRepository {
           name: o.dealer_name,
           slug: o.dealer_slug,
           count: 0,
-          city: o.dealer_locations?.[0]?.city
+          city: o.dealer_locations?.[0]?.city,
+          website_url: o.source_url ? o.source_url.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '') : undefined
         };
         cur.count++;
         dealerCounts.set(o.dealer_id, cur);
@@ -736,9 +740,11 @@ export class OffersRepository {
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
     const total = items.length;
-    const limit = filters.limit ?? 24;
-    const offset = filters.offset ?? 0;
-    const paginated = items.slice(offset, offset + limit);
+    const offset = Math.max(0, filters.offset ?? 0);
+    const limit = filters.limit === 0 ? total : (filters.limit ?? 48);
+    const paginated = (filters.limit === 0 || limit >= total)
+      ? items.slice(offset)
+      : items.slice(offset, offset + limit);
 
     return {
       offers: paginated,

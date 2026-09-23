@@ -284,7 +284,7 @@ export interface SearchResponse {
   available_brands: { name: string; count: number }[];
   available_categories: { category: BikeCategory; count: number }[];
   available_providers: { slug: string; name: string; count: number }[];
-  available_dealers?: { id: string; name: string; slug: string; count: number; city?: string }[];
+  available_dealers?: { id: string; name: string; slug: string; count: number; city?: string; website_url?: string }[];
 }
 
 export interface OverviewStats {

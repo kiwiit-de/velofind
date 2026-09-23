@@ -157,7 +157,11 @@ export async function createApp(): Promise<Application> {
         longitude: lng ? parseFloat(String(lng)) : undefined,
         radiusKm: radius ? parseFloat(String(radius)) : undefined,
         sort: sort ? (String(sort) as any) : undefined,
-        limit: limit ? parseInt(String(limit), 10) : 48,
+        limit: limit !== undefined
+          ? (String(limit).toLowerCase() === 'all' || String(limit) === '0'
+              ? 0
+              : Math.max(1, parseInt(String(limit), 10) || 48))
+          : 48,
         offset: offset ? parseInt(String(offset), 10) : 0
       };
 
