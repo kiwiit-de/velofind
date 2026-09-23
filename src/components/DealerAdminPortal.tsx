@@ -12,7 +12,13 @@ import {
   RefreshCw,
   Eye,
   Sliders,
-  Database
+  Database,
+  Zap,
+  Bell,
+  Mail,
+  ArrowDownRight,
+  Sparkles,
+  X
 } from 'lucide-react';
 import { Dealer, Lead, ImportRun, OverviewStats } from '../types';
 import { apiUrl } from '../lib/api';
@@ -44,14 +50,55 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
   const [csvContent, setCsvContent] = useState<string>(SAMPLE_FEEDS.standard);
   const [importing, setImporting] = useState<boolean>(false);
   const [importReport, setImportReport] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'import' | 'leads' | 'audit'>('import');
+  const [activeTab, setActiveTab] = useState<'import' | 'leads' | 'audit' | 'simulate'>('import');
 
   // Stats & Leads states
   const [stats, setStats] = useState<OverviewStats | null>(null);
   const [leads, setLeads] = useState<Lead[]>([]);
   const [auditLogs, setAuditLogs] = useState<any[]>([]);
 
+  // Dev Alert Simulation States
+  const [showSimulateModal, setShowSimulateModal] = useState<boolean>(false);
+  const [dealerOffers, setDealerOffers] = useState<any[]>([]);
+  const [targetOfferId, setTargetOfferId] = useState<string>('');
+  const [dropPercent, setDropPercent] = useState<number>(15);
+  const [testEmail, setTestEmail] = useState<string>('dev-tester@velofind.de');
+  const [createTestSubscriberFirst, setCreateTestSubscriberFirst] = useState<boolean>(true);
+  const [isSimulating, setIsSimulating] = useState<boolean>(false);
+  const [simulationResult, setSimulationResult] = useState<any>(null);
+  const [simulationError, setSimulationError] = useState<string | null>(null);
+  const [loadingOffers, setLoadingOffers] = useState<boolean>(false);
+
   const currentDealer = dealers.find(d => d.id === selectedDealerId) || dealers[0];
+
+  const fetchDealerOffers = async () => {
+    setLoadingOffers(true);
+    try {
+      const res = await fetch(apiUrl(`/api/search?dealerId=${selectedDealerId}&limit=25`));
+      if (res.ok) {
+        const data = await res.json();
+        if (data.offers && data.offers.length > 0) {
+          setDealerOffers(data.offers);
+          setTargetOfferId((prev) => prev && data.offers.some((o: any) => o.id === prev) ? prev : data.offers[0].id);
+          setLoadingOffers(false);
+          return;
+        }
+      }
+      // Fallback if specific dealer has no direct offers in current filter
+      const fallbackRes = await fetch(apiUrl('/api/search?limit=20'));
+      if (fallbackRes.ok) {
+        const fbData = await fallbackRes.json();
+        setDealerOffers(fbData.offers || []);
+        if (fbData.offers?.length > 0) {
+          setTargetOfferId((prev) => prev && fbData.offers.some((o: any) => o.id === prev) ? prev : fbData.offers[0].id);
+        }
+      }
+    } catch (err) {
+      console.error('Failed to load dealer offers for simulation:', err);
+    } finally {
+      setLoadingOffers(false);
+    }
+  };
 
   const fetchPortalData = async () => {
     try {
@@ -71,7 +118,62 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
 
   useEffect(() => {
     fetchPortalData();
+    fetchDealerOffers();
   }, [selectedDealerId]);
+
+  const handleTriggerSimulateDrop = async () => {
+    const offerIdToUse = targetOfferId || dealerOffers[0]?.id;
+    if (!offerIdToUse) {
+      setSimulationError('Kein Fahrrad-Angebot ausgewählt. Bitte wähle ein Rad oder gib eine gültige ID an.');
+      return;
+    }
+
+    setIsSimulating(true);
+    setSimulationError(null);
+    setSimulationResult(null);
+
+    try {
+      // 1. Optional: Ensure an active alert subscriber exists so the email notification flow triggers
+      if (createTestSubscriberFirst && testEmail.trim()) {
+        try {
+          await fetch(apiUrl('/api/alerts'), {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              offerId: offerIdToUse,
+              email: testEmail.trim().toLowerCase()
+            })
+          });
+        } catch (subErr) {
+          console.warn('Subscription step warning (continuing with drop):', subErr);
+        }
+      }
+
+      // 2. Invoke POST /api/alerts/simulate-drop
+      const res = await fetch(apiUrl('/api/alerts/simulate-drop'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          offerId: offerIdToUse,
+          dropPercent: Number(dropPercent) || 10
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.error || 'Fehler beim Ausführen von POST /api/alerts/simulate-drop');
+      }
+
+      setSimulationResult(data);
+      onRefreshData();
+      fetchPortalData();
+      fetchDealerOffers();
+    } catch (err: any) {
+      setSimulationError(err.message || 'Simulation fehlgeschlagen');
+    } finally {
+      setIsSimulating(false);
+    }
+  };
 
   const handleRunImport = async () => {
     setImporting(true);
@@ -117,6 +219,309 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
     }
   };
 
+  const selectedOffer = dealerOffers.find((o) => o.id === targetOfferId) || dealerOffers[0];
+  const currentPriceCents = selectedOffer?.price_cents || 439900;
+  const simulatedNewPriceCents = Math.round(currentPriceCents * (1 - (Number(dropPercent) || 10) / 100));
+  const simulatedSavingsCents = currentPriceCents - simulatedNewPriceCents;
+
+  const renderSimulationContent = () => (
+    <div className="space-y-6">
+      <div className="bg-amber-50/60 border border-amber-200/70 rounded-2xl p-4 sm:p-5 flex items-start gap-3">
+        <div className="p-2 rounded-xl bg-amber-100 text-amber-800 shrink-0 mt-0.5">
+          <Zap className="w-5 h-5 text-amber-600" />
+        </div>
+        <div className="text-xs text-amber-950 space-y-1">
+          <div className="font-bold text-sm text-amber-900 flex items-center gap-2">
+            <span>Entwickler-Testflow: POST /api/alerts/simulate-drop</span>
+            <span className="px-1.5 py-0.5 text-[10px] font-black bg-amber-200 text-amber-900 rounded">DEV ONLY</span>
+          </div>
+          <p className="text-amber-800 leading-relaxed">
+            Mit diesem Entwicklungswerkzeug reduzierst du kontrolliert den Preis eines Fahrrad-Angebots um einen gewählten Prozentsatz.
+            Der Backend-Dienst <code className="bg-amber-100/80 px-1 py-0.5 rounded font-mono text-[11px]">PriceAlertService</code> gleicht die <code className="bg-amber-100/80 px-1 py-0.5 rounded font-mono text-[11px]">user_alerts</code>-Tabelle ab, stößt den E-Mail-Versand an und hinterlegt ein unveränderliches Audit-Event im Protokoll.
+          </p>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Left Column: Offer selection & percentage */}
+        <div className="space-y-4">
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              1. Fahrrad-Angebot auswählen
+            </label>
+            {loadingOffers ? (
+              <div className="text-xs text-slate-400 py-2 flex items-center gap-2">
+                <RefreshCw className="w-3.5 h-3.5 animate-spin text-amber-600" />
+                <span>Lade Angebote...</span>
+              </div>
+            ) : dealerOffers.length > 0 ? (
+              <select
+                id="dev-select-offer-dropdown"
+                value={targetOfferId || dealerOffers[0]?.id}
+                onChange={(e) => setTargetOfferId(e.target.value)}
+                className="w-full text-xs p-2.5 rounded-xl border border-slate-300 font-medium text-slate-900 bg-white focus:ring-2 focus:ring-amber-500 focus:border-amber-500"
+              >
+                {dealerOffers.map((offer) => (
+                  <option key={offer.id} value={offer.id}>
+                    {offer.title} — €{(offer.price_cents / 100).toFixed(2)}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <p className="text-xs text-slate-500">Keine Angebote für diesen Händler gefunden.</p>
+            )}
+
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-[11px] text-slate-400">Oder Angebots-UUID manuell eingeben:</span>
+            </div>
+            <input
+              id="dev-input-offer-id"
+              type="text"
+              value={targetOfferId}
+              onChange={(e) => setTargetOfferId(e.target.value)}
+              placeholder="UUID des Angebots (z.B. d89c3c88-...)"
+              className="mt-1 w-full text-xs font-mono p-2 rounded-lg border border-slate-200 bg-slate-50 text-slate-800 focus:ring-2 focus:ring-amber-500"
+            />
+          </div>
+
+          {/* Current & Projected Price Preview */}
+          {selectedOffer && (
+            <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-2 text-xs">
+              <div className="font-bold text-slate-800 truncate">{selectedOffer.title}</div>
+              <div className="flex items-center justify-between text-slate-600">
+                <span>Aktueller Angebotspreis:</span>
+                <span className="font-mono font-bold text-slate-900">
+                  €{(currentPriceCents / 100).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-emerald-700">
+                <span>Neuer Preis nach Reduzierung:</span>
+                <span className="font-mono font-bold text-emerald-700">
+                  €{(simulatedNewPriceCents / 100).toFixed(2)}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-slate-500 border-t border-slate-200/80 pt-2 text-[11px]">
+                <span>Ersparnis für Kunden:</span>
+                <span className="font-mono font-semibold text-emerald-600">
+                  -€{(simulatedSavingsCents / 100).toFixed(2)} (-{dropPercent}%)
+                </span>
+              </div>
+            </div>
+          )}
+
+          {/* Percentage selector */}
+          <div>
+            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              2. Preissenkung (%) festlegen
+            </label>
+            <div className="flex items-center gap-1.5 mb-2">
+              {[5, 10, 15, 20, 30].map((pct) => (
+                <button
+                  key={pct}
+                  type="button"
+                  onClick={() => setDropPercent(pct)}
+                  className={`px-2.5 py-1 text-xs font-bold rounded-lg border transition-colors ${
+                    dropPercent === pct
+                      ? 'bg-amber-600 text-white border-amber-600 shadow-2xs'
+                      : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  -{pct}%
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-2">
+              <input
+                id="dev-input-drop-percent"
+                type="number"
+                min="1"
+                max="90"
+                value={dropPercent}
+                onChange={(e) => setDropPercent(Math.max(1, Math.min(90, Number(e.target.value) || 10)))}
+                className="w-24 text-xs font-mono p-2 rounded-lg border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-amber-500"
+              />
+              <span className="text-xs text-slate-500">% Preiserlass</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column: Email Subscriber Setup & Action */}
+        <div className="space-y-4 flex flex-col justify-between">
+          <div className="space-y-4">
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                3. Test-Empfänger für E-Mail-Notification
+              </label>
+              <div className="relative">
+                <Mail className="w-4 h-4 text-slate-400 absolute left-3 top-2.5" />
+                <input
+                  id="dev-input-test-email"
+                  type="email"
+                  value={testEmail}
+                  onChange={(e) => setTestEmail(e.target.value)}
+                  placeholder="name@example.com"
+                  className="w-full text-xs pl-9 pr-3 py-2.5 rounded-xl border border-slate-300 bg-white text-slate-900 focus:ring-2 focus:ring-amber-500"
+                />
+              </div>
+              <p className="text-[11px] text-slate-500 mt-1">
+                E-Mail-Adresse für die Preissenkungs-Benachrichtigung.
+              </p>
+            </div>
+
+            <div className="bg-slate-50 p-3.5 rounded-2xl border border-slate-200">
+              <label className="flex items-start gap-2.5 cursor-pointer">
+                <input
+                  id="dev-checkbox-create-subscriber"
+                  type="checkbox"
+                  checked={createTestSubscriberFirst}
+                  onChange={(e) => setCreateTestSubscriberFirst(e.target.checked)}
+                  className="mt-0.5 rounded border-slate-300 text-amber-600 focus:ring-amber-500 h-4 w-4"
+                />
+                <div className="text-xs text-slate-700">
+                  <span className="font-semibold block text-slate-900">
+                    Vorab Test-Abonnent für dieses Rad anlegen
+                  </span>
+                  <span className="text-[11px] text-slate-500">
+                    Registriert die E-Mail als aktiven Beobachter (<code className="font-mono text-[10px]">POST /api/alerts</code>), falls noch kein Alert existiert, sodass mindestens 1 E-Mail-Notification dispatched wird.
+                  </span>
+                </div>
+              </label>
+            </div>
+          </div>
+
+          <div className="pt-2">
+            <button
+              id="btn-trigger-simulate-drop"
+              type="button"
+              onClick={handleTriggerSimulateDrop}
+              disabled={isSimulating || (!targetOfferId && dealerOffers.length === 0)}
+              className="w-full py-3 px-4 rounded-xl bg-amber-600 hover:bg-amber-700 active:bg-amber-800 text-white font-bold text-sm flex items-center justify-center gap-2 transition-all shadow-sm hover:shadow disabled:opacity-50"
+            >
+              {isSimulating ? (
+                <>
+                  <RefreshCw className="w-4 h-4 animate-spin" />
+                  <span>Sende POST /api/alerts/simulate-drop...</span>
+                </>
+              ) : (
+                <>
+                  <Zap className="w-4 h-4" />
+                  <span>Preissenkung jetzt simulieren (POST /api/alerts/simulate-drop)</span>
+                </>
+              )}
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Error display */}
+      {simulationError && (
+        <div className="p-4 bg-red-50 border border-red-200 rounded-2xl text-xs text-red-800 flex items-start gap-3">
+          <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+          <div>
+            <div className="font-bold text-red-900">Fehler beim Ausführen der Simulation:</div>
+            <p className="mt-0.5">{simulationError}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Result Console */}
+      {simulationResult && (
+        <div className="p-5 bg-emerald-50/80 border border-emerald-200 rounded-2xl space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-emerald-900">
+              <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+              <span className="font-bold text-sm">Preissenkungssimulation erfolgreich ausgeführt!</span>
+            </div>
+            <span className="px-2 py-0.5 text-[10px] font-mono font-bold bg-emerald-100 text-emerald-800 rounded">
+              HTTP 200 OK
+            </span>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs">
+            <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+              <span className="text-slate-500 text-[11px] block">Vorheriger Preis</span>
+              <span className="font-bold text-slate-900 text-sm font-mono mt-0.5 block">
+                €{(simulationResult.oldPriceCents / 100).toFixed(2)}
+              </span>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+              <span className="text-slate-500 text-[11px] block">Neuer Preis</span>
+              <span className="font-bold text-emerald-600 text-sm font-mono mt-0.5 block">
+                €{(simulationResult.newPriceCents / 100).toFixed(2)}
+              </span>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+              <span className="text-slate-500 text-[11px] block">Ersparnis</span>
+              <span className="font-bold text-emerald-700 text-sm font-mono mt-0.5 block">
+                €{((simulationResult.oldPriceCents - simulationResult.newPriceCents) / 100).toFixed(2)}
+              </span>
+            </div>
+
+            <div className="bg-white p-3 rounded-xl border border-emerald-100 shadow-2xs">
+              <span className="text-slate-500 text-[11px] block">Dispatched Mails</span>
+              <span className="font-bold text-amber-600 text-sm font-mono mt-0.5 block">
+                {simulationResult.notificationsSent} {simulationResult.notificationsSent === 1 ? 'Empfänger' : 'Empfänger'}
+              </span>
+            </div>
+          </div>
+
+          {/* Detailed Notifications list */}
+          {simulationResult.notifications && simulationResult.notifications.length > 0 ? (
+            <div className="space-y-2">
+              <span className="text-xs font-bold text-slate-700 uppercase tracking-wider block">
+                Ausgelöste E-Mail-Benachrichtigungen:
+              </span>
+              <div className="space-y-1.5 max-h-48 overflow-y-auto">
+                {simulationResult.notifications.map((n: any, idx: number) => (
+                  <div key={idx} className="bg-white p-3 rounded-xl border border-emerald-200 text-xs flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                    <div className="flex items-center gap-2">
+                      <Mail className="w-4 h-4 text-emerald-600 shrink-0" />
+                      <div>
+                        <span className="font-bold text-slate-900">{n.email}</span>
+                        <span className="text-[11px] text-slate-500 ml-2 font-mono">Alert-ID: {n.alertId.slice(0, 8)}...</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-3 text-[11px]">
+                      <span className="text-emerald-700 font-semibold font-mono">
+                        Ersparnis: €{(n.savingsCents / 100).toFixed(2)}
+                      </span>
+                      <span className="text-slate-400">
+                        {new Date(n.notifiedAt).toLocaleTimeString('de-DE')}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-800">
+              ℹ️ Für dieses Rad war noch kein aktiver Alert eingerichtet (oder Target-Price wurde nicht unterschritten). Aktiviere die Checkbox &quot;Vorab Test-Abonnent anlegen&quot; für automatische Auslösung.
+            </div>
+          )}
+
+          <div className="flex items-center justify-between pt-2 border-t border-emerald-200/60 text-xs">
+            <span className="text-slate-600">
+              Audit-Event <code className="bg-white px-1.5 py-0.5 rounded text-slate-800 font-mono text-[11px]">USER_ALERT_TRIGGERED</code> wurde im Audit-Trail hinterlegt.
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSimulateModal(false);
+                setActiveTab('audit');
+              }}
+              className="text-emerald-700 hover:text-emerald-800 font-bold flex items-center gap-1 underline"
+            >
+              <span>Zum Audit-Protokoll</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Dealer Switcher & Tenancy Header */}
@@ -133,18 +538,38 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
           </h1>
         </div>
 
-        <div className="flex items-center gap-3">
-          <label className="text-xs font-semibold text-slate-600">Angemeldeter Fachhändler:</label>
-          <select
-            id="admin-dealer-switcher"
-            value={selectedDealerId}
-            onChange={(e) => setSelectedDealerId(e.target.value)}
-            className="px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500"
+        <div className="flex flex-wrap items-center gap-3">
+          {/* Development-Only Admin Button for Price Drop & Email Notification Testing */}
+          <button
+            id="btn-dev-simulate-price-drop"
+            type="button"
+            onClick={() => {
+              setShowSimulateModal(true);
+              fetchDealerOffers();
+            }}
+            className="px-3.5 py-2 rounded-xl border border-amber-300 bg-amber-50 hover:bg-amber-100 active:bg-amber-200 text-amber-950 font-semibold text-xs flex items-center gap-2 transition-all shadow-2xs group focus:outline-none focus:ring-2 focus:ring-amber-500"
+            title="Preissenkung simulieren & Email-Alerts testen (POST /api/alerts/simulate-drop)"
           >
-            {dealers.map(d => (
-              <option key={d.id} value={d.id}>{d.name}</option>
-            ))}
-          </select>
+            <span className="px-1.5 py-0.5 rounded bg-amber-200 text-amber-900 text-[10px] font-black uppercase tracking-wider">
+              DEV ONLY
+            </span>
+            <Zap className="w-4 h-4 text-amber-600 group-hover:scale-110 transition-transform" />
+            <span>Preissturz & Email-Alert simulieren</span>
+          </button>
+
+          <div className="flex items-center gap-2">
+            <label className="text-xs font-semibold text-slate-600">Angemeldeter Fachhändler:</label>
+            <select
+              id="admin-dealer-switcher"
+              value={selectedDealerId}
+              onChange={(e) => setSelectedDealerId(e.target.value)}
+              className="px-3 py-2 rounded-xl border border-slate-300 text-sm font-semibold text-slate-900 bg-white focus:ring-2 focus:ring-emerald-500"
+            >
+              {dealers.map(d => (
+                <option key={d.id} value={d.id}>{d.name}</option>
+              ))}
+            </select>
+          </div>
         </div>
       </div>
 
@@ -177,12 +602,12 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
         </div>
       )}
 
-      {/* Navigation Tabs (Import / Leads / Audit) */}
-      <div className="flex border-b border-slate-200 gap-6 text-sm font-medium">
+      {/* Navigation Tabs (Import / Leads / Audit / Dev-Simulate) */}
+      <div className="flex border-b border-slate-200 gap-6 text-sm font-medium overflow-x-auto">
         <button
           id="tab-import-btn"
           onClick={() => setActiveTab('import')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
             activeTab === 'import'
               ? 'border-emerald-600 text-emerald-800 font-bold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -195,7 +620,7 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
         <button
           id="tab-leads-btn"
           onClick={() => setActiveTab('leads')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
             activeTab === 'leads'
               ? 'border-emerald-600 text-emerald-800 font-bold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -208,7 +633,7 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
         <button
           id="tab-audit-btn"
           onClick={() => setActiveTab('audit')}
-          className={`pb-3 flex items-center gap-2 border-b-2 transition-colors ${
+          className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
             activeTab === 'audit'
               ? 'border-emerald-600 text-emerald-800 font-bold'
               : 'border-transparent text-slate-500 hover:text-slate-800'
@@ -216,6 +641,27 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
         >
           <Database className="w-4 h-4" />
           <span>Audit-Protokoll & Klick-Attribution</span>
+        </button>
+
+        <button
+          id="tab-dev-alerts-btn"
+          onClick={() => {
+            setActiveTab('simulate');
+            fetchDealerOffers();
+          }}
+          className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
+            activeTab === 'simulate'
+              ? 'border-amber-500 text-amber-900 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Zap className="w-4 h-4 text-amber-500" />
+          <span className="flex items-center gap-1.5">
+            <span>Dev: Preissenkung & Alert-Simulation</span>
+            <span className="px-1.5 py-0.2 rounded bg-amber-100 text-amber-800 text-[10px] font-bold">
+              DEV ONLY
+            </span>
+          </span>
         </button>
       </div>
 
@@ -472,6 +918,70 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
                 ))}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 4: DEV-ONLY ALERT SIMULATION */}
+      {activeTab === 'simulate' && (
+        <div className="bg-white rounded-3xl border border-amber-200/80 p-6 sm:p-8 shadow-xs space-y-6">
+          <div className="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <div className="p-2 rounded-xl bg-amber-100 text-amber-800">
+              <Zap className="w-6 h-6 text-amber-600" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h2 className="text-xl font-bold text-slate-900">Dev-Werkzeug: Preissenkung & Alert-Simulation</h2>
+                <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black tracking-wider">
+                  DEV ONLY
+                </span>
+              </div>
+              <p className="text-xs text-slate-500 font-mono">POST /api/alerts/simulate-drop</p>
+            </div>
+          </div>
+
+          {renderSimulationContent()}
+        </div>
+      )}
+
+      {/* DEV-ONLY SIMULATION POPUP MODAL */}
+      {showSimulateModal && (
+        <div
+          id="modal-simulate-price-drop"
+          className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6"
+          onClick={() => setShowSimulateModal(false)}
+        >
+          <div
+            className="bg-white rounded-3xl border border-slate-200 shadow-2xl max-w-3xl w-full p-6 sm:p-8 space-y-6 relative max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-amber-100 text-amber-800">
+                  <Zap className="w-5 h-5 text-amber-600" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-slate-900">Preissenkung & Email-Alerts simulieren</h2>
+                    <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-800 text-[10px] font-black tracking-wider">
+                      DEV ONLY
+                    </span>
+                  </div>
+                  <p className="text-xs text-slate-500 font-mono">POST /api/alerts/simulate-drop</p>
+                </div>
+              </div>
+              <button
+                id="btn-close-simulate-modal"
+                type="button"
+                onClick={() => setShowSimulateModal(false)}
+                className="p-2 text-slate-400 hover:text-slate-700 rounded-xl hover:bg-slate-100 transition-colors"
+                title="Schließen"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {renderSimulationContent()}
           </div>
         </div>
       )}

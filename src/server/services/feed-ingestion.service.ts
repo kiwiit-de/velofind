@@ -156,8 +156,10 @@ export class FeedIngestionService {
         });
         continue;
       }
-      if (isNaN(priceRaw) || priceRaw <= 0) {
-        const errorMsg = `Ungültiger Preis: "${row.price}"`;
+      if (isNaN(priceRaw) || priceRaw <= 649) {
+        const errorMsg = isNaN(priceRaw) || priceRaw <= 0
+          ? `Ungültiger Preis: "${row.price}"`
+          : `Preis liegt nicht über Mindestgrenze von 649 €: "${row.price} €" (Mindestanforderung für Dienstrad-Leasing / Bikes)`;
         errors.push({ line: lineNum, error: errorMsg, raw: line });
         await importRunsRepository.recordRow({
           import_run_id: runId,

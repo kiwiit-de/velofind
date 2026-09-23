@@ -110317,3 +110317,8 @@ export const PARTNER_OFFERS_DATA: Offer[] = [
   ]
 }
 ];
+
+import { SUPPLEMENTAL_DEALERS, SUPPLEMENTAL_OFFERS } from './supplemental-dealers-and-offers.ts';
+
+PARTNER_DEALERS_DATA.push(...SUPPLEMENTAL_DEALERS);
+PARTNER_OFFERS_DATA.push(...SUPPLEMENTAL_OFFERS);
