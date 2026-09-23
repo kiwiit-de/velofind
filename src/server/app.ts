@@ -198,7 +198,7 @@ export async function createApp(): Promise<Application> {
       if (!dealer) {
         return res.status(404).json({ error: 'Händler nicht gefunden' });
       }
-      const searchResult = await offersRepository.search({ dealerId: dealer.id, limit: 100 });
+      const searchResult = await offersRepository.search({ dealerSlug: dealer.slug, limit: 100 });
       res.json({ dealer, offers: searchResult.offers });
     } catch (err: any) {
       res.status(500).json({ error: 'Fehler beim Abrufen des Händlers', details: err.message });

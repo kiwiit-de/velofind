@@ -83,16 +83,30 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
     if (partnerSearch.trim()) {
       let q = partnerSearch.toLowerCase().trim();
       q = q.replace(/\bbohcum\b/g, 'bochum');
+
+      const cleanUrl = q
+        .replace(/^https?:\/\//i, '')
+        .replace(/^www\./i, '')
+        .replace(/\/.*$/, '')
+        .trim();
+      const domainBase = cleanUrl.replace(/\.(de|com|net|org|eu|at|ch|info|shop|bike|online)$/i, '');
+      const urlTokens = domainBase.split(/[-_.]/).filter((w) => w.length > 1);
+
       const tokens = q
         .split(/\s+/)
         .filter((t) => t.length > 1 && !['in', 'der', 'die', 'das', 'und', 'mit', 'fuer', 'für', 'filiale', 'filialen'].includes(t));
 
       list = list.filter((d) => {
         const locationsStr = d.locations?.map((l) => `${l.name} ${l.city} ${l.postal_code} ${l.address_line1}`).join(' ') || '';
-        const corpus = `${d.name} ${d.slug} ${d.website_url ?? ''} ${locationsStr}`.toLowerCase();
+        const rawWeb = (d.website_url ?? '').toLowerCase();
+        const cleanDealerWeb = rawWeb.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/$/, '');
+        const corpus = `${d.name} ${d.slug} ${rawWeb} ${cleanDealerWeb} ${locationsStr}`.toLowerCase();
 
         if (corpus.includes(q)) return true;
+        if (cleanUrl && (cleanDealerWeb.includes(cleanUrl) || corpus.includes(cleanUrl))) return true;
+        if (domainBase && domainBase.length > 2 && (d.slug.includes(domainBase) || corpus.includes(domainBase))) return true;
         if (tokens.length > 0 && tokens.every((t) => corpus.includes(t))) return true;
+        if (urlTokens.length > 0 && urlTokens.every((t) => corpus.includes(t))) return true;
         return false;
       });
     }

@@ -239,7 +239,34 @@ export class OffersRepository {
       baseQuery = baseQuery.where('o.dealer_id', '=', filters.dealerId);
     }
     if (filters.dealerSlug) {
-      baseQuery = baseQuery.where('d.slug', '=', filters.dealerSlug);
+      const raw = filters.dealerSlug.trim().toLowerCase();
+      const cleanUrl = raw.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
+      const domainBase = cleanUrl.replace(/\.(de|com|net|org|eu|at|ch)$/i, '');
+
+      if (raw === 'lucky-bike' || raw === 'lucky-bike-fachmarkt' || cleanUrl === 'lucky-bike.de' || domainBase === 'lucky-bike') {
+        baseQuery = baseQuery.where((eb) =>
+          eb.or([
+            sql<boolean>`d.slug LIKE 'lucky-bike%'`,
+            sql<boolean>`o.source_url LIKE '%lucky-bike%'`
+          ])
+        );
+      } else if (raw === 'fahrrad-xxl' || raw === 'fahrrad-xxl-grossmarkt' || cleanUrl === 'fahrrad-xxl.de' || domainBase === 'fahrrad-xxl') {
+        baseQuery = baseQuery.where((eb) =>
+          eb.or([
+            sql<boolean>`d.slug LIKE 'fahrrad-xxl%'`,
+            sql<boolean>`o.source_url LIKE '%fahrrad-xxl%'`
+          ])
+        );
+      } else if (raw === 'boc' || raw === 'b-o-c' || cleanUrl === 'boc24.de' || domainBase === 'boc24') {
+        baseQuery = baseQuery.where((eb) =>
+          eb.or([
+            sql<boolean>`d.slug LIKE 'boc%'`,
+            sql<boolean>`o.source_url LIKE '%boc24%'`
+          ])
+        );
+      } else {
+        baseQuery = baseQuery.where('d.slug', '=', filters.dealerSlug);
+      }
     }
     if (filters.dealerName) {
       const dn = `%${filters.dealerName.trim().toLowerCase()}%`;
@@ -248,9 +275,13 @@ export class OffersRepository {
 
     // Text query
     if (filters.query && filters.query.trim() !== '') {
-      const q = `%${filters.query.trim().toLowerCase()}%`;
-      baseQuery = baseQuery.where((eb) =>
-        eb.or([
+      const raw = filters.query.trim().toLowerCase();
+      const q = `%${raw}%`;
+      const cleanUrl = raw.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
+      const domainBase = cleanUrl.replace(/\.(de|com|net|org|eu|at|ch)$/i, '');
+
+      baseQuery = baseQuery.where((eb) => {
+        const conditions = [
           sql<boolean>`LOWER(o.title) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(b.name, '')) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(bm.name, '')) LIKE ${q}`,
@@ -258,8 +289,19 @@ export class OffersRepository {
           sql<boolean>`LOWER(COALESCE(d.name, '')) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(d.website_url, '')) LIKE ${q}`,
           sql<boolean>`LOWER(COALESCE(o.source_url, '')) LIKE ${q}`
-        ])
-      );
+        ];
+        if (cleanUrl && cleanUrl.length > 3) {
+          const urlPattern = `%${cleanUrl}%`;
+          conditions.push(sql<boolean>`LOWER(COALESCE(d.website_url, '')) LIKE ${urlPattern}`);
+          conditions.push(sql<boolean>`LOWER(COALESCE(o.source_url, '')) LIKE ${urlPattern}`);
+        }
+        if (domainBase && domainBase.length > 2) {
+          const basePattern = `%${domainBase}%`;
+          conditions.push(sql<boolean>`LOWER(d.slug) LIKE ${basePattern}`);
+          conditions.push(sql<boolean>`LOWER(COALESCE(d.name, '')) LIKE ${basePattern}`);
+        }
+        return eb.or(conditions);
+      });
     }
 
     // Category
@@ -439,23 +481,89 @@ export class OffersRepository {
 
     let items = [...PARTNER_OFFERS_DATA];
 
+    // Helper to normalize URL queries and domain searches
+    const normalizeUrl = (raw: string) => {
+      const cleanUrl = raw
+        .toLowerCase()
+        .replace(/^https?:\/\//i, '')
+        .replace(/^www\./i, '')
+        .replace(/\/.*$/, '')
+        .trim();
+      const domainBase = cleanUrl.replace(/\.(de|com|net|org|eu|at|ch|info|shop|bike|online)$/i, '');
+      const urlTokens = domainBase.split(/[-_.]/).filter((w) => w.length > 1);
+      return { cleanUrl, domainBase, urlTokens };
+    };
+
     if (filters.dealerId) {
       items = items.filter((o) => o.dealer_id === filters.dealerId);
     }
     if (filters.dealerSlug) {
-      items = items.filter((o) => o.dealer_slug === filters.dealerSlug);
+      const targetSlug = filters.dealerSlug.toLowerCase().trim();
+      const { cleanUrl, domainBase } = normalizeUrl(targetSlug);
+
+      items = items.filter((o) => {
+        if (o.dealer_slug === targetSlug) return true;
+
+        if (
+          targetSlug === 'lucky-bike-fachmarkt' ||
+          targetSlug === 'lucky-bike' ||
+          cleanUrl === 'lucky-bike.de' ||
+          domainBase === 'lucky-bike'
+        ) {
+          return o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike');
+        }
+
+        if (
+          targetSlug === 'fahrrad-xxl-grossmarkt' ||
+          targetSlug === 'fahrrad-xxl' ||
+          cleanUrl === 'fahrrad-xxl.de' ||
+          domainBase === 'fahrrad-xxl'
+        ) {
+          return o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl');
+        }
+
+        if (
+          targetSlug === 'b-o-c-bicycles-online-care' ||
+          targetSlug === 'boc' ||
+          targetSlug === 'b-o-c' ||
+          cleanUrl === 'boc24.de' ||
+          domainBase === 'boc24'
+        ) {
+          return o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24');
+        }
+
+        if (cleanUrl && (o.source_url || '').toLowerCase().includes(cleanUrl)) return true;
+
+        return o.dealer_slug === targetSlug;
+      });
     }
     if (filters.dealerName) {
       const dn = filters.dealerName.toLowerCase().trim();
-      items = items.filter((o) => o.dealer_name.toLowerCase().includes(dn) || o.dealer_slug.toLowerCase().includes(dn));
+      const { cleanUrl, domainBase } = normalizeUrl(dn);
+
+      items = items.filter((o) => {
+        if (dn === 'lucky bike' || dn === 'lucky-bike' || cleanUrl === 'lucky-bike.de' || domainBase === 'lucky-bike') {
+          return o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike') || o.dealer_name.toLowerCase().includes('lucky bike');
+        }
+        if (dn === 'fahrrad xxl' || dn === 'fahrrad-xxl' || cleanUrl === 'fahrrad-xxl.de' || domainBase === 'fahrrad-xxl') {
+          return o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl') || o.dealer_name.toLowerCase().includes('fahrrad xxl');
+        }
+        return o.dealer_name.toLowerCase().includes(dn) || o.dealer_slug.toLowerCase().includes(dn);
+      });
     }
     if (filters.query && filters.query.trim() !== '') {
       let q = filters.query.toLowerCase().trim();
       q = q.replace(/\bbohcum\b/g, 'bochum');
 
+      const { cleanUrl, domainBase, urlTokens } = normalizeUrl(q);
+
       const tokens = q
         .split(/\s+/)
         .filter((t) => t.length > 1 && !['in', 'der', 'die', 'das', 'und', 'mit', 'fuer', 'für', 'filiale', 'filialen'].includes(t));
+
+      const isLuckyChain = (tokens.includes('lucky') && tokens.includes('bike')) || cleanUrl === 'lucky-bike.de' || domainBase === 'lucky-bike';
+      const isFahrradXxlChain = (tokens.includes('fahrrad') && tokens.includes('xxl')) || cleanUrl === 'fahrrad-xxl.de' || domainBase === 'fahrrad-xxl';
+      const isBocChain = tokens.includes('boc') || cleanUrl === 'boc24.de' || domainBase === 'boc24';
 
       items = items.filter((o) => {
         const locationsStr = o.dealer_locations
@@ -463,13 +571,47 @@ export class OffersRepository {
           .join(' ')
           .toLowerCase();
 
-        const searchCorpus = `${o.title} ${o.brand_name} ${o.model_name} ${o.dealer_name} ${o.dealer_slug} ${locationsStr} ${o.variant_details?.color ?? ''} ${o.source_url ?? ''}`.toLowerCase();
+        const cleanSourceUrl = (o.source_url || '').toLowerCase().replace(/^https?:\/\//i, '').replace(/^www\./i, '');
+
+        if (isLuckyChain && (o.dealer_slug.startsWith('lucky-bike') || cleanSourceUrl.includes('lucky-bike'))) {
+          // If query also mentions a specific brand/model like "Trek" or "Cube", filter by that too
+          const remainingTokens = tokens.filter((t) => !['lucky', 'bike', 'fachmarkt', 'filiale'].includes(t));
+          if (remainingTokens.length === 0) return true;
+        }
+
+        if (isFahrradXxlChain && (o.dealer_slug.startsWith('fahrrad-xxl') || cleanSourceUrl.includes('fahrrad-xxl'))) {
+          const remainingTokens = tokens.filter((t) => !['fahrrad', 'xxl', 'grossmarkt', 'großmarkt', 'filiale'].includes(t));
+          if (remainingTokens.length === 0) return true;
+        }
+
+        if (isBocChain && (o.dealer_slug.startsWith('boc') || cleanSourceUrl.includes('boc24'))) {
+          const remainingTokens = tokens.filter((t) => !['boc', 'bicycles', 'online', 'care'].includes(t));
+          if (remainingTokens.length === 0) return true;
+        }
+
+        const searchCorpus = `${o.title} ${o.brand_name} ${o.model_name} ${o.dealer_name} ${o.dealer_slug} ${locationsStr} ${o.variant_details?.color ?? ''} ${o.source_url ?? ''} ${cleanSourceUrl}`.toLowerCase();
 
         // Direct phrase match
         if (searchCorpus.includes(q)) return true;
 
+        // Clean URL match (e.g. lucky-bike.de)
+        if (cleanUrl && (cleanSourceUrl.includes(cleanUrl) || searchCorpus.includes(cleanUrl))) {
+          return true;
+        }
+
+        // Domain base match (e.g. lucky-bike or fahrrad-xxl)
+        if (domainBase && domainBase.length > 2) {
+          if (o.dealer_slug.includes(domainBase) || cleanSourceUrl.includes(domainBase) || searchCorpus.includes(domainBase)) {
+            return true;
+          }
+        }
+
         // All meaningful tokens match
         if (tokens.length > 0 && tokens.every((token) => searchCorpus.includes(token))) {
+          return true;
+        }
+
+        if (urlTokens.length > 0 && urlTokens.every((token) => searchCorpus.includes(token))) {
           return true;
         }
 
@@ -568,6 +710,31 @@ export class OffersRepository {
       });
     });
 
+    const luckyOffersCount = items.filter(
+      (o) => o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike')
+    ).length;
+    const xxlOffersCount = items.filter(
+      (o) => o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl')
+    ).length;
+    const bocOffersCount = items.filter(
+      (o) => o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24')
+    ).length;
+
+    const availableDealers = Array.from(dealerCounts.values())
+      .map((d) => {
+        if (d.slug === 'lucky-bike-fachmarkt' && luckyOffersCount > d.count) {
+          return { ...d, count: luckyOffersCount };
+        }
+        if (d.slug === 'fahrrad-xxl-grossmarkt' && xxlOffersCount > d.count) {
+          return { ...d, count: xxlOffersCount };
+        }
+        if (d.slug === 'b-o-c-bicycles-online-care' && bocOffersCount > d.count) {
+          return { ...d, count: bocOffersCount };
+        }
+        return d;
+      })
+      .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
+
     const total = items.length;
     const limit = filters.limit ?? 24;
     const offset = filters.offset ?? 0;
@@ -581,7 +748,7 @@ export class OffersRepository {
       available_brands: Array.from(brandCounts.entries()).map(([name, count]) => ({ name, count })),
       available_categories: Array.from(catCounts.entries()).map(([category, count]) => ({ category: category as BikeCategory, count })),
       available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count })),
-      available_dealers: Array.from(dealerCounts.values()).sort((a, b) => b.count - a.count || a.name.localeCompare(b.name))
+      available_dealers: availableDealers
     };
   }
 

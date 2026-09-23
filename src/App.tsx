@@ -23,20 +23,38 @@ import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
 
 export default function App() {
-  const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin'>('bikes');
+  // Read initial search params from URL
+  const initialParams = useMemo(() => {
+    try {
+      return new URLSearchParams(window.location.search);
+    } catch {
+      return new URLSearchParams();
+    }
+  }, []);
+
+  const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin'>(() => {
+    const tabParam = initialParams.get('tab');
+    if (tabParam === 'dealers' || tabParam === 'favorites' || tabParam === 'leasing' || tabParam === 'admin') {
+      return tabParam;
+    }
+    return 'bikes';
+  });
   const { favoriteIds, clearFavorites, favoritesCount } = useFavorites();
   const { compareIds, compareCount, removeCompare, clearCompare } = useCompare();
 
   // Search & Filter State
-  const [query, setQuery] = useState('');
-  const [category, setCategory] = useState('ALL');
-  const [propulsion, setPropulsion] = useState('ALL');
-  const [brand, setBrand] = useState('ALL');
-  const [leasingProvider, setLeasingProvider] = useState('ALL');
-  const [selectedDealerSlug, setSelectedDealerSlug] = useState('');
-  const [postalCode, setPostalCode] = useState('');
-  const [radiusKm, setRadiusKm] = useState(50);
-  const [sort, setSort] = useState('newest');
+  const [query, setQuery] = useState(() => initialParams.get('q') || initialParams.get('search') || '');
+  const [category, setCategory] = useState(() => initialParams.get('category') || 'ALL');
+  const [propulsion, setPropulsion] = useState(() => initialParams.get('propulsion') || 'ALL');
+  const [brand, setBrand] = useState(() => initialParams.get('brand') || 'ALL');
+  const [leasingProvider, setLeasingProvider] = useState(() => initialParams.get('provider') || 'ALL');
+  const [selectedDealerSlug, setSelectedDealerSlug] = useState(() => initialParams.get('dealerSlug') || initialParams.get('dealer') || '');
+  const [postalCode, setPostalCode] = useState(() => initialParams.get('postalCode') || '');
+  const [radiusKm, setRadiusKm] = useState(() => {
+    const r = Number(initialParams.get('radius'));
+    return r > 0 ? r : 50;
+  });
+  const [sort, setSort] = useState(() => initialParams.get('sort') || 'newest');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [bikesViewMode, setBikesViewMode] = useState<'grid' | 'map'>('grid');
 

@@ -64,6 +64,23 @@ export class DealersRepository {
       }
     });
 
+    const luckyBikeTotal = PARTNER_OFFERS_DATA.filter(
+      (o) => o.is_active && (o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike'))
+    ).length;
+    const fahrradXxlTotal = PARTNER_OFFERS_DATA.filter(
+      (o) => o.is_active && (o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl'))
+    ).length;
+    const bocTotal = PARTNER_OFFERS_DATA.filter(
+      (o) => o.is_active && (o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24'))
+    ).length;
+
+    const resolveOffersCount = (dealer: { id: string; slug: string }): number => {
+      if (dealer.slug === 'lucky-bike-fachmarkt') return luckyBikeTotal;
+      if (dealer.slug === 'fahrrad-xxl-grossmarkt') return fahrradXxlTotal;
+      if (dealer.slug === 'b-o-c-bicycles-online-care') return bocTotal;
+      return offerCountMap.get(dealer.id) || 0;
+    };
+
     if (await isDatabaseAvailable()) {
       try {
         const dealers = await this.findAll(onlyActive);
@@ -109,7 +126,7 @@ export class DealersRepository {
                     contract_reference: p.contract_reference ?? undefined
                   }))
                 : (fallbackDealer?.supported_providers || []),
-              offers_count: offerCountMap.get(dealer.id) || (fallbackDealer ? offerCountMap.get(fallbackDealer.id) || 0 : 0)
+              offers_count: resolveOffersCount(dealer)
             };
           });
 
@@ -119,7 +136,7 @@ export class DealersRepository {
             .filter((d) => !existingSlugs.has(d.slug) && (onlyActive ? d.is_active : true))
             .map((d) => ({
               ...d,
-              offers_count: offerCountMap.get(d.id) || 0
+              offers_count: resolveOffersCount(d)
             }));
 
           return [...dbDealersWithRelations, ...missingPartners].sort((a, b) => a.name.localeCompare(b.name, 'de-DE'));
@@ -133,7 +150,7 @@ export class DealersRepository {
       .filter((d) => (onlyActive ? d.is_active : true))
       .map((d) => ({
         ...d,
-        offers_count: offerCountMap.get(d.id) || 0
+        offers_count: resolveOffersCount(d)
       }));
   }
 
@@ -154,67 +171,108 @@ export class DealersRepository {
   }
 
   async findBySlug(slug: string): Promise<Dealer | undefined> {
+    const raw = slug.trim().toLowerCase();
+    const cleanUrl = raw.replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
+    const baseDomain = cleanUrl.replace(/\.(de|com|net|org|eu|at|ch)$/i, '');
+
+    // Canonical alias mappings
+    let targetSlug = slug;
+    if (raw === 'lucky-bike' || raw === 'luckybike' || cleanUrl === 'lucky-bike.de' || baseDomain === 'lucky-bike') {
+      targetSlug = 'lucky-bike-fachmarkt';
+    } else if (raw === 'fahrrad-xxl' || raw === 'fahrradxxl' || cleanUrl === 'fahrrad-xxl.de' || baseDomain === 'fahrrad-xxl') {
+      targetSlug = 'fahrrad-xxl-grossmarkt';
+    } else if (raw === 'boc' || raw === 'b-o-c' || cleanUrl === 'boc24.de' || baseDomain === 'boc24') {
+      targetSlug = 'b-o-c-bicycles-online-care';
+    }
+
     if (await isDatabaseAvailable()) {
       try {
         const dealer = await this.db
           .selectFrom('dealers')
           .selectAll()
-          .where('slug', '=', slug)
+          .where('slug', '=', targetSlug)
           .executeTakeFirst();
         if (dealer) return dealer;
       } catch {
         // Fallback below
       }
     }
-    return (PARTNER_DEALERS_DATA as unknown as Dealer[]).find((d) => d.slug === slug);
+
+    const direct = (PARTNER_DEALERS_DATA as unknown as Dealer[]).find((d) => d.slug === targetSlug || d.slug.toLowerCase() === raw);
+    if (direct) return direct;
+
+    if (cleanUrl) {
+      const byUrl = (PARTNER_DEALERS_DATA as unknown as Dealer[]).find((d) => {
+        const dWeb = (d.website_url || '').toLowerCase().replace(/^https?:\/\//i, '').replace(/^www\./i, '').replace(/\/.*$/, '').trim();
+        return dWeb === cleanUrl;
+      });
+      if (byUrl) return byUrl;
+    }
+
+    return undefined;
   }
 
   async findBySlugWithDetails(slug: string): Promise<DealerWithRelations | undefined> {
+    const dealer = await this.findBySlug(slug);
+    if (!dealer) return undefined;
+
     if (await isDatabaseAvailable()) {
       try {
-        const dealer = await this.findBySlug(slug);
-        if (dealer) {
-          const locations = await this.db
-            .selectFrom('dealer_locations')
-            .selectAll()
-            .where('dealer_id', '=', dealer.id)
-            .execute();
+        const locations = await this.db
+          .selectFrom('dealer_locations')
+          .selectAll()
+          .where('dealer_id', '=', dealer.id)
+          .execute();
 
-          const participations = await this.db
-            .selectFrom('dealer_provider_participation as dpp')
-            .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
-            .select([
-              'lp.id as provider_id',
-              'lp.slug as provider_slug',
-              'lp.name as provider_name',
-              'dpp.status',
-              'dpp.contract_reference'
-            ])
-            .where('dpp.dealer_id', '=', dealer.id)
-            .execute();
+        const participations = await this.db
+          .selectFrom('dealer_provider_participation as dpp')
+          .innerJoin('leasing_providers as lp', 'lp.id', 'dpp.provider_id')
+          .select([
+            'lp.id as provider_id',
+            'lp.slug as provider_slug',
+            'lp.name as provider_name',
+            'dpp.status',
+            'dpp.contract_reference'
+          ])
+          .where('dpp.dealer_id', '=', dealer.id)
+          .execute();
 
-          return {
-            ...dealer,
-            locations,
-            supported_providers: participations.map((p) => ({
-              provider_id: p.provider_id,
-              provider_slug: p.provider_slug,
-              provider_name: p.provider_name,
-              status: p.status,
-              contract_reference: p.contract_reference ?? undefined
-            }))
-          };
-        }
+        return {
+          ...dealer,
+          locations,
+          supported_providers: participations.map((p) => ({
+            provider_id: p.provider_id,
+            provider_slug: p.provider_slug,
+            provider_name: p.provider_name,
+            status: p.status,
+            contract_reference: p.contract_reference ?? undefined
+          }))
+        };
       } catch {
         // Fallback below
       }
     }
 
-    const dealer = (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).find((d) => d.slug === slug);
-    if (!dealer) return undefined;
-    const offersCount = PARTNER_OFFERS_DATA.filter((o) => o.dealer_id === dealer.id && o.is_active).length;
+    const partnerDealer = (PARTNER_DEALERS_DATA as unknown as DealerWithRelations[]).find((d) => d.slug === dealer.slug);
+    const resolved = partnerDealer || (dealer as DealerWithRelations);
+
+    let offersCount = PARTNER_OFFERS_DATA.filter((o) => o.dealer_id === resolved.id && o.is_active).length;
+    if (resolved.slug === 'lucky-bike-fachmarkt') {
+      offersCount = PARTNER_OFFERS_DATA.filter(
+        (o) => o.is_active && (o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike'))
+      ).length;
+    } else if (resolved.slug === 'fahrrad-xxl-grossmarkt') {
+      offersCount = PARTNER_OFFERS_DATA.filter(
+        (o) => o.is_active && (o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl'))
+      ).length;
+    } else if (resolved.slug === 'b-o-c-bicycles-online-care') {
+      offersCount = PARTNER_OFFERS_DATA.filter(
+        (o) => o.is_active && (o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24'))
+      ).length;
+    }
+
     return {
-      ...dealer,
+      ...resolved,
       offers_count: offersCount
     };
   }

@@ -216,7 +216,7 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Modell, Marke, Motor suchen (z.B. Cube, Bosch 85Nm)..."
+              placeholder="Modell, Marke, Händler oder Website (z.B. Cube, lucky-bike.de, fahrrad-xxl.de)..."
               className="w-full pl-11 pr-4 py-2.5 rounded-xl border border-slate-300 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent text-slate-900 placeholder:text-slate-400"
             />
             {query && (
