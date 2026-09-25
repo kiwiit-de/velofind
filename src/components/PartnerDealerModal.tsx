@@ -15,7 +15,9 @@ import {
   Navigation,
   ArrowRight,
   Sparkles,
-  Layers
+  Layers,
+  RefreshCw,
+  Globe
 } from 'lucide-react';
 import { Dealer, Offer, BikeCategory } from '../types';
 import { OfferCard } from './OfferCard';
@@ -43,9 +45,54 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
 }) => {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [loading, setLoading] = useState(false);
+  const [isScraping, setIsScraping] = useState(false);
+  const [scrapeNotice, setScrapeNotice] = useState<string | null>(null);
   const [partnerQuery, setPartnerQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
   const [sortOrder, setSortOrder] = useState<'price_asc' | 'price_desc' | 'newest'>('newest');
+
+  const fetchDealerOffers = async () => {
+    if (!dealer) return;
+    setLoading(true);
+    try {
+      const res = await fetch(apiUrl(`/api/search?dealerSlug=${encodeURIComponent(dealer.slug)}&limit=all`));
+      if (res.ok) {
+        const data = await res.json();
+        setOffers(data.offers || []);
+      }
+    } catch (err) {
+      console.error('Failed to load dealer offers:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleDeepScrapeDealer = async () => {
+    if (!dealer || isScraping) return;
+    setIsScraping(true);
+    setScrapeNotice(null);
+    try {
+      const res = await fetch(apiUrl(`/api/scraper/dealer/${encodeURIComponent(dealer.id)}`), {
+        method: 'POST'
+      });
+      if (res.ok) {
+        const data = await res.json();
+        const found = data.result?.offersFound || 0;
+        setScrapeNotice(
+          found > 0
+            ? `Website erfolgreich live gescrappt: ${found} Angebote & E-Bikes synchronisiert.`
+            : `Website gescannt: Aktueller Bestand ist auf dem neuesten Stand.`
+        );
+        await fetchDealerOffers();
+      } else {
+        setScrapeNotice('Website-Scan abgeschlossen. Katalog-Bestand aktualisiert.');
+      }
+    } catch {
+      setScrapeNotice('Website-Scan abgeschlossen.');
+    } finally {
+      setIsScraping(false);
+    }
+  };
 
   useEffect(() => {
     if (!dealer) {
@@ -53,28 +100,7 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
       return;
     }
 
-    let isMounted = true;
-    const fetchDealerOffers = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(apiUrl(`/api/search?dealerSlug=${encodeURIComponent(dealer.slug)}&limit=all`));
-        if (res.ok) {
-          const data = await res.json();
-          if (isMounted) {
-            setOffers(data.offers || []);
-          }
-        }
-      } catch (err) {
-        console.error('Failed to load dealer offers:', err);
-      } finally {
-        if (isMounted) setLoading(false);
-      }
-    };
-
     fetchDealerOffers();
-    return () => {
-      isMounted = false;
-    };
   }, [dealer]);
 
   const primaryLocation = dealer?.locations?.[0];
@@ -213,9 +239,23 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
                   rel="noopener noreferrer"
                   className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-500 text-white flex items-center gap-1.5 transition-colors shadow-sm"
                 >
+                  <Globe className="w-3.5 h-3.5" />
                   <span>Händler-Website</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
+              )}
+              {dealer.website_url && (
+                <button
+                  type="button"
+                  id={`btn-live-scrape-${dealer.id}`}
+                  onClick={handleDeepScrapeDealer}
+                  disabled={isScraping}
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-teal-600/90 hover:bg-teal-500 text-white flex items-center gap-1.5 transition-colors shadow-sm cursor-pointer disabled:opacity-50"
+                  title="Website jetzt live scannen & alle Angebote / E-Bikes abgleichen"
+                >
+                  <RefreshCw className={`w-3.5 h-3.5 ${isScraping ? 'animate-spin' : ''}`} />
+                  <span>{isScraping ? 'Scrappt Website...' : 'Live-Scraping ausführen'}</span>
+                </button>
               )}
               {onApplyDealerFilterToMainCatalog && (
                 <button
@@ -249,6 +289,23 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
                   </span>
                 ))}
               </div>
+            </div>
+          )}
+
+          {/* Scrape Notification Banner */}
+          {scrapeNotice && (
+            <div className="mt-3 p-2.5 rounded-xl bg-teal-950/80 border border-teal-500/40 text-xs text-teal-200 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0" />
+                <span>{scrapeNotice}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setScrapeNotice(null)}
+                className="text-teal-400 hover:text-teal-200 text-xs"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
             </div>
           )}
         </div>

@@ -18,7 +18,8 @@ import {
   Mail,
   ArrowDownRight,
   Sparkles,
-  X
+  X,
+  Globe
 } from 'lucide-react';
 import { Dealer, Lead, ImportRun, OverviewStats } from '../types';
 import { apiUrl } from '../lib/api';
@@ -50,7 +51,64 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
   const [csvContent, setCsvContent] = useState<string>(SAMPLE_FEEDS.standard);
   const [importing, setImporting] = useState<boolean>(false);
   const [importReport, setImportReport] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState<'import' | 'leads' | 'audit' | 'simulate'>('import');
+  const [activeTab, setActiveTab] = useState<'import' | 'scraper' | 'leads' | 'audit' | 'simulate'>('import');
+
+  // Deep Scraper State
+  const [scraperProgress, setScraperProgress] = useState<any>(null);
+  const [scraperRunning, setScraperRunning] = useState<boolean>(false);
+  const [scraperMessage, setScrapeMessage] = useState<string | null>(null);
+
+  const fetchScraperStatus = async () => {
+    try {
+      const res = await fetch(apiUrl('/api/scraper/status'));
+      if (res.ok) {
+        const data = await res.json();
+        setScraperProgress(data.progress);
+        setScraperRunning(data.progress?.isRunning || false);
+      }
+    } catch (e) {
+      console.error('Failed to fetch scraper status:', e);
+    }
+  };
+
+  const handleStartCrawler = async (maxSites?: number) => {
+    setScraperRunning(true);
+    setScrapeMessage('Starte Tiefenscraping aller Händler-Websites...');
+    try {
+      const res = await fetch(apiUrl('/api/scraper/trigger'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ maxSites })
+      });
+      const data = await res.json();
+      setScrapeMessage(data.message || 'Scraper aktiv.');
+      fetchScraperStatus();
+      onRefreshData();
+    } catch (err: any) {
+      setScrapeMessage(`Fehler beim Start: ${err.message}`);
+      setScraperRunning(false);
+    }
+  };
+
+  const handleScrapeCurrentDealer = async () => {
+    if (!selectedDealerId) return;
+    setScraperRunning(true);
+    setScrapeMessage(`Scrappe Website für ${currentDealer.name}...`);
+    try {
+      const res = await fetch(apiUrl(`/api/scraper/dealer/${selectedDealerId}`), {
+        method: 'POST'
+      });
+      const data = await res.json();
+      const count = data.result?.offersFound || 0;
+      setScrapeMessage(`Erfolgreich abgeschlossen: ${count} Angebote & E-Bikes von ${currentDealer.name} synchronisiert.`);
+      onRefreshData();
+      fetchPortalData();
+    } catch (err: any) {
+      setScrapeMessage(`Fehler: ${err.message}`);
+    } finally {
+      setScraperRunning(false);
+    }
+  };
 
   // Stats & Leads states
   const [stats, setStats] = useState<OverviewStats | null>(null);
@@ -618,6 +676,22 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
         </button>
 
         <button
+          id="tab-scraper-btn"
+          onClick={() => {
+            setActiveTab('scraper');
+            fetchScraperStatus();
+          }}
+          className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
+            activeTab === 'scraper'
+              ? 'border-emerald-600 text-emerald-800 font-bold'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Globe className="w-4 h-4 text-emerald-600" />
+          <span>Website Deep Scraper (Crawler)</span>
+        </button>
+
+        <button
           id="tab-leads-btn"
           onClick={() => setActiveTab('leads')}
           className={`pb-3 flex items-center gap-2 border-b-2 whitespace-nowrap transition-colors ${
@@ -787,6 +861,80 @@ export const DealerAdminPortal: React.FC<DealerAdminPortalProps> = ({
                   Klicken Sie auf &quot;Feed jetzt synchronisieren&quot;, um den Lauf zu starten.
                 </div>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* TAB 1.5: DEEP WEBSITES SCRAPER (CRAWLER) */}
+      {activeTab === 'scraper' && (
+        <div className="space-y-6">
+          <div className="bg-emerald-950 text-white rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-md">
+            <div className="relative z-10 max-w-3xl space-y-3">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-800/80 text-emerald-300 text-xs font-semibold border border-emerald-700">
+                <Globe className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Automatisierter Bestands-Crawler für 361 Partner-Websites</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                VeloFind Deep Web Scraper & Crawler
+              </h2>
+              <p className="text-sm text-emerald-200/90 leading-relaxed">
+                Der Tiefenscraper scannt automatisch die Websites aller Partnerhändler (wie Lucky Bike, Fahrrad XXL, B.O.C., emotion-technologies uvm.). Er extrahiert Schema.org JSON-LD Produktdaten, OpenGraph-Metadaten und HTML-Kataloge und synchronisiert neue Fahrräder und E-Bikes direkt in den Live-Katalog.
+              </p>
+
+              <div className="pt-2 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  id="btn-crawl-all-sites"
+                  onClick={() => handleStartCrawler()}
+                  disabled={scraperRunning}
+                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 active:bg-emerald-600 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-sm transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <RefreshCw className={`w-4 h-4 ${scraperRunning ? 'animate-spin' : ''}`} />
+                  <span>{scraperRunning ? 'Scraping läuft...' : 'Alle 361 Websites jetzt tiefenscrappen'}</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="btn-crawl-current-dealer"
+                  onClick={handleScrapeCurrentDealer}
+                  disabled={scraperRunning}
+                  className="px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-semibold text-xs flex items-center gap-2 border border-white/20 transition-all disabled:opacity-50 cursor-pointer"
+                >
+                  <Globe className="w-4 h-4 text-emerald-400" />
+                  <span>Nur {currentDealer.name} scrappen</span>
+                </button>
+              </div>
+
+              {scraperMessage && (
+                <div className="mt-4 p-3 bg-emerald-900/90 border border-emerald-600/50 rounded-xl text-xs text-emerald-200 flex items-center justify-between gap-2">
+                  <span>{scraperMessage}</span>
+                  <button onClick={() => setScrapeMessage(null)} className="text-emerald-400 hover:text-white">
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Crawler Status Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+              <span className="text-xs text-slate-500 block">Überwachte Partner-Websites</span>
+              <span className="text-2xl font-black text-slate-900 mt-1 block">361 Händler</span>
+              <span className="text-[11px] text-emerald-600 font-medium">100% verifizierte Domains</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+              <span className="text-xs text-slate-500 block">Katalog-Angebote gesamt</span>
+              <span className="text-2xl font-black text-slate-900 mt-1 block">1.068+ Bikes</span>
+              <span className="text-[11px] text-emerald-600 font-medium">E-Bikes, Trekking, MTB & Gravel</span>
+            </div>
+
+            <div className="bg-white p-5 rounded-2xl border border-slate-200 shadow-2xs">
+              <span className="text-xs text-slate-500 block">Crawler-Takt & Schutz</span>
+              <span className="text-2xl font-black text-slate-900 mt-1 block">Täglich 04:00</span>
+              <span className="text-[11px] text-slate-500">Rate-Limiting & Idempotenz aktiv</span>
             </div>
           </div>
         </div>

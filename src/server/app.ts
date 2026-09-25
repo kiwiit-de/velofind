@@ -23,6 +23,7 @@ import {
 } from './db/repositories/index.ts';
 import { feedIngestionService } from './services/feed-ingestion.service.ts';
 import { dailySyncService } from './services/daily-sync.service.ts';
+import { deepScraperService } from './services/deep-scraper.service.ts';
 import { imageFetcherService } from './services/image-fetcher.service.ts';
 import { marketTrendsService } from './services/market-trends.service.ts';
 import { priceAlertService } from './services/price-alert.service.ts';
@@ -571,6 +572,37 @@ export async function createApp(): Promise<Application> {
       res.json({ success: true, message: 'Datenbestand erfolgreich neu eingelesen', report });
     } catch (err: any) {
       res.status(500).json({ error: 'Fehler beim Reseed', details: err.message });
+    }
+  });
+
+  // --- DEEP PARTNER WEBSITES SCRAPER API ---
+  apiRouter.get('/scraper/status', (_req: Request, res: Response) => {
+    res.json({
+      progress: deepScraperService.getProgress(),
+      recentResults: deepScraperService.getLastResults(10)
+    });
+  });
+
+  apiRouter.post('/scraper/trigger', async (req: Request, res: Response) => {
+    try {
+      const maxSites = req.body?.maxSites ? parseInt(String(req.body.maxSites), 10) : undefined;
+      const result = await deepScraperService.startDeepScrape({ maxSites });
+      res.json(result);
+    } catch (err: any) {
+      res.status(500).json({ error: 'Fehler beim Starten des Tiefenscrapers', details: err.message });
+    }
+  });
+
+  apiRouter.post('/scraper/dealer/:id', async (req: Request, res: Response) => {
+    try {
+      const dealer = await dealersRepository.findById(req.params.id);
+      if (!dealer) {
+        return res.status(404).json({ error: 'Partnerhändler nicht gefunden' });
+      }
+      const result = await deepScraperService.scrapeDealerWebsite(dealer);
+      res.json({ success: true, result });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Fehler beim Scrapen der Händler-Website', details: err.message });
     }
   });
 

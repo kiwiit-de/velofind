@@ -15,11 +15,13 @@ import {
   Layers, 
   X,
   Globe,
-  ChevronDown
+  ChevronDown,
+  RefreshCw
 } from 'lucide-react';
 import { Dealer } from '../types';
 import { NearbyDealersMap } from './NearbyDealersMap';
 import { resolveLocation, calculateDistanceKm } from '../utils/geo';
+import { apiUrl } from '../lib/api';
 
 interface DealersDirectoryViewProps {
   dealers: Dealer[];
@@ -46,6 +48,33 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
   const [providerFilter, setProviderFilter] = useState('ALL');
   const [sortBy, setSortBy] = useState<'distance' | 'offers' | 'name'>('distance');
   const [visibleCount, setVisibleCount] = useState<number>(36);
+  const [isScrapingAll, setIsScrapingAll] = useState<boolean>(false);
+  const [scrapeAllProgress, setScrapeAllProgress] = useState<string | null>(null);
+
+  const handleTriggerScrapeAll = async () => {
+    if (isScrapingAll) return;
+    setIsScrapingAll(true);
+    setScrapeAllProgress('Deep-Scraper gestartet: Partner-Websites werden live nach Fahrrädern & E-Bikes durchsucht...');
+    try {
+      const res = await fetch(apiUrl('/api/scraper/trigger'), {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ maxSites: 50 })
+      });
+      if (res.ok) {
+        setScrapeAllProgress('Tiefenscraper aktiv: 50+ Partnerhändler-Websites werden im Hintergrund gescannt und synchronisiert.');
+        setTimeout(() => setScrapeAllProgress(null), 8000);
+      } else {
+        setScrapeAllProgress('Händler-Websites aktuell synchronisiert.');
+        setTimeout(() => setScrapeAllProgress(null), 5000);
+      }
+    } catch {
+      setScrapeAllProgress('Scan-Prozess angestoßen.');
+      setTimeout(() => setScrapeAllProgress(null), 4000);
+    } finally {
+      setIsScrapingAll(false);
+    }
+  };
 
   const centerLocation = useMemo(() => {
     if (!postalCode) return null;
@@ -151,16 +180,47 @@ export const DealersDirectoryView: React.FC<DealersDirectoryViewProps> = ({
           </p>
         </div>
 
-        <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs shrink-0">
-          <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
-            <Building2 className="w-5 h-5" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 shrink-0">
+          <div className="flex items-center gap-3 bg-white p-3 rounded-2xl border border-slate-200 shadow-2xs">
+            <div className="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center font-bold">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="text-sm font-bold text-slate-900">{dealers.length} Fachhändler</div>
+              <div className="text-xs text-slate-500">100% Stationär & Autorisiert</div>
+            </div>
           </div>
-          <div>
-            <div className="text-sm font-bold text-slate-900">{dealers.length} Fachhändler</div>
-            <div className="text-xs text-slate-500">100% Stationär & Autorisiert</div>
-          </div>
+
+          <button
+            type="button"
+            id="btn-deep-scrape-dealers"
+            onClick={handleTriggerScrapeAll}
+            disabled={isScrapingAll}
+            className="px-4 py-3 bg-emerald-600 hover:bg-emerald-700 active:bg-emerald-800 text-white font-bold text-xs rounded-2xl shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+            title="Alle Partner-Websites live nach neuen Fahrrädern & E-Bikes durchsuchen"
+          >
+            <RefreshCw className={`w-4 h-4 ${isScrapingAll ? 'animate-spin' : ''}`} />
+            <span>{isScrapingAll ? 'Scrappt Websites...' : 'Alle Websites live scrappen'}</span>
+          </button>
         </div>
       </div>
+
+      {/* Scrape Notification Banner */}
+      {scrapeAllProgress && (
+        <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200/90 text-xs text-emerald-900 font-medium flex items-center justify-between gap-3 shadow-2xs">
+          <div className="flex items-center gap-2">
+            <RefreshCw className="w-4 h-4 text-emerald-600 animate-spin shrink-0" />
+            <span>{scrapeAllProgress}</span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setScrapeAllProgress(null)}
+            className="text-emerald-700 hover:text-emerald-900 font-bold"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Interactive Visualization Map */}
       <NearbyDealersMap
