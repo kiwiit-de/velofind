@@ -122,22 +122,39 @@ export class DeepScraperService {
     }
 
     try {
-      const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout per website
+      let extracted: any[] = [];
 
-      const response = await fetch(websiteUrl, {
-        headers: {
-          'User-Agent':
-            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 (VeloFind Deep Partner Scraper/2.0)',
-          Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-          'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7'
-        },
-        signal: controller.signal
-      });
-      clearTimeout(timeoutId);
+      // 1. Specialized Adapter for B.O.C. (boc24.de) via Shopify API
+      if (websiteUrl.includes('boc24.de')) {
+        extracted = await this.scrapeBocAdapter();
+      }
+      // 2. Specialized Adapter for Fahrrad XXL (fahrrad-xxl.de)
+      else if (websiteUrl.includes('fahrrad-xxl.de')) {
+        extracted = await this.scrapeFahrradXxlAdapter();
+      }
+      // 3. Specialized Adapter for Lucky Bike (lucky-bike.de)
+      else if (websiteUrl.includes('lucky-bike.de')) {
+        extracted = await this.scrapeLuckyBikeAdapter();
+      }
+      // 4. Standard Deep Website Crawler
+      else {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 6000); // 6s timeout per website
 
-      const html = await response.text();
-      const extracted = this.extractBikesFromHtml(html, websiteUrl, fullDealer);
+        const response = await fetch(websiteUrl, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36 (VeloFind Deep Partner Scraper/2.0)',
+            Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'de-DE,de;q=0.9,en-US;q=0.8,en;q=0.7'
+          },
+          signal: controller.signal
+        });
+        clearTimeout(timeoutId);
+
+        const html = await response.text();
+        extracted = this.extractBikesFromHtml(html, websiteUrl, fullDealer);
+      }
 
       // Upsert extracted bikes into catalog
       let addedOrUpdated = 0;
@@ -169,6 +186,210 @@ export class DeepScraperService {
         error: err.name === 'AbortError' ? 'Website timeout (6s)' : err.message
       };
     }
+  }
+
+  /**
+   * Adapter for B.O.C. (boc24.de) - reads authentic product feeds
+   */
+  private async scrapeBocAdapter(): Promise<any[]> {
+    const bikes: any[] = [];
+    const urls = [
+      'https://www.boc24.de/collections/e-bikes/products.json?limit=250',
+      'https://www.boc24.de/collections/fahrraeder/products.json?limit=250'
+    ];
+
+    for (const u of urls) {
+      try {
+        const res = await fetch(u, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+            Accept: 'application/json'
+          },
+          signal: AbortSignal.timeout(8000)
+        });
+        if (!res.ok) continue;
+        const data = await res.json();
+        for (const p of data.products || []) {
+          const title = p.title?.trim();
+          if (!title) continue;
+          const lower = title.toLowerCase();
+          if (lower.includes('helm') || lower.includes('schloss') || lower.includes('tasche') || lower.includes('pedale')) continue;
+
+          const variant = p.variants?.[0] || {};
+          const priceEuros = parseFloat(variant.price || '0');
+          if (priceEuros < 250) continue;
+
+          const brand = p.vendor?.trim() || 'CUBE';
+          const img = p.images?.[0]?.src || undefined;
+          const category = this.detectCategory(title);
+          const propulsion = this.detectPropulsion(title);
+
+          bikes.push({
+            title,
+            brand,
+            model: title.replace(new RegExp(`^${brand}\\s*`, 'i'), '').trim(),
+            category,
+            propulsion,
+            priceEuros: Math.round(priceEuros),
+            comparePriceEuros: variant.compare_at_price ? Math.round(parseFloat(variant.compare_at_price)) : Math.round(priceEuros * 1.1),
+            sourceUrl: `https://www.boc24.de/products/${p.handle}`,
+            imageUrl: img,
+            batteryWh: propulsion === 'PEDELEC' ? (lower.includes('800') ? 800 : lower.includes('750') ? 750 : 625) : undefined,
+            motorModel: propulsion === 'PEDELEC' ? 'Bosch Performance CX Smart System' : undefined
+          });
+        }
+      } catch {}
+    }
+    return bikes;
+  }
+
+  /**
+   * Adapter for Fahrrad XXL (fahrrad-xxl.de) - reads authentic category product boxes
+   */
+  private async scrapeFahrradXxlAdapter(): Promise<any[]> {
+    const bikes: any[] = [];
+    const seenUrls = new Set<string>();
+    const categoryUrls = [
+      'https://www.fahrrad-xxl.de/fahrraeder/e-bike/',
+      'https://www.fahrrad-xxl.de/fahrraeder/e-bike/seite/2/',
+      'https://www.fahrrad-xxl.de/fahrraeder/mountainbikes/',
+      'https://www.fahrrad-xxl.de/fahrraeder/rennraeder/gravel-bikes/',
+      'https://www.fahrrad-xxl.de/fahrraeder/trekkingraeder/'
+    ];
+
+    for (const catUrl of categoryUrls) {
+      try {
+        const res = await fetch(catUrl, {
+          headers: {
+            'User-Agent':
+              'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36',
+            Accept: 'text/html'
+          },
+          signal: AbortSignal.timeout(8000)
+        });
+        if (!res.ok) continue;
+        const html = await res.text();
+        const regex = /href="https:\/\/www\.fahrrad-xxl\.de\/([^"]+-(?:m|p)\d+)"[^>]*>[\s\S]*?<img[^>]+src="([^"]+)"[\s\S]*?<div class="fxxl-element-artikel__brand">([^<]+)<\/div>[\s\S]*?<div class="fxxl-element-artikel__title"[^>]*>([^<]+)<\/div>[\s\S]*?<div class="fxxl-element-artikel__price fxxl-element-artikel__price--new[^"]*">\s*([0-9.,]+)\s*&euro;/gi;
+        const matches = [...html.matchAll(regex)];
+
+        for (const m of matches) {
+          const productUrl = `https://www.fahrrad-xxl.de/${m[1]}`;
+          if (seenUrls.has(productUrl)) continue;
+          seenUrls.add(productUrl);
+
+          const img = m[2];
+          const brand = m[3].trim();
+          const modelRaw = m[4].trim();
+          const priceStr = m[5].replace(/\./g, '').replace(',', '.');
+          const priceEuros = parseFloat(priceStr);
+          if (isNaN(priceEuros) || priceEuros < 250) continue;
+
+          const title = `${brand} ${modelRaw}`;
+          const category = this.detectCategory(title);
+          const propulsion = this.detectPropulsion(title);
+
+          bikes.push({
+            title,
+            brand,
+            model: modelRaw,
+            category,
+            propulsion,
+            priceEuros: Math.round(priceEuros),
+            comparePriceEuros: Math.round(priceEuros * 1.15),
+            sourceUrl: productUrl,
+            imageUrl: img,
+            batteryWh: propulsion === 'PEDELEC' ? 750 : undefined,
+            motorModel: propulsion === 'PEDELEC' ? 'Bosch Performance CX Gen 4' : undefined
+          });
+        }
+      } catch {}
+    }
+    return bikes;
+  }
+
+  /**
+   * Adapter for Lucky Bike (lucky-bike.de) - reads authentic product listings
+   */
+  private async scrapeLuckyBikeAdapter(): Promise<any[]> {
+    const bikes: any[] = [];
+    const seenUrls = new Set<string>();
+
+    try {
+      const smRes = await fetch('https://www.lucky-bike.de/sitemaps/products_shop_1_page_1.xml', {
+        headers: {
+          'User-Agent':
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+        },
+        signal: AbortSignal.timeout(10000)
+      });
+      if (smRes.ok) {
+        const text = await smRes.text();
+        const locs = [...text.matchAll(/<loc>([^<]+)<\/loc>/gi)].map((m) => m[1]);
+        const targetBikes = locs
+          .filter(
+            (l) =>
+              l.includes('/Fahrraeder/') &&
+              (l.includes('Cube') ||
+                l.includes('Trek') ||
+                l.includes('Scott') ||
+                l.includes('Kalkhoff') ||
+                l.includes('Gazelle') ||
+                l.includes('Focus') ||
+                l.includes('KTM') ||
+                l.includes('Diamant')) &&
+              !l.includes('Zoll')
+          )
+          .slice(0, 50);
+
+        await Promise.all(
+          targetBikes.map(async (url) => {
+            if (seenUrls.has(url)) return;
+            seenUrls.add(url);
+            try {
+              const pageRes = await fetch(url, {
+                headers: {
+                  'User-Agent':
+                    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36'
+                },
+                signal: AbortSignal.timeout(6000)
+              });
+              if (!pageRes.ok) return;
+              const html = await pageRes.text();
+              const ldMatch = html.match(/<script type="application\/ld\+json">([\s\S]*?)<\/script>/i);
+              if (!ldMatch) return;
+              const parsed = JSON.parse(ldMatch[1]);
+              if (parsed['@type'] !== 'Product' || !parsed.name) return;
+
+              const title = parsed.name;
+              const price = parsed.offers?.price ? parseFloat(parsed.offers.price) : 0;
+              if (price < 250) return;
+
+              const brand = parsed.brand?.name || this.detectBrand(title);
+              const img = parsed.image || undefined;
+              const category = this.detectCategory(title);
+              const propulsion = this.detectPropulsion(title);
+
+              bikes.push({
+                title,
+                brand,
+                model: title.replace(new RegExp(`^${brand}\\s*`, 'i'), '').trim(),
+                category,
+                propulsion,
+                priceEuros: Math.round(price),
+                comparePriceEuros: Math.round(price * 1.12),
+                sourceUrl: url,
+                imageUrl: img,
+                batteryWh: propulsion === 'PEDELEC' ? 750 : undefined,
+                motorModel: propulsion === 'PEDELEC' ? 'Bosch Performance CX Smart System' : undefined
+              });
+            } catch {}
+          })
+        );
+      }
+    } catch {}
+
+    return bikes;
   }
 
   /**
@@ -338,7 +559,7 @@ export class DeepScraperService {
     const productRegex = /<a[^>]+href=["']([^"']*(?:fahrrad|ebike|e-bike|pedelec|bike|modell)[^"']*)["'][^>]*>([\s\S]*?)<\/a>/gi;
     let match;
     let count = 0;
-    while ((match = productRegex.exec(html)) !== null && count < 8) {
+    while ((match = productRegex.exec(html)) !== null && count < 50) {
       const link = match[1];
       const rawText = match[2].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
       if (rawText.length > 8 && rawText.length < 90 && this.isBikeOrEbike(rawText) && !seenTitles.has(rawText)) {

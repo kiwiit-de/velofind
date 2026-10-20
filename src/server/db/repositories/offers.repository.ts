@@ -508,8 +508,7 @@ export class OffersRepository {
         if (o.dealer_slug === targetSlug) return true;
 
         if (
-          targetSlug === 'lucky-bike-fachmarkt' ||
-          targetSlug === 'lucky-bike' ||
+          targetSlug.startsWith('lucky-bike') ||
           cleanUrl === 'lucky-bike.de' ||
           domainBase === 'lucky-bike'
         ) {
@@ -517,8 +516,7 @@ export class OffersRepository {
         }
 
         if (
-          targetSlug === 'fahrrad-xxl-grossmarkt' ||
-          targetSlug === 'fahrrad-xxl' ||
+          targetSlug.startsWith('fahrrad-xxl') ||
           cleanUrl === 'fahrrad-xxl.de' ||
           domainBase === 'fahrrad-xxl'
         ) {
@@ -526,9 +524,8 @@ export class OffersRepository {
         }
 
         if (
-          targetSlug === 'b-o-c-bicycles-online-care' ||
-          targetSlug === 'boc' ||
-          targetSlug === 'b-o-c' ||
+          targetSlug.startsWith('boc') ||
+          targetSlug.startsWith('b-o-c') ||
           cleanUrl === 'boc24.de' ||
           domainBase === 'boc24'
         ) {
