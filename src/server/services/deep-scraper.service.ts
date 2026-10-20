@@ -696,6 +696,10 @@ export class DeepScraperService {
     );
 
     const priceCents = (item.priceEuros || 3499) * 100;
+    // Strictly keep only bikes and ebikes with price over 648€ (> 64800 cents)
+    if (priceCents <= 64800) {
+      return;
+    }
     const compareCents = Math.round(priceCents * 1.1);
     const resolvedImg = item.imageUrl || imageFetcherService.getVerifiedModelImage(item.brand, item.title, item.category);
 

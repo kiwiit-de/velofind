@@ -59,19 +59,19 @@ export class DealersRepository {
   async findAllWithLocations(onlyActive: boolean = true): Promise<DealerWithRelations[]> {
     const offerCountMap = new Map<string, number>();
     PARTNER_OFFERS_DATA.forEach((o) => {
-      if (o.is_active) {
+      if (o.is_active && o.price_cents > 64800) {
         offerCountMap.set(o.dealer_id, (offerCountMap.get(o.dealer_id) || 0) + 1);
       }
     });
 
     const luckyBikeTotal = PARTNER_OFFERS_DATA.filter(
-      (o) => o.is_active && (o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike'))
+      (o) => o.is_active && o.price_cents > 64800 && (o.dealer_slug.startsWith('lucky-bike') || (o.source_url || '').includes('lucky-bike'))
     ).length;
     const fahrradXxlTotal = PARTNER_OFFERS_DATA.filter(
-      (o) => o.is_active && (o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl'))
+      (o) => o.is_active && o.price_cents > 64800 && (o.dealer_slug.startsWith('fahrrad-xxl') || (o.source_url || '').includes('fahrrad-xxl'))
     ).length;
     const bocTotal = PARTNER_OFFERS_DATA.filter(
-      (o) => o.is_active && (o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24'))
+      (o) => o.is_active && o.price_cents > 64800 && (o.dealer_slug.startsWith('boc') || (o.source_url || '').includes('boc24'))
     ).length;
 
     const resolveOffersCount = (dealer: { id: string; slug: string }): number => {

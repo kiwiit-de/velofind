@@ -868,8 +868,8 @@ export async function runEnrichment() {
   // Filter out any stale offers for all 11 Bochum dealers
   const bochumDealerIds = new Set(BOCHUM_DEALERS.map((d) => d.id));
   const preservedOffers = PARTNER_OFFERS_DATA.filter((o) => !bochumDealerIds.has(o.dealer_id));
-
-  const finalOffers = [...bochumOffers, ...preservedOffers];
+  // Strictly keep only bikes and ebikes with price over 648€ (> 64800 cents)
+  const finalOffers = [...bochumOffers, ...preservedOffers].filter((o) => o.price_cents > 64800);
 
   console.log(`[Summary] Total Bochum offers created: ${bochumOffers.length}`);
   console.log(`[Summary] Final catalog size: ${finalOffers.length} offers`);

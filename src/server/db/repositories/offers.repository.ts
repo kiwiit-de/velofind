@@ -150,8 +150,11 @@ export class OffersRepository {
     if (filters.variantId) {
       query = query.where('variant_id', '=', filters.variantId);
     }
+    // Strictly keep only bikes and ebikes with price over 648€ (> 64800 cents)
+    query = query.where('price_cents', '>', 64800);
+
     if (filters.minPrice) {
-      query = query.where('price_cents', '>=', filters.minPrice * 100);
+      query = query.where('price_cents', '>=', Math.max(filters.minPrice * 100, 64900));
     }
     if (filters.maxPrice) {
       query = query.where('price_cents', '<=', filters.maxPrice * 100);
@@ -337,9 +340,10 @@ export class OffersRepository {
       );
     }
 
-    // Price range
+    // Price range - strictly keep only bikes and ebikes with price over 648€ (> 64800 cents)
+    baseQuery = baseQuery.where('o.price_cents', '>', 64800);
     if (filters.minPrice !== undefined && filters.minPrice > 0) {
-      baseQuery = baseQuery.where('o.price_cents', '>=', filters.minPrice * 100);
+      baseQuery = baseQuery.where('o.price_cents', '>=', Math.max(filters.minPrice * 100, 64900));
     }
     if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
       baseQuery = baseQuery.where('o.price_cents', '<=', filters.maxPrice * 100);
@@ -482,7 +486,8 @@ export class OffersRepository {
       }
     }
 
-    let items = [...PARTNER_OFFERS_DATA];
+    // Strict platform constraint: keep only bikes and ebikes with price over 648€ (> 64800 cents)
+    let items = PARTNER_OFFERS_DATA.filter((o) => o.price_cents > 64800);
 
     // Helper to normalize URL queries and domain searches
     const normalizeUrl = (raw: string) => {
@@ -637,7 +642,7 @@ export class OffersRepository {
       );
     }
     if (filters.minPrice !== undefined && filters.minPrice > 0) {
-      items = items.filter((o) => o.price_cents >= filters.minPrice! * 100);
+      items = items.filter((o) => o.price_cents >= Math.max(filters.minPrice! * 100, 64900));
     }
     if (filters.maxPrice !== undefined && filters.maxPrice > 0) {
       items = items.filter((o) => o.price_cents <= filters.maxPrice! * 100);
