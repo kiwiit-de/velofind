@@ -13,6 +13,7 @@
 
 import { PARTNER_DEALERS_DATA, PARTNER_OFFERS_DATA } from '../db/dealer-registry.ts';
 import { imageFetcherService } from './image-fetcher.service.ts';
+import { enrichBikeSpecs } from './spec-enricher.service.ts';
 import type { Dealer, Offer, BikeCategory, PropulsionType } from '../../types.ts';
 
 export interface ScrapeSiteResult {
@@ -218,7 +219,8 @@ export class DeepScraperService {
 
           const variant = p.variants?.[0] || {};
           const priceEuros = parseFloat(variant.price || '0');
-          if (priceEuros < 250) continue;
+          // Strictly keep only bikes and ebikes with price over 648€
+          if (isNaN(priceEuros) || priceEuros <= 648) continue;
 
           const brand = p.vendor?.trim() || 'CUBE';
           const img = p.images?.[0]?.src || undefined;
@@ -283,7 +285,8 @@ export class DeepScraperService {
           const modelRaw = m[4].trim();
           const priceStr = m[5].replace(/\./g, '').replace(',', '.');
           const priceEuros = parseFloat(priceStr);
-          if (isNaN(priceEuros) || priceEuros < 250) continue;
+          // Strictly keep only bikes and ebikes with price over 648€
+          if (isNaN(priceEuros) || priceEuros <= 648) continue;
 
           const title = `${brand} ${modelRaw}`;
           const category = this.detectCategory(title);
@@ -363,7 +366,8 @@ export class DeepScraperService {
 
               const title = parsed.name;
               const price = parsed.offers?.price ? parseFloat(parsed.offers.price) : 0;
-              if (price < 250) return;
+              // Strictly keep only bikes and ebikes with price over 648€
+              if (isNaN(price) || price <= 648) return;
 
               const brand = parsed.brand?.name || this.detectBrand(title);
               const img = parsed.image || undefined;
@@ -732,16 +736,18 @@ export class DeepScraperService {
       first_seen_at: nowIso,
       last_seen_at: nowIso,
       is_active: true,
-      variant_details: {
-        frame_size: 'M / 50cm (Verfügbar)',
-        frame_type: 'DIAMOND',
-        color: 'Graphite Black',
-        battery_wh: item.propulsion === 'PEDELEC' ? 750 : undefined,
-        motor_brand: item.propulsion === 'PEDELEC' ? 'Bosch' : undefined,
-        motor_model: item.propulsion === 'PEDELEC' ? 'Bosch Performance CX Smart System' : undefined,
-        torque_nm: item.propulsion === 'PEDELEC' ? 85 : undefined,
-        sku: externalId
-      },
+      variant_details: enrichBikeSpecs({
+        title: item.title,
+        brand_name: item.brand,
+        category: item.category,
+        propulsion: item.propulsion,
+        price_cents: priceCents,
+        existing: {
+          battery_wh: item.batteryWh,
+          motor_model: item.motorModel,
+          sku: externalId
+        }
+      }),
       leasing_compatibilities: (dealer.supported_providers || []).map((p) => ({
         provider_id: p.provider_id,
         provider_slug: p.provider_slug,

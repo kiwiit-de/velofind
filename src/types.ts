@@ -74,9 +74,11 @@ export interface BikeVariant {
   color: string;
   wheel_size_in?: number;
   weight_kg?: number;
+  max_weight_kg?: number; // Zulässiges Gesamtgewicht / Max. Systemgewicht in kg (Fahrrad + Fahrer + Gepäck)
   battery_wh?: number;
   motor_brand?: string;
   motor_model?: string;
+  engine_type?: string;   // Bauform / Motortyp (z.B. 'Mittelmotor', 'Hecknabenmotor')
   torque_nm?: number;
   images?: string[];
   created_at: string;
@@ -180,9 +182,11 @@ export interface Offer {
     color: string;
     wheel_size_in?: number;
     weight_kg?: number;
+    max_weight_kg?: number; // Zulässiges Gesamtgewicht / Max. Systemgewicht in kg (Fahrrad + Fahrer + Gepäck)
     battery_wh?: number;
     motor_brand?: string;
     motor_model?: string;
+    engine_type?: string;   // Bauform / Motortyp (z.B. 'Mittelmotor', 'Hecknabenmotor')
     torque_nm?: number;
     gtin?: string;
     sku?: string;
@@ -262,6 +266,8 @@ export interface SearchFilters {
   propulsion?: PropulsionType | 'ALL';
   brand?: string;
   leasingProvider?: string;
+  motorBrand?: string;
+  minTorque?: number;
   minPrice?: number;
   maxPrice?: number;
   availability?: AvailabilityStatus | 'ALL';
@@ -284,6 +290,7 @@ export interface SearchResponse {
   available_brands: { name: string; count: number }[];
   available_categories: { category: BikeCategory; count: number }[];
   available_providers: { slug: string; name: string; count: number }[];
+  available_motor_brands?: { name: string; count: number }[];
   available_dealers?: { id: string; name: string; slug: string; count: number; city?: string; website_url?: string }[];
 }
 

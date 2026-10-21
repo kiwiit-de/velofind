@@ -641,6 +641,13 @@ export class OffersRepository {
         )
       );
     }
+    if (filters.motorBrand && filters.motorBrand !== 'ALL') {
+      const mb = filters.motorBrand.toLowerCase();
+      items = items.filter((o) => (o.variant_details?.motor_brand || '').toLowerCase().includes(mb));
+    }
+    if (filters.minTorque !== undefined && filters.minTorque > 0) {
+      items = items.filter((o) => (o.variant_details?.torque_nm || 0) >= filters.minTorque!);
+    }
     if (filters.minPrice !== undefined && filters.minPrice > 0) {
       items = items.filter((o) => o.price_cents >= Math.max(filters.minPrice! * 100, 64900));
     }
@@ -748,6 +755,14 @@ export class OffersRepository {
       ? items.slice(offset)
       : items.slice(offset, offset + limit);
 
+    const motorCounts = new Map<string, number>();
+    items.forEach((o) => {
+      const mb = o.variant_details?.motor_brand;
+      if (mb && !mb.toLowerCase().includes('ohne') && !mb.toLowerCase().includes('muskel')) {
+        motorCounts.set(mb, (motorCounts.get(mb) || 0) + 1);
+      }
+    });
+
     return {
       offers: paginated,
       total,
@@ -756,6 +771,9 @@ export class OffersRepository {
       available_brands: Array.from(brandCounts.entries()).map(([name, count]) => ({ name, count })),
       available_categories: Array.from(catCounts.entries()).map(([category, count]) => ({ category: category as BikeCategory, count })),
       available_providers: Array.from(providerCounts.entries()).map(([slug, data]) => ({ slug, name: data.name, count: data.count })),
+      available_motor_brands: Array.from(motorCounts.entries())
+        .map(([name, count]) => ({ name, count }))
+        .sort((a, b) => b.count - a.count),
       available_dealers: availableDealers
     };
   }

@@ -69,6 +69,11 @@ export const CompareModal: React.FC<CompareModalProps> = ({
     .filter((w): w is number => typeof w === 'number' && w > 0);
   const minWeightKg = weights.length > 0 ? Math.min(...weights) : null;
 
+  const maxCapacities = compareOffers
+    .map((o) => o.variant_details?.max_weight_kg)
+    .filter((w): w is number => typeof w === 'number' && w > 0);
+  const maxCapacityKg = maxCapacities.length > 0 ? Math.max(...maxCapacities) : null;
+
   // Format price helper
   const formatPrice = (cents: number) => {
     return (cents / 100).toLocaleString('de-DE', {
@@ -420,6 +425,19 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                   </SpecRow>
 
                   <SpecRow
+                    label="Motortyp / Bauform"
+                    onlyDifferences={onlyDifferences}
+                    isDiff={isDifferent((o) => o.variant_details?.engine_type || '-')}
+                  >
+                    {compareOffers.map((o) => (
+                      <div key={o.id} className="text-slate-800 text-xs font-medium">
+                        {o.variant_details?.engine_type || (o.propulsion === 'MUSCULAR' ? 'Reiner Pedalantrieb' : 'Mittelmotor')}
+                      </div>
+                    ))}
+                    {emptySlotsCount > 0 && <EmptySpecSlots count={emptySlotsCount} />}
+                  </SpecRow>
+
+                  <SpecRow
                     label="Drehmoment (Nm)"
                     onlyDifferences={onlyDifferences}
                     isDiff={isDifferent((o) => o.variant_details?.torque_nm)}
@@ -564,6 +582,30 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                           {isMinKg && (
                             <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
                               Leichtestes Rad
+                            </span>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {emptySlotsCount > 0 && <EmptySpecSlots count={emptySlotsCount} />}
+                  </SpecRow>
+
+                  <SpecRow
+                    label="Zul. Gesamtgewicht"
+                    onlyDifferences={onlyDifferences}
+                    isDiff={isDifferent((o) => o.variant_details?.max_weight_kg)}
+                  >
+                    {compareOffers.map((o) => {
+                      const maxKg = o.variant_details?.max_weight_kg;
+                      const isMaxCap = maxCapacityKg !== null && maxKg === maxCapacityKg && compareOffers.length > 1;
+                      return (
+                        <div key={o.id} className="flex items-center gap-2">
+                          <span className={`font-semibold ${isMaxCap ? 'text-emerald-700 font-bold' : 'text-slate-800'}`}>
+                            {maxKg ? `${maxKg} kg` : '140 kg'}
+                          </span>
+                          {isMaxCap && (
+                            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded border border-emerald-200">
+                              Höchste Zuladung
                             </span>
                           )}
                         </div>

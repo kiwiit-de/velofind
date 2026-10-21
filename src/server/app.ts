@@ -145,6 +145,8 @@ export async function createApp(): Promise<Application> {
         propulsion: propulsion ? (String(propulsion) as PropulsionType) : undefined,
         brand: brand ? String(brand) : undefined,
         leasingProvider: provider ? String(provider) : undefined,
+        motorBrand: req.query.motorBrand ? String(req.query.motorBrand) : undefined,
+        minTorque: req.query.minTorque ? parseFloat(String(req.query.minTorque)) : undefined,
         dealerId: dealerId ? String(dealerId) : undefined,
         dealerSlug: dealerSlug ? String(dealerSlug) : undefined,
         dealerName: dealer ? String(dealer) : undefined,

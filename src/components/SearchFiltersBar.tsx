@@ -15,6 +15,9 @@ interface SearchFiltersBarProps {
   setPropulsion: (p: string) => void;
   brand: string;
   setBrand: (b: string) => void;
+  motorBrand?: string;
+  setMotorBrand?: (mb: string) => void;
+  availableMotorBrands?: { name: string; count: number }[];
   leasingProvider: string;
   setLeasingProvider: (lp: string) => void;
   selectedDealerSlug?: string;
@@ -69,6 +72,9 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   setPropulsion,
   brand,
   setBrand,
+  motorBrand,
+  setMotorBrand,
+  availableMotorBrands,
   leasingProvider,
   setLeasingProvider,
   selectedDealerSlug,
@@ -185,7 +191,7 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
     tagline: ''
   };
 
-  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || leasingProvider !== 'ALL' || selectedDealerSlug || postalCode || onlyFavorites;
+  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || (motorBrand && motorBrand !== 'ALL') || leasingProvider !== 'ALL' || selectedDealerSlug || postalCode || onlyFavorites;
 
   // Check if current postalCode matches a known city
   const knownCity = findCity(postalCode);
@@ -646,6 +652,28 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               <option key={b.name} value={b.name}>{b.name} ({b.count})</option>
             ))}
           </select>
+
+          {/* Motor Brand Select (Bosch, Shimano, Yamaha, Specialized, Brose...) */}
+          {availableMotorBrands && availableMotorBrands.length > 0 && setMotorBrand && (
+            <select
+              id="filter-motor-brand-select"
+              value={motorBrand || 'ALL'}
+              onChange={(e) => setMotorBrand(e.target.value)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                motorBrand && motorBrand !== 'ALL'
+                  ? 'bg-emerald-100 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-slate-50 text-slate-700 border-slate-200'
+              }`}
+              title="Motorenmarke filtern (Bosch, Shimano, Yamaha, Specialized...)"
+            >
+              <option value="ALL">⚡ Alle Motoren</option>
+              {availableMotorBrands.map((mb) => (
+                <option key={mb.name} value={mb.name}>
+                  {mb.name} ({mb.count})
+                </option>
+              ))}
+            </select>
+          )}
 
           {/* Dedicated 'Leasing Provider' Dropdown Filter with Company Logos */}
           <div ref={providerDropdownRef} id="filter-provider-dropdown-container" className="relative">

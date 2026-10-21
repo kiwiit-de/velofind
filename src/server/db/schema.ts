@@ -53,9 +53,11 @@ export interface BikeVariantTable {
   color: string;
   wheel_size_in: number | null;
   weight_kg: number | null;
+  max_weight_kg: number | null; // Zulässiges Gesamtgewicht / Max. Systemgewicht (kg)
   battery_wh: number | null;
   motor_brand: string | null;
   motor_model: string | null;
+  engine_type: string | null;   // Bauform / Motortyp (z.B. Mittelmotor)
   torque_nm: number | null;
   created_at: Generated<Date>;
   updated_at: Generated<Date>;

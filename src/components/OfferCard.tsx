@@ -194,23 +194,42 @@ export const OfferCard: React.FC<OfferCardProps> = ({
             {offer.title}
           </h3>
 
-          {/* Key Technical Specs */}
-          <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-500 mb-3">
+          {/* Key Technical Specs: Engine Brand, Torque Nm, Weight, Max Weight Capacity */}
+          <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-xs text-slate-600 mb-3 bg-slate-50/80 p-2 rounded-xl border border-slate-100">
+            {offer.variant_details?.motor_brand && offer.propulsion !== 'MUSCULAR' ? (
+              <div
+                className="flex items-center gap-1 font-medium text-emerald-800 bg-emerald-50/90 px-1.5 py-0.5 rounded border border-emerald-200/80"
+                title={`Motor: ${offer.variant_details.motor_brand} ${offer.variant_details.motor_model || ''} (${offer.variant_details.engine_type || 'Mittelmotor'})`}
+              >
+                <Zap className="w-3 h-3 text-emerald-600 shrink-0" />
+                <span>{offer.variant_details.motor_brand}{offer.variant_details.torque_nm ? ` · ${offer.variant_details.torque_nm} Nm` : ''}</span>
+              </div>
+            ) : offer.propulsion === 'MUSCULAR' ? (
+              <div className="flex items-center gap-1 text-[11px] font-medium text-slate-700 bg-white px-1.5 py-0.5 rounded border border-slate-200">
+                <span>Bio-Antrieb</span>
+              </div>
+            ) : null}
+
             {offer.variant_details?.battery_wh && (
-              <div className="flex items-center gap-1">
-                <BatteryCharging className="w-3.5 h-3.5 text-slate-400" />
-                <span>{offer.variant_details.battery_wh} Wh</span>
+              <div className="flex items-center gap-1" title="Akkukapazität">
+                <BatteryCharging className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span className="font-semibold text-slate-800">{offer.variant_details.battery_wh} Wh</span>
               </div>
             )}
-            {offer.variant_details?.torque_nm && (
-              <div className="flex items-center gap-1">
-                <Gauge className="w-3.5 h-3.5 text-slate-400" />
-                <span>{offer.variant_details.torque_nm} Nm</span>
+
+            {offer.variant_details?.weight_kg && (
+              <div className="flex items-center gap-1 text-slate-600" title="Eigengewicht des Fahrrads">
+                <Scale className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                <span>{offer.variant_details.weight_kg} kg</span>
               </div>
             )}
-            {offer.variant_details?.frame_size && (
-              <div className="flex items-center gap-1">
-                <span className="font-medium text-slate-700">Größe:</span> {offer.variant_details.frame_size}
+
+            {offer.variant_details?.max_weight_kg && (
+              <div
+                className="flex items-center gap-1 text-[11px] text-slate-500 font-medium bg-white px-1.5 py-0.5 rounded border border-slate-200/60"
+                title="Zulässiges Gesamtgewicht / Max. Systemgewicht (Fahrrad + Fahrer + Gepäck)"
+              >
+                <span>Zul. Max: {offer.variant_details.max_weight_kg} kg</span>
               </div>
             )}
           </div>

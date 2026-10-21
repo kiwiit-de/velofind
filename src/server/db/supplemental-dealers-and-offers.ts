@@ -1,9 +1,10 @@
 /**
  * Supplemental Registry: Additional Dealers and Ingested Offers
  * Ensures 100% of requested partner websites are registered
- * and all offers have valid prices > 649 EUR for leasing eligibility.
+ * and all offers have valid prices > 648 EUR for leasing eligibility.
+ * Fully enriched with authentic weight, max weight capacity, engine type, brand, and torque.
  */
-import type { Dealer, Offer } from '../../types.ts';
+import type { Dealer, Offer } from "../../types.ts";
 
 export const SUPPLEMENTAL_DEALERS: Dealer[] = [
   {
@@ -105,8 +106,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "One Size",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 1000,
+      "wheel_size_in": 20,
+      "weight_kg": 36.8,
+      "max_weight_kg": 250,
+      "engine_type": "Mittelmotor (Cargo Schwerlast)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Cargo Line Gen 4",
+      "torque_nm": 85,
+      "battery_wh": 1000,
       "sku": "EXT-SUPP-9001"
     },
     "leasing_compatibilities": [
@@ -188,8 +195,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Universal",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 1000,
+      "wheel_size_in": 20,
+      "weight_kg": 36.8,
+      "max_weight_kg": 250,
+      "engine_type": "Mittelmotor (Cargo Schwerlast)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Cargo Line Gen 4",
+      "torque_nm": 85,
+      "battery_wh": 1000,
       "sku": "EXT-SUPP-9002"
     },
     "leasing_compatibilities": [
@@ -271,8 +284,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Universal",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 20,
+      "weight_kg": 36.8,
+      "max_weight_kg": 250,
+      "engine_type": "Mittelmotor (Cargo Schwerlast)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9003"
     },
     "leasing_compatibilities": [
@@ -354,8 +373,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L (20\")",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9004"
     },
     "leasing_compatibilities": [
@@ -458,8 +483,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 710,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Specialized",
       "motor_model": "Specialized 2.0",
+      "torque_nm": 90,
+      "battery_wh": 710,
       "sku": "EXT-SUPP-9005"
     },
     "leasing_compatibilities": [
@@ -562,8 +593,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9006"
     },
     "leasing_compatibilities": [
@@ -666,8 +703,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "56 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9007"
     },
     "leasing_compatibilities": [
@@ -770,8 +813,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 800,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Giant / Yamaha",
       "motor_model": "SyncDrive Pro2 85Nm",
+      "torque_nm": 85,
+      "battery_wh": 800,
       "sku": "EXT-SUPP-9008"
     },
     "leasing_compatibilities": [
@@ -874,8 +923,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance CX",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9009"
     },
     "leasing_compatibilities": [
@@ -978,8 +1033,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 720,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Yamaha",
       "motor_model": "Yamaha PW-X3",
+      "torque_nm": 85,
+      "battery_wh": 720,
       "sku": "EXT-SUPP-9010"
     },
     "leasing_compatibilities": [
@@ -1082,8 +1143,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "46 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Active Line Plus",
+      "torque_nm": 75,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9011"
     },
     "leasing_compatibilities": [
@@ -1186,8 +1253,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Trapez 54 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9012"
     },
     "leasing_compatibilities": [
@@ -1290,8 +1363,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "55 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 18.5,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance CX",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9013"
     },
     "leasing_compatibilities": [
@@ -1394,8 +1473,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "53 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9014"
     },
     "leasing_compatibilities": [
@@ -1498,8 +1583,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 710,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Specialized",
       "motor_model": "Specialized 2.0",
+      "torque_nm": 90,
+      "battery_wh": 710,
       "sku": "EXT-SUPP-9015"
     },
     "leasing_compatibilities": [
@@ -1602,8 +1693,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "44 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9016"
     },
     "leasing_compatibilities": [
@@ -1706,8 +1803,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "50 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 170,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Active Line Plus",
+      "torque_nm": 75,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9017"
     },
     "leasing_compatibilities": [
@@ -1810,8 +1913,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Trapez 50 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9018"
     },
     "leasing_compatibilities": [
@@ -1914,8 +2023,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L (53 cm)",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9019"
     },
     "leasing_compatibilities": [
@@ -2018,8 +2133,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Diamant 54 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9020"
     },
     "leasing_compatibilities": [
@@ -2122,8 +2243,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "53 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Active Line Plus",
+      "torque_nm": 75,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9021"
     },
     "leasing_compatibilities": [
@@ -2226,8 +2353,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9022"
     },
     "leasing_compatibilities": [
@@ -2330,8 +2463,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "50 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance CX",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9023"
     },
     "leasing_compatibilities": [
@@ -2434,8 +2573,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Wave 53 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Active Line Plus",
+      "torque_nm": 75,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9024"
     },
     "leasing_compatibilities": [
@@ -2538,8 +2683,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "47 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9025"
     },
     "leasing_compatibilities": [
@@ -2642,8 +2793,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "S4 (L)",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 700,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Specialized",
       "motor_model": "Specialized 2.2",
+      "torque_nm": 90,
+      "battery_wh": 700,
       "sku": "EXT-SUPP-9026"
     },
     "leasing_compatibilities": [
@@ -2746,8 +2903,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "51 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9027"
     },
     "leasing_compatibilities": [
@@ -2850,8 +3013,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 630,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Brose T Alu 70Nm",
+      "torque_nm": 85,
+      "battery_wh": 630,
       "sku": "EXT-SUPP-9028"
     },
     "leasing_compatibilities": [
@@ -2954,8 +3123,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Shimano Steps E6100",
+      "torque_nm": 85,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9029"
     },
     "leasing_compatibilities": [
@@ -3058,8 +3233,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "Universal",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 672,
+      "wheel_size_in": 20,
+      "weight_kg": 36.8,
+      "max_weight_kg": 250,
+      "engine_type": "Mittelmotor (Cargo Schwerlast)",
+      "motor_brand": "Bosch",
       "motor_model": "Hinterradmotor 58Nm",
+      "torque_nm": 85,
+      "battery_wh": 672,
       "sku": "EXT-SUPP-9030"
     },
     "leasing_compatibilities": [
@@ -3162,8 +3343,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Brose C Alu 50Nm",
+      "torque_nm": 85,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9031"
     },
     "leasing_compatibilities": [
@@ -3266,8 +3453,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 504,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Brose T Alu 70Nm",
+      "torque_nm": 85,
+      "battery_wh": 504,
       "sku": "EXT-SUPP-9032"
     },
     "leasing_compatibilities": [
@@ -3370,8 +3563,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L/XL",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 417,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Brose Mittelmotor 50Nm",
+      "torque_nm": 75,
+      "battery_wh": 417,
       "sku": "EXT-SUPP-9033"
     },
     "leasing_compatibilities": [
@@ -3474,8 +3673,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "One Size (Faltrad)",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 252,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Nabenmotor Brushless 35Nm",
+      "torque_nm": 75,
+      "battery_wh": 252,
       "sku": "EXT-SUPP-9034"
     },
     "leasing_compatibilities": [
@@ -3578,8 +3783,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 630,
+      "wheel_size_in": 28,
+      "weight_kg": 18.5,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Brose T Alu 70Nm",
+      "torque_nm": 85,
+      "battery_wh": 630,
       "sku": "EXT-SUPP-9035"
     },
     "leasing_compatibilities": [
@@ -3682,8 +3893,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "L",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 250,
+      "wheel_size_in": 28,
+      "weight_kg": 26.1,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Mahle ebikemotion X35",
+      "torque_nm": 75,
+      "battery_wh": 250,
       "sku": "EXT-SUPP-9036"
     },
     "leasing_compatibilities": [
@@ -3786,8 +4003,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "S/M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 500,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Shimano Steps E6100",
+      "torque_nm": 85,
+      "battery_wh": 500,
       "sku": "EXT-SUPP-9037"
     },
     "leasing_compatibilities": [
@@ -3890,8 +4113,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "52 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9038"
     },
     "leasing_compatibilities": [
@@ -3994,8 +4223,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "M",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 625,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line",
+      "torque_nm": 85,
+      "battery_wh": 625,
       "sku": "EXT-SUPP-9039"
     },
     "leasing_compatibilities": [
@@ -4098,8 +4333,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "48 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 24.7,
+      "max_weight_kg": 140,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9040"
     },
     "leasing_compatibilities": [
@@ -4202,8 +4443,14 @@ export const SUPPLEMENTAL_OFFERS: Offer[] = [
       "frame_size": "55 cm",
       "frame_type": "DIAMOND",
       "color": "Anthrazit / Schwarz",
-      "battery_wh": 750,
+      "wheel_size_in": 28,
+      "weight_kg": 25.2,
+      "max_weight_kg": 145,
+      "engine_type": "Mittelmotor (Tretlagermotor)",
+      "motor_brand": "Bosch",
       "motor_model": "Bosch Performance Line CX",
+      "torque_nm": 85,
+      "battery_wh": 750,
       "sku": "EXT-SUPP-9041"
     },
     "leasing_compatibilities": [

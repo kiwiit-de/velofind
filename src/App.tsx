@@ -47,6 +47,7 @@ export default function App() {
   const [category, setCategory] = useState(() => initialParams.get('category') || 'ALL');
   const [propulsion, setPropulsion] = useState(() => initialParams.get('propulsion') || 'ALL');
   const [brand, setBrand] = useState(() => initialParams.get('brand') || 'ALL');
+  const [motorBrand, setMotorBrand] = useState(() => initialParams.get('motorBrand') || 'ALL');
   const [leasingProvider, setLeasingProvider] = useState(() => initialParams.get('provider') || 'ALL');
   const [selectedDealerSlug, setSelectedDealerSlug] = useState(() => initialParams.get('dealerSlug') || initialParams.get('dealer') || '');
   const [postalCode, setPostalCode] = useState(() => initialParams.get('postalCode') || '');
@@ -71,6 +72,7 @@ export default function App() {
   const [offers, setOffers] = useState<Offer[]>([]);
   const [totalOffers, setTotalOffers] = useState(0);
   const [availableBrands, setAvailableBrands] = useState<{ name: string; count: number }[]>([]);
+  const [availableMotorBrands, setAvailableMotorBrands] = useState<{ name: string; count: number }[]>([]);
   const [availableCategories, setAvailableCategories] = useState<{ category: BikeCategory; count: number }[]>([]);
   const [availableProviders, setAvailableProviders] = useState<{ slug: string; name: string; count: number }[]>([]);
   const [availableDealers, setAvailableDealers] = useState<{ id: string; name: string; slug: string; count: number; city?: string }[]>([]);
@@ -207,6 +209,7 @@ export default function App() {
         if (category !== 'ALL') params.append('category', category);
         if (propulsion !== 'ALL') params.append('propulsion', propulsion);
         if (brand !== 'ALL') params.append('brand', brand);
+        if (motorBrand !== 'ALL') params.append('motorBrand', motorBrand);
         if (leasingProvider !== 'ALL') params.append('provider', leasingProvider);
         if (selectedDealerSlug) params.append('dealerSlug', selectedDealerSlug);
         if (postalCode) {
@@ -238,6 +241,7 @@ export default function App() {
           setTotalOffers(data.total);
           setCurrentPage(pageToLoad);
           setAvailableBrands(data.available_brands || []);
+          setAvailableMotorBrands(data.available_motor_brands || []);
           setAvailableCategories(data.available_categories || []);
           setAvailableProviders(data.available_providers || []);
           setAvailableDealers(data.available_dealers || []);
@@ -249,13 +253,13 @@ export default function App() {
         setIsLoadingMore(false);
       }
     },
-    [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort, pageSize]
+    [query, category, propulsion, brand, motorBrand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort, pageSize]
   );
 
   useEffect(() => {
     setCurrentPage(1);
     fetchSearchResults(1, false, pageSize);
-  }, [query, category, propulsion, brand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
+  }, [query, category, propulsion, brand, motorBrand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
 
   const totalPages = typeof pageSize === 'number' ? Math.max(1, Math.ceil(totalOffers / pageSize)) : 1;
 
@@ -312,6 +316,7 @@ export default function App() {
     setCategory('ALL');
     setPropulsion('ALL');
     setBrand('ALL');
+    setMotorBrand('ALL');
     setLeasingProvider('ALL');
     setSelectedDealerSlug('');
     setPostalCode('');
@@ -352,6 +357,9 @@ export default function App() {
               setPropulsion={setPropulsion}
               brand={brand}
               setBrand={setBrand}
+              motorBrand={motorBrand}
+              setMotorBrand={setMotorBrand}
+              availableMotorBrands={availableMotorBrands}
               leasingProvider={leasingProvider}
               setLeasingProvider={setLeasingProvider}
               selectedDealerSlug={selectedDealerSlug}

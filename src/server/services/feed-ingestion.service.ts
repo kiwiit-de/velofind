@@ -16,6 +16,9 @@ import {
 } from '../db/repositories/index.ts';
 import { sanitizeCSVField, generateUUID } from '../db/utils.ts';
 import type { ImportStatus, AvailabilityStatus, OfferCondition } from '../db/schema.ts';
+import type { Offer } from '../../types.ts';
+import { PARTNER_OFFERS_DATA, PARTNER_DEALERS_DATA } from '../db/dealer-registry.ts';
+import { enrichBikeSpecs } from './spec-enricher.service.ts';
 import { imageFetcherService } from './image-fetcher.service.ts';
 import { priceAlertService } from './price-alert.service.ts';
 
@@ -207,6 +210,35 @@ export class FeedIngestionService {
         }
       }
 
+      // Extract technical specifications (weight, max weight, engine type, engine brand, torque/strength)
+      const weightRaw = parseFloat(row.weight || row.weight_kg || row.gewicht || '');
+      const maxWeightRaw = parseFloat(row.max_weight || row.max_weight_kg || row.zuladung || row.systemgewicht || row.max_system_weight || '');
+      const torqueRaw = parseFloat(row.torque || row.torque_nm || row.engine_strength || row.drehmoment || row.nm || '');
+      const batteryRaw = parseFloat(row.battery || row.battery_wh || row.akku || '');
+      const engineType = row.engine_type || row.motortyp || row.motor_type || undefined;
+      const motorBrand = row.motor_brand || row.engine_marke || row.motor_hersteller || undefined;
+      const motorModel = row.motor_model || row.motor || undefined;
+
+      const variantDetails = enrichBikeSpecs({
+        title,
+        brand_name: brand,
+        category: (row.category as any) || 'E_BIKE',
+        propulsion: (row.propulsion as any) || 'PEDELEC',
+        price_cents: priceCents,
+        existing: {
+          weight_kg: isNaN(weightRaw) ? undefined : weightRaw,
+          max_weight_kg: isNaN(maxWeightRaw) ? undefined : maxWeightRaw,
+          torque_nm: isNaN(torqueRaw) ? undefined : torqueRaw,
+          battery_wh: isNaN(batteryRaw) ? undefined : batteryRaw,
+          engine_type: engineType,
+          motor_brand: motorBrand,
+          motor_model: motorModel,
+          frame_size: row.frame_size,
+          color: row.color,
+          sku: externalId
+        }
+      });
+
       // Upsert offer directly into PostgreSQL
       const savedOffer = await offersRepository.upsertBySourceAndExternalId({
         id: existingOffer ? existingOffer.id : generateUUID(),
@@ -225,6 +257,52 @@ export class FeedIngestionService {
         content_hash: 'hash-' + generateUUID().slice(0, 10),
         is_active: true
       });
+
+      // Sync into in-memory PARTNER_OFFERS_DATA for instant catalog visibility
+      const dealerObj = PARTNER_DEALERS_DATA.find((d) => d.id === dealerId);
+      const memoryOffer: Offer = {
+        id: savedOffer.id,
+        dealer_id: dealerId,
+        dealer_name: dealerObj?.name || 'Partner Fachhändler',
+        dealer_slug: dealerObj?.slug || 'partner-fachhaendler',
+        dealer_verified: true,
+        dealer_locations: dealerObj?.locations || [],
+        source_id: dataSource.id,
+        external_id: externalId,
+        title,
+        brand_name: brand,
+        model_name: model,
+        model_year: 2025,
+        category: (row.category as any) || 'E_BIKE',
+        propulsion: (row.propulsion as any) || 'PEDELEC',
+        price_cents: priceCents,
+        compare_at_price_cents: compareAtPriceCents || Math.round(priceCents * 1.1),
+        currency: row.currency || 'EUR',
+        availability,
+        quantity,
+        condition,
+        source_url: sourceUrl,
+        image_url: savedOffer.image_url || undefined,
+        content_hash: savedOffer.content_hash,
+        first_seen_at: new Date().toISOString(),
+        last_seen_at: new Date().toISOString(),
+        is_active: true,
+        variant_details: variantDetails,
+        leasing_compatibilities: (dealerObj?.supported_providers || []).map((p) => ({
+          provider_id: p.provider_id,
+          provider_slug: p.provider_slug,
+          provider_name: p.provider_name,
+          status: p.status,
+          evidence_reason: 'Importiert über autorisierten Händler-Bestand'
+        }))
+      };
+
+      const existingMemIdx = PARTNER_OFFERS_DATA.findIndex((o) => o.dealer_id === dealerId && o.external_id === externalId);
+      if (existingMemIdx >= 0) {
+        PARTNER_OFFERS_DATA[existingMemIdx] = memoryOffer;
+      } else {
+        PARTNER_OFFERS_DATA.unshift(memoryOffer);
+      }
 
       // Synchronize provider eligibility for participating leasing providers
       for (const part of participations) {

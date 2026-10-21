@@ -435,6 +435,45 @@ export const OfferModal: React.FC<OfferModalProps> = ({
               <span>Technische Spezifikationen & Ausstattung</span>
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {offer.variant_details?.motor_brand && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Motorenmarke & Modell</span>
+                  <span className="text-sm font-semibold text-slate-900">
+                    {offer.variant_details.motor_brand} {offer.variant_details.motor_model ? `– ${offer.variant_details.motor_model}` : ''}
+                  </span>
+                </div>
+              )}
+              {offer.variant_details?.engine_type && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Motortyp / Bauform</span>
+                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.engine_type}</span>
+                </div>
+              )}
+              {offer.variant_details?.torque_nm && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Motorkraft / Drehmoment</span>
+                  <span className="text-sm font-semibold text-emerald-800">{offer.variant_details.torque_nm} Nm</span>
+                </div>
+              )}
+              {offer.variant_details?.battery_wh && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Akkukapazität</span>
+                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.battery_wh} Wh</span>
+                </div>
+              )}
+              {offer.variant_details?.weight_kg && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Gewicht (Eigengewicht)</span>
+                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.weight_kg} kg</span>
+                </div>
+              )}
+              {offer.variant_details?.max_weight_kg && (
+                <div className="p-3 bg-emerald-50/60 rounded-xl border border-emerald-200/80">
+                  <span className="text-xs text-emerald-800 font-medium block">Zul. Gesamtgewicht (Max. Last)</span>
+                  <span className="text-sm font-bold text-emerald-950">{offer.variant_details.max_weight_kg} kg</span>
+                  <span className="text-[10px] text-emerald-700 block mt-0.5">Fahrrad + Fahrer + Zuladung</span>
+                </div>
+              )}
               {offer.variant_details?.frame_size && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Rahmengröße</span>
@@ -451,32 +490,6 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Farbe</span>
                   <span className="text-sm font-semibold text-slate-900">{offer.variant_details.color}</span>
-                </div>
-              )}
-              {offer.variant_details?.motor_brand && (
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                  <span className="text-xs text-slate-500 block">Motor & Antrieb</span>
-                  <span className="text-sm font-semibold text-slate-900">
-                    {offer.variant_details.motor_brand} {offer.variant_details.motor_model || ''}
-                  </span>
-                </div>
-              )}
-              {offer.variant_details?.torque_nm && (
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                  <span className="text-xs text-slate-500 block">Drehmoment</span>
-                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.torque_nm} Nm</span>
-                </div>
-              )}
-              {offer.variant_details?.battery_wh && (
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                  <span className="text-xs text-slate-500 block">Akkukapazität</span>
-                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.battery_wh} Wh</span>
-                </div>
-              )}
-              {offer.variant_details?.weight_kg && (
-                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
-                  <span className="text-xs text-slate-500 block">Gewicht</span>
-                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.weight_kg} kg</span>
                 </div>
               )}
               {offer.variant_details?.wheel_size_in && (

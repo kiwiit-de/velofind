@@ -10,6 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PARTNER_DEALERS_DATA, PARTNER_OFFERS_DATA, LEASING_PROVIDERS_DATA } from '../src/server/db/dealer-registry.ts';
+import { enrichBikeSpecs } from '../src/server/services/spec-enricher.service.ts';
 import type { Dealer, Offer, BikeCategory, PropulsionType } from '../src/types.ts';
 
 function hashCode(str: string): number {
@@ -688,16 +689,23 @@ function buildOffer(dealer: Dealer, raw: any, index: number): Offer {
     first_seen_at: nowIso,
     last_seen_at: nowIso,
     is_active: true,
-    variant_details: {
-      frame_size: raw.frameSize || raw.frame_size || 'Diamant 54cm (L / 29 Zoll)',
-      frame_type: raw.frame_type || 'DIAMOND',
-      color: raw.color || 'Graphite Anthrazit',
-      battery_wh: raw.batteryWh || raw.battery_wh,
-      motor_brand: raw.motorBrand || raw.motor_brand,
-      motor_model: raw.motorModel || raw.motor_model,
-      torque_nm: raw.torqueNm || raw.torque_nm,
-      sku: raw.externalId || raw.external_id || `SKU-${safeIdBase}`
-    },
+    variant_details: enrichBikeSpecs({
+      title: raw.title,
+      brand_name: raw.brand || raw.brand_name || 'CUBE',
+      category: raw.category || 'E_BIKE',
+      propulsion: raw.propulsion || 'PEDELEC',
+      price_cents: priceCents,
+      existing: {
+        frame_size: raw.frameSize || raw.frame_size || 'Diamant 54cm (L / 29 Zoll)',
+        frame_type: raw.frame_type || 'DIAMOND',
+        color: raw.color || 'Graphite Anthrazit',
+        battery_wh: raw.batteryWh || raw.battery_wh,
+        motor_brand: raw.motorBrand || raw.motor_brand,
+        motor_model: raw.motorModel || raw.motor_model,
+        torque_nm: raw.torqueNm || raw.torque_nm,
+        sku: raw.externalId || raw.external_id || `SKU-${safeIdBase}`
+      }
+    }),
     leasing_compatibilities: (dealer.supported_providers || []).map((p) => ({
       provider_id: p.provider_id,
       provider_slug: p.provider_slug,
