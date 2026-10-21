@@ -181,6 +181,13 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
     return list;
   }, [availableProviders, providerCountsMap]);
 
+  // Total offers aggregated across all partner dealers (sum of all offers from each partner shop)
+  const totalPartnerOffers = useMemo(() => {
+    if (!availableDealers || availableDealers.length === 0) return totalResults || 0;
+    const sum = availableDealers.reduce((acc, d) => acc + (Number(d.count) || 0), 0);
+    return sum > 0 ? sum : (totalResults || 0);
+  }, [availableDealers, totalResults]);
+
   const selectedProviderMeta = LEASING_PROVIDER_METADATA[leasingProvider.toLowerCase()];
   const selectedProviderName = selectedProviderMeta?.name || availableProviders.find(p => p.slug === leasingProvider)?.name || leasingProvider;
 
@@ -879,10 +886,12 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
                   : 'bg-slate-50 text-slate-700 border-slate-200'
               }`}
             >
-              <option value="ALL">Alle 361 Partner-Händler & Websites ({availableDealers.length})</option>
-              {availableDealers.map(d => (
+              <option value="ALL">
+                Alle {availableDealers.length} Partner-Händler & Websites ({totalPartnerOffers.toLocaleString('de-DE')} Angebote)
+              </option>
+              {availableDealers.map((d) => (
                 <option key={d.slug} value={d.slug}>
-                  {d.name} {d.website_url ? `(${d.website_url})` : (d.city ? `(${d.city})` : '')} ({d.count} Angebote)
+                  {d.name} {d.website_url ? `(${d.website_url})` : (d.city ? `(${d.city})` : '')} ({d.count.toLocaleString('de-DE')} Angebote)
                 </option>
               ))}
             </select>

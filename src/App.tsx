@@ -627,7 +627,7 @@ export default function App() {
                                 <Layers className="w-3.5 h-3.5" />
                               </div>
                               <span>
-                                Geladen: <strong className="text-slate-950 font-bold">{offers.length}</strong> von <strong className="text-slate-950 font-bold">{totalOffers.toLocaleString('de-DE')}</strong> Angeboten aus allen 361 verifizierten Händler-Websites
+                                Geladen: <strong className="text-slate-950 font-bold">{offers.length}</strong> von <strong className="text-slate-950 font-bold">{totalOffers.toLocaleString('de-DE')}</strong> Angeboten aus allen {dealers.length || 368} verifizierten Händler-Websites
                               </span>
                             </div>
                             <div className="text-xs font-semibold text-emerald-800 bg-emerald-50 px-3 py-1 rounded-full border border-emerald-200/80 shrink-0 self-start sm:self-auto flex items-center gap-1.5">
