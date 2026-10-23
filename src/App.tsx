@@ -21,6 +21,7 @@ import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldChe
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
+import { getPartnerGeneralOfferUrl, groupPartnerOffers } from './utils/partner-bike-grouper';
 
 export default function App() {
   // Read initial search params from URL
@@ -229,14 +230,20 @@ export default function App() {
         const res = await fetch(apiUrl(`/api/search?${params.toString()}`));
         if (res.ok) {
           const data: SearchResponse = await res.json();
+          const processedOffers = groupPartnerOffers(data.offers || [], {
+            selectedDealerSlug,
+            userLat: centerLocation?.lat,
+            userLng: centerLocation?.lng
+          });
+
           if (append) {
             setOffers((prev) => {
               const existingIds = new Set(prev.map((o) => o.id));
-              const newOffers = (data.offers || []).filter((o) => !existingIds.has(o.id));
+              const newOffers = processedOffers.filter((o) => !existingIds.has(o.id));
               return [...prev, ...newOffers];
             });
           } else {
-            setOffers(data.offers || []);
+            setOffers(processedOffers);
           }
           setTotalOffers(data.total);
           setCurrentPage(pageToLoad);
@@ -304,11 +311,32 @@ export default function App() {
     window.scrollTo({ top: 380, behavior: 'smooth' });
   };
 
-  // Tracked Outbound Safe Redirect
-  const handleTrackOutbound = (offerId: string) => {
-    // Open through tracked attribution redirect in a new window/tab
-    window.open(`/api/out/${offerId}`, '_blank', 'noopener,noreferrer');
-    showToast('Weiterleitung zum verifizierten Fachhändler erfolgt...');
+  // Tracked Outbound Safe Direct Redirect
+  const handleTrackOutbound = (offerIdOrOffer: string | Offer, alreadyOpenedDirectly = false) => {
+    let targetOffer: Offer | undefined;
+    if (typeof offerIdOrOffer === 'object') {
+      targetOffer = offerIdOrOffer;
+    } else {
+      targetOffer = offers.find((o) => o.id === offerIdOrOffer) || cachedOffersMap[offerIdOrOffer];
+    }
+
+    const offerId = typeof offerIdOrOffer === 'string' ? offerIdOrOffer : offerIdOrOffer.id;
+
+    // Asynchronously record click attribution without blocking navigation
+    try {
+      fetch(apiUrl(`/api/out/${encodeURIComponent(offerId)}?json=true`), { keepalive: true }).catch(() => {});
+    } catch {
+      // ignore
+    }
+
+    // Only open window if the caller has not already opened it via a native <a target="_blank"> link
+    if (!alreadyOpenedDirectly) {
+      const directUrl = targetOffer
+        ? getPartnerGeneralOfferUrl(targetOffer)
+        : `https://www.google.com/search?q=${encodeURIComponent('Fahrrad ' + offerId)}`;
+      window.open(directUrl, '_blank', 'noopener,noreferrer');
+      showToast('Weiterleitung zum Partner-Angebot geöffnet...');
+    }
   };
 
   const resetFilters = () => {

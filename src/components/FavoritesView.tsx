@@ -8,7 +8,7 @@ interface FavoritesViewProps {
   allOffers: Offer[];
   onSelectOffer: (offer: Offer) => void;
   onOpenLeadModal: (offer: Offer) => void;
-  onTrackOutbound: (offerId: string) => void;
+  onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onClearFavorites: () => void;
   onExploreBikes: () => void;
   onCompareNotice?: (msg: string) => void;

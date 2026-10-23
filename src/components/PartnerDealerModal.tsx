@@ -28,7 +28,7 @@ interface PartnerDealerModalProps {
   dealer: Dealer | null;
   onClose: () => void;
   onSelectOffer: (offer: Offer) => void;
-  onTrackOutbound: (offerId: string) => void;
+  onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onOpenLeadModal: (offer: Offer) => void;
   onApplyDealerFilterToMainCatalog?: (dealerSlug: string) => void;
   onCompareNotice?: (msg: string) => void;

@@ -26,12 +26,13 @@ import { useCompare } from '../utils/compare';
 import { usePriceAlert } from '../utils/alerts';
 import { resolveImageUrl } from '../lib/api';
 import { LeasingProviderLogo } from './LeasingProviderLogo';
+import { getPartnerGeneralOfferUrl } from '../utils/partner-bike-grouper';
 
 interface OfferModalProps {
   offer: Offer | null;
   onClose: () => void;
   onOpenLeadModal: (offer: Offer) => void;
-  onTrackOutbound: (offerId: string) => void;
+  onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onCompareNotice?: (msg: string) => void;
   onOpenDealer?: (dealerSlug: string) => void;
 }
@@ -231,18 +232,33 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                   )}
                 </div>
                 <p className="text-xs text-slate-500 mt-1">inkl. MwSt., Bereitstellung & Übergabeinspektion</p>
+                {offer.available_branches && offer.available_branches.length > 1 && (
+                  <div className="mt-2.5 p-2.5 bg-emerald-50/80 border border-emerald-200/90 rounded-xl flex items-start gap-2 text-xs text-emerald-950">
+                    <MapPin className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <span className="font-bold">In {offer.available_branches.length} Filialen verfügbar:</span>{' '}
+                      <span className="text-emerald-800">
+                        {offer.available_branches.map((b) => b.city || b.dealer_name).filter(Boolean).slice(0, 3).join(', ')}
+                        {offer.available_branches.length > 3 ? ' u.a.' : ''}
+                      </span>
+                    </div>
+                  </div>
+                )}
               </div>
 
               {/* Conversion CTAs */}
               <div className="space-y-2">
-                <button
+                <a
                   id="modal-btn-outbound"
-                  onClick={() => onTrackOutbound(offer.id)}
-                  className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-colors"
+                  href={getPartnerGeneralOfferUrl(offer)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => onTrackOutbound(offer.id, true)}
+                  className="w-full py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-sm flex items-center justify-center gap-2 shadow-sm transition-colors cursor-pointer text-center"
                 >
                   <span>Angebot beim Fachhändler ansehen</span>
                   <ExternalLink className="w-4 h-4" />
-                </button>
+                </a>
 
                 <button
                   id="modal-btn-lead"
@@ -543,16 +559,95 @@ export const OfferModal: React.FC<OfferModalProps> = ({
             </div>
           </div>
 
-          {/* Physical Dealer Information Card */}
-          {location && (
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5">
-              <h3 className="text-base font-bold text-slate-900 mb-2 flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-emerald-600" />
-                <span>Anbieter & Fachhändler vor Ort</span>
+          {/* Physical Dealer & Multi-Branch Locations Card */}
+          <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-base font-bold text-slate-900 flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-emerald-600" />
+                <span>
+                  {offer.available_branches && offer.available_branches.length > 1
+                    ? `Verfügbarkeit an ${offer.available_branches.length} Partner-Filialen`
+                    : 'Anbieter & Fachhändler vor Ort'}
+                </span>
               </h3>
+              {offer.available_branches && offer.available_branches.length > 1 && (
+                <span className="text-xs font-bold text-emerald-800 bg-emerald-100/80 px-2.5 py-0.5 rounded-full border border-emerald-200">
+                  {offer.available_branches.length} Standorte
+                </span>
+              )}
+            </div>
+
+            {offer.available_branches && offer.available_branches.length > 1 ? (
+              <div className="space-y-3">
+                <p className="text-xs text-slate-600">
+                  Dieses Fahrrad ist bei Partner <strong>{offer.dealer_name}</strong> an folgenden Standorten verfügbar:
+                </p>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  {offer.available_branches.map((branch, idx) => (
+                    <div
+                      key={branch.dealer_slug || branch.dealer_id || idx}
+                      className="p-3 bg-white rounded-xl border border-slate-200 flex flex-col justify-between shadow-2xs hover:border-emerald-300 transition-colors"
+                    >
+                      <div>
+                        <div className="flex items-start justify-between gap-1.5">
+                          <span className="text-xs font-bold text-slate-900">{branch.dealer_name}</span>
+                          <span className="px-1.5 py-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 rounded border border-emerald-200/60 shrink-0">
+                            Vorrätig
+                          </span>
+                        </div>
+                        {(branch.address || branch.city) && (
+                          <div className="text-[11px] text-slate-600 mt-1 flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-emerald-600 shrink-0" />
+                            <span className="truncate">
+                              {branch.address ? `${branch.address}, ` : ''}
+                              {branch.postal_code ? `${branch.postal_code} ` : ''}
+                              {branch.city || ''}
+                            </span>
+                          </div>
+                        )}
+                        {branch.distance_km !== undefined && (
+                          <div className="text-[11px] text-emerald-700 font-medium mt-1">
+                            📍 ca. {branch.distance_km} km entfernt
+                          </div>
+                        )}
+                      </div>
+
+                      <div className="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+                        {onOpenDealer ? (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              onClose();
+                              onOpenDealer(branch.dealer_slug);
+                            }}
+                            className="text-emerald-700 hover:text-emerald-900 font-semibold text-[11px] hover:underline"
+                          >
+                            Filial-Bestand ansehen →
+                          </button>
+                        ) : (
+                          <span />
+                        )}
+                        <a
+                          href={branch.source_url || getPartnerGeneralOfferUrl(offer)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => onTrackOutbound(branch.dealer_id || offer.id, true)}
+                          className="text-[11px] text-slate-500 hover:text-emerald-700 font-medium inline-flex items-center gap-0.5"
+                        >
+                          <span>Partner-Shop</span>
+                          <ExternalLink className="w-2.5 h-2.5" />
+                        </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : location ? (
               <div className="space-y-1.5 text-sm text-slate-700">
                 <div className="font-semibold text-slate-900 text-base">{offer.dealer_name}</div>
-                <div>{location.name} • {location.address_line1}, {location.postal_code} {location.city}</div>
+                <div>
+                  {location.name} • {location.address_line1}, {location.postal_code} {location.city}
+                </div>
                 {location.opening_hours && (
                   <div className="flex items-center gap-1.5 text-xs text-slate-600 pt-1">
                     <Clock className="w-3.5 h-3.5 text-slate-400" />
@@ -566,25 +661,25 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                   </div>
                 )}
               </div>
+            ) : null}
 
-              {onOpenDealer && (
-                <div className="mt-4 pt-3 border-t border-slate-200/80 flex items-center justify-between">
-                  <span className="text-xs text-slate-500">Alle Räder dieses Partners durchsuchen:</span>
-                  <button
-                    type="button"
-                    onClick={() => {
-                      onClose();
-                      onOpenDealer(offer.dealer_slug);
-                    }}
-                    className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-xs"
-                  >
-                    <Building2 className="w-3.5 h-3.5" />
-                    <span>Alle Angebote von {offer.dealer_name} ansehen</span>
-                  </button>
-                </div>
-              )}
-            </div>
-          )}
+            {onOpenDealer && (
+              <div className="mt-3 pt-3 border-t border-slate-200/80 flex items-center justify-between">
+                <span className="text-xs text-slate-500">Alle Räder dieses Partners durchsuchen:</span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onClose();
+                    onOpenDealer(offer.dealer_slug);
+                  }}
+                  className="px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1.5 transition-colors shadow-xs"
+                >
+                  <Building2 className="w-3.5 h-3.5" />
+                  <span>Alle Angebote von {offer.dealer_name} ansehen</span>
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>

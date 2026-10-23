@@ -194,7 +194,32 @@ export interface Offer {
   leasing_compatibilities: OfferProviderEligibility[];
   price_history?: OfferPriceHistory[];
   distance_km?: number;
+  available_branches?: AvailableBranch[];
+  available_locations?: AvailableLocation[];
+  branches_count?: number;
 }
+
+export interface AvailableBranch {
+  dealer_id: string;
+  dealer_name: string;
+  dealer_slug: string;
+  name?: string;
+  city?: string;
+  postal_code?: string;
+  address?: string;
+  address_line1?: string;
+  distance_km?: number;
+  availability?: AvailabilityStatus;
+  source_url?: string;
+  phone?: string;
+  email?: string;
+  opening_hours?: string;
+  quantity?: number;
+  latitude?: number;
+  longitude?: number;
+}
+
+export type AvailableLocation = AvailableBranch;
 
 export interface Lead {
   id: string;

@@ -5,11 +5,12 @@ import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
 import { resolveImageUrl } from '../lib/api';
 import { LeasingProviderLogo } from './LeasingProviderLogo';
+import { getPartnerGeneralOfferUrl } from '../utils/partner-bike-grouper';
 
 interface OfferCardProps {
   offer: Offer;
   onSelectOffer: (offer: Offer) => void;
-  onTrackOutbound: (offerId: string) => void;
+  onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onOpenLeadModal?: (offer: Offer) => void;
   onCompareNotice?: (msg: string) => void;
   onOpenDealer?: (dealerSlug: string) => void;
@@ -284,13 +285,21 @@ export const OfferCard: React.FC<OfferCardProps> = ({
                 {offer.dealer_name}
               </span>
             )}
-            {offer.distance_km !== undefined ? (
-              <span className="text-emerald-700 font-semibold flex items-center gap-0.5">
+            {offer.available_branches && offer.available_branches.length > 1 ? (
+              <span
+                className="text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200/60 flex items-center gap-1 shrink-0"
+                title={`Verfügbar in ${offer.available_branches.length} Standorten: ${offer.available_branches.map((b) => b.city || b.dealer_name).filter(Boolean).join(', ')}`}
+              >
+                <MapPin className="w-2.5 h-2.5 text-emerald-600" />
+                <span>{offer.available_branches.length} Filialen</span>
+              </span>
+            ) : offer.distance_km !== undefined ? (
+              <span className="text-emerald-700 font-semibold flex items-center gap-0.5 shrink-0">
                 <MapPin className="w-3 h-3" />
                 {offer.distance_km} km
               </span>
             ) : closestLocation ? (
-              <span className="text-slate-400 flex items-center gap-0.5">
+              <span className="text-slate-400 flex items-center gap-0.5 shrink-0">
                 <MapPin className="w-3 h-3" />
                 {closestLocation.city}
               </span>
@@ -318,15 +327,21 @@ export const OfferCard: React.FC<OfferCardProps> = ({
               >
                 Details
               </button>
-              <button
+              <a
                 id={`btn-outbound-${offer.id}`}
-                onClick={() => onTrackOutbound(offer.id)}
-                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 transition-colors shadow-xs"
-                title="Angebot direkt auf der Händler-Website ansehen"
+                href={getPartnerGeneralOfferUrl(offer)}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onTrackOutbound(offer.id, true);
+                }}
+                className="px-3 py-1.5 text-xs font-semibold rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white flex items-center gap-1 transition-colors shadow-xs cursor-pointer"
+                title="Angebot direkt auf der Partner-Website ansehen"
               >
                 <span>Händler</span>
                 <ExternalLink className="w-3 h-3" />
-              </button>
+              </a>
             </div>
           </div>
         </div>

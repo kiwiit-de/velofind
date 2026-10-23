@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { Offer } from '../types';
 import { resolveImageUrl } from '../lib/api';
+import { getPartnerGeneralOfferUrl } from '../utils/partner-bike-grouper';
 
 interface CompareModalProps {
   isOpen: boolean;
@@ -27,7 +28,7 @@ interface CompareModalProps {
   onRemoveOffer: (offerId: string) => void;
   onClearAll: () => void;
   onOpenLeadModal: (offer: Offer) => void;
-  onTrackOutbound: (offerId: string) => void;
+  onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onAddMoreBikes?: () => void;
 }
 
@@ -274,14 +275,17 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                           <MessageSquare className="w-3.5 h-3.5" />
                           <span>Probefahrt anfragen</span>
                         </button>
-                        <button
+                        <a
                           id={`btn-compare-outbound-${offer.id}`}
-                          onClick={() => onTrackOutbound(offer.id)}
-                          className="w-full py-1.5 px-3 text-xs font-medium rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center gap-1.5 transition-colors"
+                          href={getPartnerGeneralOfferUrl(offer)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={() => onTrackOutbound(offer.id, true)}
+                          className="w-full py-1.5 px-3 text-xs font-medium rounded-xl bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
                         >
                           <span>Zum Fachhändler</span>
                           <ExternalLink className="w-3 h-3" />
-                        </button>
+                        </a>
                       </div>
                     </div>
                   );

@@ -18,6 +18,7 @@ import { sql } from 'kysely';
 import { GERMAN_LOCATIONS, calculateDistanceKm } from '../utils.ts';
 import type { Offer, SearchFilters, SearchResponse } from '../../../types.ts';
 import { PARTNER_OFFERS_DATA } from '../dealer-registry.ts';
+import { groupPartnerOffers, getBikeIdentityKey } from '../../../utils/partner-bike-grouper.ts';
 
 export type DbOffer = Selectable<OfferTable>;
 export type NewOffer = Insertable<OfferTable>;
@@ -125,7 +126,15 @@ export class OffersRepository {
     }
 
     const regOffer = PARTNER_OFFERS_DATA.find((o) => o.id === id);
-    if (regOffer) return regOffer;
+    if (regOffer) {
+      const bikeKey = getBikeIdentityKey(regOffer);
+      const siblings = PARTNER_OFFERS_DATA.filter((o) => getBikeIdentityKey(o) === bikeKey);
+      if (siblings.length > 1) {
+        const grouped = groupPartnerOffers(siblings);
+        if (grouped.length > 0) return grouped[0];
+      }
+      return regOffer;
+    }
     return undefined;
   }
 
@@ -748,12 +757,20 @@ export class OffersRepository {
       })
       .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 
-    const total = items.length;
+    // Deduplicate identical bikes from the same partner across multiple store locations:
+    // View each bike model only once in the catalog, with all partner locations consolidated
+    const consolidatedItems = groupPartnerOffers(items, {
+      selectedDealerSlug: filters.dealerSlug,
+      userLat,
+      userLng
+    });
+
+    const total = consolidatedItems.length;
     const offset = Math.max(0, filters.offset ?? 0);
     const limit = filters.limit === 0 ? total : (filters.limit ?? 48);
     const paginated = (filters.limit === 0 || limit >= total)
-      ? items.slice(offset)
-      : items.slice(offset, offset + limit);
+      ? consolidatedItems.slice(offset)
+      : consolidatedItems.slice(offset, offset + limit);
 
     const motorCounts = new Map<string, number>();
     items.forEach((o) => {

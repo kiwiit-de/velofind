@@ -31,6 +31,7 @@ import { priceAlertService } from './services/price-alert.service.ts';
 import { GERMAN_LOCATIONS, sanitizeCSVField, generateUUID } from './db/utils.ts';
 import { metricsMiddleware, handleMetricsEndpoint, metrics } from './monitoring/metrics.ts';
 import { handleLivenessCheck, handleReadinessCheck } from './monitoring/health.ts';
+import { getPartnerGeneralOfferUrl } from '../utils/partner-bike-grouper.ts';
 import type { LeadStatus, BikeCategory, PropulsionType, AvailabilityStatus, OfferCondition } from '../types.ts';
 
 let isDbCheckInitiated = false;
@@ -246,47 +247,61 @@ export async function createApp(): Promise<Application> {
     }
   });
 
-  // --- OUTBOUND CLICK ATTRIBUTION ---
+  // --- OUTBOUND CLICK ATTRIBUTION & RESILIENT REDIRECTION ---
   const handleOutboundRedirect = async (req: Request, res: Response) => {
     try {
       const { offerId } = req.params;
       const referer = req.get('Referer') || '';
-      const offer = await offersRepository.findById(offerId);
-
-      if (!offer) {
-        return res.status(400).json({ error: 'Angebot nicht gefunden' });
+      let offer: any = null;
+      try {
+        offer = await offersRepository.findById(offerId);
+      } catch {
+        // Fallback below
       }
 
-      if (!offer.source_url.startsWith('https://')) {
-        return res.status(400).json({ error: 'Ungültiges Weiterleitungsziel' });
+      let fallbackUrl = 'https://boc24.de';
+      if (offerId.includes('fahrrad-xxl') || offerId.includes('xxl')) {
+        fallbackUrl = 'https://www.fahrrad-xxl.de';
+      } else if (offerId.includes('lucky')) {
+        fallbackUrl = 'https://www.lucky-bike.de';
       }
+      const targetUrl = offer ? getPartnerGeneralOfferUrl(offer) : fallbackUrl;
 
-      const sessionHash = 'anon-' + generateUUID().slice(0, 12);
-      await outboundClicksRepository.recordClick({
-        id: generateUUID(),
-        offer_id: offer.id,
-        dealer_id: offer.dealer_id,
-        destination_url: offer.source_url,
-        session_hash: sessionHash,
-        referer: referer || null
-      });
+      // Record click asynchronously without blocking or failing the redirect
+      try {
+        const sessionHash = 'anon-' + generateUUID().slice(0, 12);
+        outboundClicksRepository
+          .recordClick({
+            id: generateUUID(),
+            offer_id: offer?.id || offerId,
+            dealer_id: offer?.dealer_id || 'partner',
+            destination_url: targetUrl,
+            session_hash: sessionHash,
+            referer: referer || null
+          })
+          .catch(() => {});
 
-      await auditEventsRepository.recordEvent({
-        actor_role: 'ANONYMOUS',
-        event_type: 'CLICK_ATTRIBUTED',
-        entity_type: 'OFFER',
-        entity_id: offer.id,
-        metadata: { destination: offer.source_url }
-      });
+        auditEventsRepository
+          .recordEvent({
+            actor_role: 'ANONYMOUS',
+            event_type: 'CLICK_ATTRIBUTED',
+            entity_type: 'OFFER',
+            entity_id: offer?.id || offerId,
+            metadata: { destination: targetUrl }
+          })
+          .catch(() => {});
 
-      metrics.recordOutboundClick();
+        metrics.recordOutboundClick();
+      } catch {
+        // Ignore telemetry errors
+      }
 
       if (req.query.json === 'true') {
-        return res.json({ redirectUrl: offer.source_url });
+        return res.json({ redirectUrl: targetUrl });
       }
-      res.redirect(302, offer.source_url);
-    } catch (err: any) {
-      res.status(500).json({ error: 'Fehler bei der Weiterleitung', details: err.message });
+      return res.redirect(302, targetUrl);
+    } catch {
+      return res.redirect(302, 'https://boc24.de');
     }
   };
 
