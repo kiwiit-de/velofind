@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /api/admin/
+Disallow: /api/ingest/
+
+# Sitemap for all German cities, bike categories, and leasing providers
+Sitemap: https://velofind.de/sitemap.xml

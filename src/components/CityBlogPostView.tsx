@@ -87,24 +87,28 @@ export const CityBlogPostView: React.FC<CityBlogPostViewProps> = ({
 
   // Find offers available in or near this city
   const localOffers = useMemo(() => {
-    return allOffers.filter((offer) => {
+    const directMatches = allOffers.filter((offer) => {
       // Check branch locations or dealer location
       const hasLocalBranch = offer.available_branches?.some(
-        (b) => b.city?.toLowerCase().includes(city.name.toLowerCase()) || (b.distance_km !== undefined && b.distance_km <= 50)
+        (b) => b.city?.toLowerCase().includes(city.name.toLowerCase()) || (b.distance_km !== undefined && b.distance_km <= 60)
       );
       const hasDealerLocation = offer.dealer_locations?.some(
         (l) => l.city.toLowerCase().includes(city.name.toLowerCase())
       );
       return hasLocalBranch || hasDealerLocation;
     });
+
+    if (directMatches.length > 0) return directMatches;
+
+    // Fallback: If no direct local branch, display high-relevance models available for regional delivery
+    return allOffers.slice(0, 8);
   }, [allOffers, city]);
 
   // Filter local offers by category tab
   const filteredLocalOffers = useMemo(() => {
     if (selectedCategory === 'ALL') return localOffers.slice(0, 8);
-    return localOffers
-      .filter((o) => o.category === selectedCategory || o.propulsion === selectedCategory)
-      .slice(0, 8);
+    const matches = localOffers.filter((o) => o.category === selectedCategory || o.propulsion === selectedCategory);
+    return matches.length > 0 ? matches.slice(0, 8) : localOffers.slice(0, 8);
   }, [localOffers, selectedCategory]);
 
   // Dynamic SEO Metadata Injection (Title, Description, JSON-LD Schema)
@@ -226,6 +230,33 @@ export const CityBlogPostView: React.FC<CityBlogPostViewProps> = ({
               'text': f.answer
             }
           }))
+        },
+        {
+          '@type': 'ItemList',
+          'name': `Fahrrad- & E-Bike Angebote in ${city.name}`,
+          'itemListElement': filteredLocalOffers.slice(0, 6).map((offer, index) => ({
+            '@type': 'ListItem',
+            'position': index + 1,
+            'item': {
+              '@type': 'Product',
+              'name': offer.title,
+              'image': offer.image_url,
+              'brand': {
+                '@type': 'Brand',
+                'name': offer.brand_name
+              },
+              'offers': {
+                '@type': 'Offer',
+                'price': (offer.price_cents / 100).toFixed(2),
+                'priceCurrency': 'EUR',
+                'availability': 'https://schema.org/InStock',
+                'seller': {
+                  '@type': 'LocalBusiness',
+                  'name': offer.dealer_name
+                }
+              }
+            }
+          }))
         }
       ]
     };
@@ -262,13 +293,17 @@ export const CityBlogPostView: React.FC<CityBlogPostViewProps> = ({
       <div className="bg-white border-b border-slate-200 sticky top-16 z-30 shadow-2xs">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap items-center justify-between gap-3 text-xs">
           <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-slate-500 overflow-x-auto">
-            <button
-              onClick={onBackToOverview}
+            <a
+              href="?tab=cities"
+              onClick={(e) => {
+                e.preventDefault();
+                onBackToOverview();
+              }}
               className="hover:text-emerald-700 flex items-center gap-1 font-medium transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Alle Städte</span>
-            </button>
+            </a>
             <ChevronRight className="w-3 h-3 text-slate-300" />
             <span className="text-slate-500">{city.state}</span>
             <ChevronRight className="w-3 h-3 text-slate-300" />
@@ -766,27 +801,35 @@ export const CityBlogPostView: React.FC<CityBlogPostViewProps> = ({
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2.5">
             {nearbyCities.map((nc) => (
-              <button
+              <a
                 key={`${nc.code}-${nc.name}`}
-                onClick={() => onSelectCity(nc)}
-                className="p-3 bg-white hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 text-left transition-all shadow-2xs group cursor-pointer"
+                href={`?tab=cities&amp;city=${getCitySlug(nc.name)}`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  onSelectCity(nc);
+                }}
+                className="p-3 bg-white hover:bg-emerald-50 rounded-xl border border-slate-200 hover:border-emerald-300 text-left transition-all shadow-2xs group cursor-pointer block no-underline"
               >
                 <span className="text-[10px] text-slate-400 block font-mono">{nc.code}</span>
                 <span className="font-bold text-xs text-slate-800 group-hover:text-emerald-800 block truncate">
                   {nc.name}
                 </span>
                 <span className="text-[10px] text-slate-500 truncate block mt-0.5">{nc.state}</span>
-              </button>
+              </a>
             ))}
           </div>
 
           <div className="mt-6 pt-4 border-t border-slate-200 flex flex-wrap items-center justify-between gap-3 text-xs">
-            <button
-              onClick={onBackToOverview}
+            <a
+              href="?tab=cities"
+              onClick={(e) => {
+                e.preventDefault();
+                onBackToOverview();
+              }}
               className="font-bold text-emerald-700 hover:text-emerald-900 flex items-center gap-1 cursor-pointer"
             >
               <span>← Zurück zur Gesamtübersicht aller Städte in Deutschland</span>
-            </button>
+            </a>
             <span className="text-slate-400">
               VeloFind • Bundesweites Netzwerk geprüfter Fahrrad-Fachhändler
             </span>

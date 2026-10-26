@@ -32,6 +32,9 @@ import { GERMAN_LOCATIONS, sanitizeCSVField, generateUUID } from './db/utils.ts'
 import { metricsMiddleware, handleMetricsEndpoint, metrics } from './monitoring/metrics.ts';
 import { handleLivenessCheck, handleReadinessCheck } from './monitoring/health.ts';
 import { getPartnerGeneralOfferUrl } from '../utils/partner-bike-grouper.ts';
+import { generateSitemapXml } from '../utils/sitemap-generator.ts';
+import { ALL_GERMAN_CITIES } from '../data/germanCities.ts';
+import { getCityCyclingProfile } from '../data/cityBlogData.ts';
 import type { LeadStatus, BikeCategory, PropulsionType, AvailabilityStatus, OfferCondition } from '../types.ts';
 
 let isDbCheckInitiated = false;
@@ -691,6 +694,61 @@ export async function createApp(): Promise<Application> {
     } catch (err: any) {
       res.status(500).json({ error: 'Failed to refresh offer image', details: err.message });
     }
+  });
+
+  // --- PROGRAMMATIC SEO & GEO SITEMAP / ROBOTS ENDPOINTS ---
+  apiRouter.get('/sitemap.xml', (req: Request, res: Response) => {
+    try {
+      const host = req.get('host') || 'velofind.de';
+      const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+      const domain = `${protocol}://${host}`;
+      const xml = generateSitemapXml(domain);
+      res.header('Content-Type', 'application/xml; charset=utf-8');
+      res.header('Cache-Control', 'public, max-age=86400, s-maxage=86400');
+      res.send(xml);
+    } catch (err: any) {
+      console.error('Sitemap generation error:', err);
+      res.status(500).send('Error generating sitemap');
+    }
+  });
+
+  apiRouter.get('/robots.txt', (req: Request, res: Response) => {
+    const host = req.get('host') || 'velofind.de';
+    const protocol = req.protocol === 'https' || req.get('x-forwarded-proto') === 'https' ? 'https' : 'http';
+    const sitemapUrl = `${protocol}://${host}/sitemap.xml`;
+    res.header('Content-Type', 'text/plain; charset=utf-8');
+    res.header('Cache-Control', 'public, max-age=86400');
+    res.send(`User-agent: *\nAllow: /\nDisallow: /api/admin/\nDisallow: /api/ingest/\n\nSitemap: ${sitemapUrl}\n`);
+  });
+
+  // Geo Cities Directory for high-speed location search & autocomplete
+  apiRouter.get('/geo/cities', (req: Request, res: Response) => {
+    const q = req.query.q ? String(req.query.q).toLowerCase().trim() : '';
+    const state = req.query.state ? String(req.query.state) : '';
+
+    let matched = ALL_GERMAN_CITIES;
+    if (state && state !== 'ALL') {
+      matched = matched.filter((c) => c.state === state);
+    }
+    if (q) {
+      matched = matched.filter((c) => c.name.toLowerCase().includes(q) || c.code.startsWith(q));
+    }
+    res.json({
+      total: matched.length,
+      cities: matched.slice(0, 50)
+    });
+  });
+
+  apiRouter.get('/geo/city-profile', (req: Request, res: Response) => {
+    const cityName = req.query.name ? String(req.query.name) : '';
+    const city = ALL_GERMAN_CITIES.find(
+      (c) => c.name.toLowerCase() === cityName.toLowerCase() || c.code === cityName
+    );
+    if (!city) {
+      return res.status(404).json({ error: 'City not found' });
+    }
+    const profile = getCityCyclingProfile(city);
+    res.json({ city, profile });
   });
 
   // Mount API router under both /api AND root (for maximal flexibility with proxies and serverless rewrites)

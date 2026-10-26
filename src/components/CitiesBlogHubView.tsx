@@ -12,10 +12,13 @@ import {
   CheckCircle2,
   Award,
   Layers,
-  Filter
+  Filter,
+  Navigation,
+  Zap
 } from 'lucide-react';
 import { ALL_GERMAN_CITIES, GermanCity } from '../data/germanCities';
 import { getAllBundeslaender, getCitiesByState, getCitySlug } from '../data/cityBlogData';
+import { findNearestGermanCity } from '../utils/geo';
 
 interface CitiesBlogHubViewProps {
   onSelectCity: (city: GermanCity) => void;
@@ -30,6 +33,8 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedState, setSelectedState] = useState<string>('ALL');
+  const [isLocating, setIsLocating] = useState(false);
+  const [geoNotice, setGeoNotice] = useState<string | null>(null);
 
   const allStates = useMemo(() => getAllBundeslaender(), []);
 
@@ -55,6 +60,31 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
     return ALL_GERMAN_CITIES.filter((c) => c.isMetropolis).slice(0, 8);
   }, []);
 
+  const handleLocateMe = () => {
+    if (!navigator.geolocation) {
+      setGeoNotice('Standorterkennung im Browser nicht verfügbar');
+      return;
+    }
+    setIsLocating(true);
+    setGeoNotice(null);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setIsLocating(false);
+        const nearest = findNearestGermanCity(pos.coords.latitude, pos.coords.longitude);
+        if (nearest) {
+          setGeoNotice(`Nächste Stadt ermittelt: ${nearest.name} (${nearest.code})`);
+          onSelectCity(nearest);
+        }
+      },
+      (err) => {
+        setIsLocating(false);
+        console.warn('Geolocation error:', err);
+        setGeoNotice('Standort konnte nicht ermittelt werden. Bitte Stadt manuell eingeben.');
+      },
+      { timeout: 7000 }
+    );
+  };
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 pb-20">
       {/* Hero Banner */}
@@ -65,7 +95,7 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
         <div className="max-w-7xl mx-auto relative z-10 text-center">
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30 text-xs font-bold mb-4 shadow-sm">
             <Compass className="w-4 h-4 text-emerald-400" />
-            <span>Fahrrad & E-Bike Ratgeber für ganz Deutschland • 170+ Städte & Orte</span>
+            <span>Fahrrad &amp; E-Bike Ratgeber für ganz Deutschland • 170+ Städte &amp; Orte</span>
           </div>
 
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-white max-w-4xl mx-auto leading-tight">
@@ -76,29 +106,48 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
             Lokale Fachhändler, echte Händlerbestände vor Ort, regionale Radrouten und autorisiertes Dienstrad-Leasing (JobRad, BusinessBike u.v.m.) in allen 16 Bundesländern.
           </p>
 
-          {/* Quick Search Input */}
-          <div className="mt-8 max-w-xl mx-auto relative">
-            <div className="relative">
-              <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
-              <input
-                id="city-hub-search-input"
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Stadtname oder Postleitzahl eingeben (z. B. Berlin, Köln, 44787)..."
-                className="w-full pl-12 pr-10 py-3.5 bg-white text-slate-900 rounded-2xl text-sm font-medium shadow-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-slate-400"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold p-1"
-                >
-                  ✕
-                </button>
-              )}
+          {/* Quick Search & Location Bar */}
+          <div className="mt-8 max-w-2xl mx-auto">
+            <div className="flex flex-col sm:flex-row gap-2.5">
+              <div className="relative flex-1">
+                <Search className="w-5 h-5 text-slate-400 absolute left-4 top-1/2 -translate-y-1/2" />
+                <input
+                  id="city-hub-search-input"
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Stadtname oder PLZ eingeben (z. B. Berlin, München, 44787)..."
+                  className="w-full pl-12 pr-10 py-3.5 bg-white text-slate-900 rounded-2xl text-sm font-medium shadow-xl border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-500 placeholder:text-slate-400"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-xs font-bold p-1"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleLocateMe}
+                disabled={isLocating}
+                className="px-5 py-3.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white rounded-2xl text-sm font-bold shadow-xl flex items-center justify-center gap-2 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+              >
+                <Navigation className={`w-4 h-4 ${isLocating ? 'animate-spin' : ''}`} />
+                <span>{isLocating ? 'Ortung...' : 'In meiner Nähe'}</span>
+              </button>
             </div>
-            {searchQuery && (
+
+            {geoNotice && (
               <div className="mt-2 text-xs text-emerald-300 font-medium">
+                {geoNotice}
+              </div>
+            )}
+
+            {searchQuery && (
+              <div className="mt-2 text-xs text-emerald-300 font-medium text-left">
                 {filteredCities.length} {filteredCities.length === 1 ? 'Stadt gefunden' : 'Städte gefunden'}
               </div>
             )}
@@ -160,10 +209,14 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {featuredMetropolises.map((city) => (
-                <div
+                <a
                   key={`${city.code}-${city.name}`}
-                  onClick={() => onSelectCity(city)}
-                  className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between"
+                  href={`?tab=cities&amp;city=${getCitySlug(city.name)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectCity(city);
+                  }}
+                  className="bg-white p-5 rounded-2xl border border-slate-200 hover:border-emerald-400 hover:shadow-md transition-all cursor-pointer group flex flex-col justify-between block no-underline"
                 >
                   <div>
                     <div className="flex items-center justify-between gap-2 mb-2">
@@ -185,19 +238,19 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
                     <span>Stadt-Ratgeber öffnen</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </div>
-                </div>
+                </a>
               ))}
             </div>
           </section>
         )}
 
-        {/* Complete City Directory Grid */}
+        {/* Complete City Directory Grid (SEO Crawlable Anchors) */}
         <section className="mb-14">
           <div className="flex items-center justify-between gap-3 mb-6">
             <div>
               <div className="flex items-center gap-2 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
                 <Building2 className="w-4 h-4 text-emerald-600" />
-                <span>Verzeichnis aller Städte & Orte</span>
+                <span>Verzeichnis aller Städte &amp; Orte</span>
               </div>
               <h2 className="text-2xl font-black text-slate-900">
                 {selectedState === 'ALL'
@@ -213,10 +266,14 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
           {filteredCities.length > 0 ? (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
               {filteredCities.map((city) => (
-                <button
+                <a
                   key={`${city.code}-${city.name}`}
-                  onClick={() => onSelectCity(city)}
-                  className="bg-white hover:bg-emerald-50/70 p-3.5 rounded-xl border border-slate-200 hover:border-emerald-300 text-left transition-all shadow-2xs group cursor-pointer flex flex-col justify-between"
+                  href={`?tab=cities&amp;city=${getCitySlug(city.name)}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    onSelectCity(city);
+                  }}
+                  className="bg-white hover:bg-emerald-50/70 p-3.5 rounded-xl border border-slate-200 hover:border-emerald-300 text-left transition-all shadow-2xs group cursor-pointer flex flex-col justify-between block no-underline"
                 >
                   <div>
                     <span className="text-[10px] text-slate-400 block font-mono">{city.code}</span>
@@ -227,7 +284,7 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
                   <span className="text-[10px] text-slate-500 truncate block mt-1.5 font-medium">
                     {city.state}
                   </span>
-                </button>
+                </a>
               ))}
             </div>
           ) : (
@@ -248,7 +305,129 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
           )}
         </section>
 
-        {/* Why Buy Locally / SEO Information Card */}
+        {/* SEO Cross-Linking Matrix: Categories x Top Cities */}
+        <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/90 mb-12">
+          <div className="max-w-3xl mb-6">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
+              <Layers className="w-4 h-4 text-emerald-600" />
+              <span>Häufig gesuchte Fahrrad-Kategorien &amp; Regionen</span>
+            </div>
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">
+              Beliebte Suchanfragen nach Fahrrad-Kategorien in deutschen Städten
+            </h2>
+            <p className="text-xs text-slate-500 mt-1">
+              Direktzugriff auf spezialisierte Bestände und Fachhändler für E-Bikes, Gravel, Mountainbikes und Diensträder:
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 text-xs">
+            <div>
+              <span className="font-bold text-slate-900 block mb-2.5 flex items-center gap-1.5">
+                <Zap className="w-3.5 h-3.5 text-amber-500" />
+                <span>E-Bike kaufen nach Stadt</span>
+              </span>
+              <ul className="space-y-1.5 text-slate-600">
+                {['Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt am Main'].map((cityName) => {
+                  const city = ALL_GERMAN_CITIES.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
+                  return (
+                    <li key={cityName}>
+                      <a
+                        href={`?tab=cities&amp;city=${getCitySlug(cityName)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (city) onSelectCity(city);
+                        }}
+                        className="hover:text-emerald-700 hover:underline transition-colors block truncate"
+                      >
+                        E-Bikes in {cityName.replace(' am Main', '')}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-900 block mb-2.5 flex items-center gap-1.5">
+                <Compass className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Gravel Bikes nach Region</span>
+              </span>
+              <ul className="space-y-1.5 text-slate-600">
+                {['Freiburg im Breisgau', 'Stuttgart', 'München', 'Dresden', 'Hannover'].map((cityName) => {
+                  const city = ALL_GERMAN_CITIES.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
+                  return (
+                    <li key={cityName}>
+                      <a
+                        href={`?tab=cities&amp;city=${getCitySlug(cityName)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (city) onSelectCity(city);
+                        }}
+                        className="hover:text-emerald-700 hover:underline transition-colors block truncate"
+                      >
+                        Gravel Bikes in {cityName.replace(' im Breisgau', '')}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-900 block mb-2.5 flex items-center gap-1.5">
+                <Bike className="w-3.5 h-3.5 text-blue-600" />
+                <span>JobRad &amp; Dienstrad-Leasing</span>
+              </span>
+              <ul className="space-y-1.5 text-slate-600">
+                {['Düsseldorf', 'Dortmund', 'Bremen', 'Nürnberg', 'Bochum'].map((cityName) => {
+                  const city = ALL_GERMAN_CITIES.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
+                  return (
+                    <li key={cityName}>
+                      <a
+                        href={`?tab=cities&amp;city=${getCitySlug(cityName)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (city) onSelectCity(city);
+                        }}
+                        className="hover:text-emerald-700 hover:underline transition-colors block truncate"
+                      >
+                        JobRad Händler in {cityName}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-900 block mb-2.5 flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 text-purple-600" />
+                <span>Lastenräder &amp; Trekking</span>
+              </span>
+              <ul className="space-y-1.5 text-slate-600">
+                {['Münster', 'Leipzig', 'Bonn', 'Karlsruhe', 'Augsburg'].map((cityName) => {
+                  const city = ALL_GERMAN_CITIES.find((c) => c.name.toLowerCase() === cityName.toLowerCase());
+                  return (
+                    <li key={cityName}>
+                      <a
+                        href={`?tab=cities&amp;city=${getCitySlug(cityName)}`}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          if (city) onSelectCity(city);
+                        }}
+                        className="hover:text-emerald-700 hover:underline transition-colors block truncate"
+                      >
+                        Lastenrad Förderung in {cityName}
+                      </a>
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        {/* Why Buy Locally / Trust Card */}
         <section className="bg-white rounded-2xl p-6 sm:p-8 shadow-sm border border-slate-200/90 mb-12">
           <div className="max-w-3xl mb-8">
             <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-100 text-emerald-800 text-xs font-bold mb-2">
@@ -268,7 +447,7 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
               <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-xs mb-3">
                 1
               </div>
-              <h3 className="font-bold text-sm text-slate-900">Probefahrt & Ergonomie-Check</h3>
+              <h3 className="font-bold text-sm text-slate-900">Probefahrt &amp; Ergonomie-Check</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Kein Blindkauf im Karton: Teste Rahmenhöhe, Sitzposition und Fahrgefühl direkt bei deinem Fachhändler in deiner Stadt.
               </p>
@@ -278,7 +457,7 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
               <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-xs mb-3">
                 2
               </div>
-              <h3 className="font-bold text-sm text-slate-900">Fahrfertige Endmontage & Sicherheit</h3>
+              <h3 className="font-bold text-sm text-slate-900">Fahrfertige Endmontage &amp; Sicherheit</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
                 Jedes Rad wird von geschulten Zweiradmechanikern vor Ort montiert, eingestellt und mit Übergabeprotokoll fahrbereit ausgehändigt.
               </p>
@@ -288,9 +467,9 @@ export const CitiesBlogHubView: React.FC<CitiesBlogHubViewProps> = ({
               <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center font-bold text-base shadow-xs mb-3">
                 3
               </div>
-              <h3 className="font-bold text-sm text-slate-900">Dienstrad-Leasing & Meisterwerkstatt</h3>
+              <h3 className="font-bold text-sm text-slate-900">Dienstrad-Leasing &amp; Meisterwerkstatt</h3>
               <p className="text-xs text-slate-600 leading-relaxed">
-                Persönliche Betreuung für JobRad, BusinessBike & Co. inklusive jährlicher Inspektionen und Garantieabwicklung direkt vor deiner Haustür.
+                Persönliche Betreuung für JobRad, BusinessBike &amp; Co. inklusive jährlicher Inspektionen und Garantieabwicklung direkt vor deiner Haustür.
               </p>
             </div>
           </div>

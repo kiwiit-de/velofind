@@ -26,7 +26,14 @@ export const Header: React.FC<HeaderProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo & Slogan */}
-          <div className="flex items-center gap-3 cursor-pointer" onClick={() => setCurrentTab('bikes')}>
+          <a
+            href="/"
+            className="flex items-center gap-3 cursor-pointer no-underline"
+            onClick={(e) => {
+              e.preventDefault();
+              setCurrentTab('bikes');
+            }}
+          >
             <div className="w-10 h-10 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-sm">
               <Bike className="w-6 h-6" />
             </div>
@@ -37,14 +44,18 @@ export const Header: React.FC<HeaderProps> = ({
               </div>
               <p className="text-[11px] text-slate-500 hidden sm:block">Echter Händlerbestand & Dienstrad-Leasing</p>
             </div>
-          </div>
+          </a>
 
           {/* Navigation Links */}
           <nav className="flex items-center gap-1 sm:gap-1.5">
-            <button
+            <a
               id="nav-bikes-btn"
-              onClick={() => setCurrentTab('bikes')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=bikes"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('bikes');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'bikes'
                   ? 'bg-slate-900 text-white'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -52,12 +63,16 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <Search className="w-4 h-4" />
               <span>Räder & E-Bikes</span>
-            </button>
+            </a>
 
-            <button
+            <a
               id="nav-favorites-btn"
-              onClick={() => setCurrentTab('favorites')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=favorites"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('favorites');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'favorites'
                   ? 'bg-rose-600 text-white shadow-xs'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -82,14 +97,14 @@ export const Header: React.FC<HeaderProps> = ({
                   {favoritesCount}
                 </span>
               )}
-            </button>
+            </a>
 
             {compareCount > 0 && onOpenCompare && (
               <button
                 id="nav-compare-btn"
                 type="button"
                 onClick={onOpenCompare}
-                className="px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 shadow-2xs"
+                className="px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 shadow-2xs cursor-pointer"
                 title="Fahrrad-Vergleich öffnen"
               >
                 <Scale className="w-4 h-4 text-emerald-600" />
@@ -100,10 +115,14 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
             )}
 
-            <button
+            <a
               id="nav-leasing-btn"
-              onClick={() => setCurrentTab('leasing')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=leasing"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('leasing');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'leasing'
                   ? 'bg-slate-900 text-white'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -111,12 +130,16 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               <span>Dienstrad-Leasing</span>
-            </button>
+            </a>
 
-            <button
+            <a
               id="nav-dealers-btn"
-              onClick={() => setCurrentTab('dealers')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=dealers"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('dealers');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'dealers'
                   ? 'bg-slate-900 text-white'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -125,12 +148,16 @@ export const Header: React.FC<HeaderProps> = ({
               <Building2 className="w-4 h-4" />
               <span className="hidden md:inline">Partner-Händler</span>
               <span className="md:hidden">Händler</span>
-            </button>
+            </a>
 
-            <button
+            <a
               id="nav-cities-btn"
-              onClick={() => setCurrentTab('cities')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=cities"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('cities');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'cities'
                   ? 'bg-slate-900 text-white'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
@@ -139,12 +166,16 @@ export const Header: React.FC<HeaderProps> = ({
               <MapPin className="w-4 h-4 text-emerald-500" />
               <span className="hidden lg:inline">Städte & Ratgeber</span>
               <span className="lg:hidden">Städte</span>
-            </button>
+            </a>
 
-            <button
+            <a
               id="nav-admin-btn"
-              onClick={() => setCurrentTab('admin')}
-              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+              href="/?tab=admin"
+              onClick={(e) => {
+                e.preventDefault();
+                setCurrentTab('admin');
+              }}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 no-underline ${
                 currentTab === 'admin'
                   ? 'bg-emerald-700 text-white shadow-sm'
                   : 'text-emerald-700 bg-emerald-50 hover:bg-emerald-100'
@@ -152,7 +183,7 @@ export const Header: React.FC<HeaderProps> = ({
             >
               <FileSpreadsheet className="w-4 h-4" />
               <span>Händler-Portal</span>
-            </button>
+            </a>
           </nav>
         </div>
       </div>

@@ -5,7 +5,7 @@
  */
 
 import { Dealer, DealerLocation } from '../types';
-import { ALL_GERMAN_CITIES } from '../data/germanCities';
+import { ALL_GERMAN_CITIES, GermanCity } from '../data/germanCities';
 
 export interface GeoLocation {
   lat: number;
@@ -370,3 +370,22 @@ export function getNearbyDealers(
 
   return result.sort((a, b) => a.distanceKm - b.distanceKm);
 }
+
+/**
+ * Find the closest German city in the database to given GPS coordinates.
+ */
+export function findNearestGermanCity(lat: number, lng: number): GermanCity {
+  let closest = ALL_GERMAN_CITIES[0];
+  let minDistance = Infinity;
+
+  for (const city of ALL_GERMAN_CITIES) {
+    const dist = calculateDistanceKm(lat, lng, city.lat, city.lng);
+    if (dist < minDistance) {
+      minDistance = dist;
+      closest = city;
+    }
+  }
+
+  return closest;
+}
+

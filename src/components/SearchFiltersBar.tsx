@@ -1,8 +1,9 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check, Globe } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check, Globe, Navigation } from 'lucide-react';
 import { BikeCategory, PropulsionType } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { ALL_GERMAN_CITIES, TOP_GERMAN_METROPOLES, CITIES_BY_STATE, findCity } from '../data/germanCities';
+import { findNearestGermanCity } from '../utils/geo';
 import { LeasingProviderLogo, LEASING_PROVIDER_METADATA } from './LeasingProviderLogo';
 
 interface SearchFiltersBarProps {
@@ -100,6 +101,28 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
   const [isProviderOpen, setIsProviderOpen] = useState(false);
   const providerDropdownRef = useRef<HTMLDivElement>(null);
+  const [isLocating, setIsLocating] = useState(false);
+
+  const handleDetectLocation = () => {
+    if (!navigator.geolocation) return;
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        setIsLocating(false);
+        const nearest = findNearestGermanCity(pos.coords.latitude, pos.coords.longitude);
+        if (nearest) {
+          setPostalCode(nearest.code);
+          setCustomInputText(nearest.code);
+          setIsCustomMode(false);
+        }
+      },
+      (err) => {
+        setIsLocating(false);
+        console.warn('Geolocation error:', err);
+      },
+      { timeout: 7000 }
+    );
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -337,6 +360,16 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
                 </div>
               </form>
             )}
+
+            <button
+              type="button"
+              onClick={handleDetectLocation}
+              disabled={isLocating}
+              className="p-2.5 rounded-xl border border-slate-300 hover:border-emerald-500 hover:bg-emerald-50 text-slate-600 hover:text-emerald-700 transition-colors cursor-pointer shrink-0 disabled:opacity-50"
+              title="GPS-Standort ermitteln (nächstgelegene Stadt in Deutschland)"
+            >
+              <Navigation className={`w-4 h-4 ${isLocating ? 'animate-spin text-emerald-600' : ''}`} />
+            </button>
 
             {postalCode && (
               <div className="w-28">

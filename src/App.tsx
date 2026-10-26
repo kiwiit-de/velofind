@@ -1122,29 +1122,34 @@ export default function App() {
               <ul className="space-y-1.5 text-slate-500">
                 {['Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt am Main', 'Stuttgart', 'Dortmund'].map((cityName) => {
                   const c = ALL_GERMAN_CITIES.find(x => x.name.toLowerCase() === cityName.toLowerCase());
+                  const slug = getCitySlug(cityName);
                   return (
                     <li key={cityName}>
-                      <button
-                        onClick={() => {
+                      <a
+                        href={`?tab=cities&city=${slug}`}
+                        onClick={(e) => {
+                          e.preventDefault();
                           if (c) handleSelectCityBlog(c);
                         }}
-                        className="hover:text-emerald-600 transition-colors text-left"
+                        className="hover:text-emerald-600 transition-colors text-left block no-underline"
                       >
                         Fahrrad kaufen in {cityName.replace(' am Main', '')}
-                      </button>
+                      </a>
                     </li>
                   );
                 })}
                 <li>
-                  <button
-                    onClick={() => {
+                  <a
+                    href="?tab=cities"
+                    onClick={(e) => {
+                      e.preventDefault();
                       setActiveBlogCity(null);
                       setCurrentTab('cities');
                     }}
                     className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline pt-0.5 inline-block"
                   >
                     Alle 170+ Städte & Ratgeber →
-                  </button>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -1152,10 +1157,10 @@ export default function App() {
             <div>
               <span className="font-bold text-slate-900 block mb-2">Dienstrad-Leasing</span>
               <ul className="space-y-1.5 text-slate-500">
-                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">JobRad Partnerhändler</button></li>
-                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">Bikeleasing-Service</button></li>
-                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">BusinessBike Entdeckung</button></li>
-                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">Deutsche Dienstrad & Eurorad</button></li>
+                <li><a href="?tab=leasing&provider=jobrad" onClick={(e) => { e.preventDefault(); setLeasingProvider('jobrad'); setCurrentTab('bikes'); }} className="hover:text-emerald-600 block no-underline">JobRad Partnerhändler</a></li>
+                <li><a href="?tab=leasing&provider=bikeleasing" onClick={(e) => { e.preventDefault(); setLeasingProvider('bikeleasing'); setCurrentTab('bikes'); }} className="hover:text-emerald-600 block no-underline">Bikeleasing-Service</a></li>
+                <li><a href="?tab=leasing&provider=businessbike" onClick={(e) => { e.preventDefault(); setLeasingProvider('businessbike'); setCurrentTab('bikes'); }} className="hover:text-emerald-600 block no-underline">BusinessBike Entdeckung</a></li>
+                <li><a href="?tab=leasing&provider=deutsche-dienstrad" onClick={(e) => { e.preventDefault(); setLeasingProvider('deutsche-dienstrad'); setCurrentTab('bikes'); }} className="hover:text-emerald-600 block no-underline">Deutsche Dienstrad & Eurorad</a></li>
               </ul>
             </div>
 

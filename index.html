@@ -1,14 +1,71 @@
 <!doctype html>
-<html lang="en">
+<html lang="de">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>VeloFind - Bike & E-Bike Discovery Marketplace Germany</title>
-    <meta name="description" content="Germany-focused bike and e-bike discovery marketplace connecting riders with verified dealer inventory and leasing providers." />
-    <meta property="og:title" content="VeloFind - Bike & E-Bike Discovery Marketplace Germany" />
-    <meta property="og:description" content="Germany-focused bike and e-bike discovery marketplace connecting riders with verified dealer inventory and leasing providers." />
+    <title>VeloFind Deutschland – Fahrräder &amp; E-Bikes beim Fachhändler vor Ort finden</title>
+    <meta name="description" content="Fahrräder, E-Bikes &amp; Dienstrad-Leasing bei verifizierten Fachhändlern in ganz Deutschland vergleichen. Sofort verfügbar vor Ort mit Probefahrt &amp; JobRad-Vorteil." />
+    
+    <!-- Geo-Targeting & Local Search Signals (Deutschland) -->
+    <meta name="geo.region" content="DE" />
+    <meta name="geo.placename" content="Deutschland" />
+    <meta name="geo.position" content="51.1657;10.4515" />
+    <meta name="ICBM" content="51.1657, 10.4515" />
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+    <!-- OpenGraph Social Cards -->
+    <meta property="og:locale" content="de_DE" />
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="VeloFind Deutschland" />
+    <meta property="og:title" content="VeloFind Deutschland – Fahrräder &amp; E-Bikes beim Fachhändler finden" />
+    <meta property="og:description" content="Fahrräder, E-Bikes &amp; Dienstrad-Leasing bei verifizierten Fachhändlern in ganz Deutschland vergleichen. Sofort verfügbar vor Ort mit Probefahrt &amp; JobRad-Vorteil." />
+
+    <!-- Twitter / X Cards -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="VeloFind Deutschland – Fahrräder &amp; E-Bikes beim Fachhändler finden" />
+    <meta name="twitter:description" content="Fahrräder, E-Bikes &amp; Dienstrad-Leasing bei verifizierten Fachhändlern in ganz Deutschland vergleichen. Sofort verfügbar vor Ort mit Probefahrt." />
+
+    <!-- Schema.org Global WebSite & Organization (Google Rich Snippets & Sitelinks Searchbox) -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "@id": "https://velofind.de/#website",
+          "url": "https://velofind.de/",
+          "name": "VeloFind Deutschland",
+          "description": "Deutschlands Marktplatz für Fahrräder, E-Bikes und Dienstrad-Leasing beim lokalen Fachhändler.",
+          "inLanguage": "de-DE",
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://velofind.de/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "Organization",
+          "@id": "https://velofind.de/#organization",
+          "name": "VeloFind Deutschland GmbH",
+          "url": "https://velofind.de/",
+          "description": "Unabhängige Entdeckungs- und Vergleichsplattform für den stationären Fahrrad-Fachhandel und Dienstrad-Leasing in Deutschland.",
+          "areaServed": {
+            "@type": "Country",
+            "name": "Germany"
+          },
+          "contactPoint": {
+            "@type": "ContactPoint",
+            "contactType": "Customer Support",
+            "availableLanguage": ["German", "English"]
+          }
+        }
+      ]
+    }
+    </script>
+
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.css" />
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.5.3/dist/MarkerCluster.Default.css" />
@@ -18,4 +75,3 @@
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-
