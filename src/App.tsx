@@ -17,7 +17,8 @@ import { OfferCardSkeleton, OfferGridSkeleton } from './components/OfferCardSkel
 import { BikeLoadingSpinner } from './components/BikeLoadingSpinner';
 import { apiUrl } from './lib/api';
 import { Offer, Dealer, LeasingProvider, SearchResponse, BikeCategory } from './types';
-import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X, ChevronLeft, ChevronRight, Layers, Globe, ExternalLink } from 'lucide-react';
+import { Bike, Sparkles, Filter, RefreshCw, AlertCircle, CheckCircle2, ShieldCheck, MapPin, Clock, Heart, Scale, Compass, Building2, X, ChevronLeft, ChevronRight, ChevronDown, Check, Layers, Globe, ExternalLink } from 'lucide-react';
+import { LeasingProviderLogo } from './components/LeasingProviderLogo';
 import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
@@ -100,6 +101,25 @@ export default function App() {
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [cachedOffersMap, setCachedOffersMap] = useState<Record<string, Offer>>({});
+  const [isDealerLeasingDropdownOpen, setIsDealerLeasingDropdownOpen] = useState(false);
+  const dealerLeasingDropdownRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dealerLeasingDropdownRef.current &&
+        !dealerLeasingDropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDealerLeasingDropdownOpen(false);
+      }
+    };
+    if (isDealerLeasingDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isDealerLeasingDropdownOpen]);
 
   const showToast = (msg: string) => {
     setToastMessage(msg);
@@ -411,38 +431,183 @@ export default function App() {
             {/* Offers Grid Container */}
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
               {/* Partner Dealer Filter Banner */}
-              {selectedDealerSlug && (
-                <div className="mb-4 p-3 bg-emerald-50 border border-emerald-300/80 rounded-2xl flex items-center justify-between gap-3 shadow-2xs">
-                  <div className="flex items-center gap-2 text-xs font-semibold text-emerald-950">
-                    <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
-                    <span>
-                      Gefiltert nach Partner-Händler:{' '}
-                      <strong>{dealers.find((d) => d.slug === selectedDealerSlug)?.name || selectedDealerSlug}</strong>
-                      {dealers.find((d) => d.slug === selectedDealerSlug)?.locations?.[0]?.city
-                        ? ` in ${dealers.find((d) => d.slug === selectedDealerSlug)?.locations?.[0]?.city}`
-                        : ''}
-                    </span>
+              {selectedDealerSlug && (() => {
+                const currentDealer = dealers.find((d) => d.slug === selectedDealerSlug);
+                const dealerSupportedProviders = currentDealer?.supported_providers || [];
+                const dealerCity = currentDealer?.locations?.[0]?.city;
+
+                return (
+                  <div className="mb-4 p-3.5 bg-gradient-to-r from-emerald-50 via-teal-50/40 to-emerald-50 border border-emerald-300/90 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-3 shadow-2xs">
+                    <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex items-center gap-2 text-xs font-semibold text-emerald-950">
+                        <Building2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                        <span>
+                          Gefiltert nach Partner-Händler:{' '}
+                          <strong className="text-slate-900">{currentDealer?.name || selectedDealerSlug}</strong>
+                          {dealerCity ? ` in ${dealerCity}` : ''}
+                        </span>
+                      </div>
+
+                      {/* Dropdown-Menü: Speziell alle vom aktuellen Händler unterstützten Leasing-Anbieter */}
+                      <div className="relative" ref={dealerLeasingDropdownRef}>
+                        <button
+                          id="btn-dealer-leasing-dropdown"
+                          type="button"
+                          onClick={() => setIsDealerLeasingDropdownOpen((prev) => !prev)}
+                          className={`px-3 py-1.5 rounded-xl border text-xs font-semibold flex items-center gap-1.5 transition-all shadow-2xs cursor-pointer ${
+                            isDealerLeasingDropdownOpen
+                              ? 'bg-emerald-700 text-white border-emerald-700 ring-2 ring-emerald-300'
+                              : leasingProvider !== 'ALL'
+                              ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                              : 'bg-white hover:bg-emerald-100/80 border-emerald-300 text-emerald-950'
+                          }`}
+                          title="Alle vom aktuellen Händler unterstützten Leasing-Anbieter anzeigen"
+                        >
+                          <ShieldCheck className={`w-3.5 h-3.5 ${isDealerLeasingDropdownOpen || leasingProvider !== 'ALL' ? 'text-white' : 'text-emerald-600'}`} />
+                          <span>
+                            {leasingProvider !== 'ALL'
+                              ? `Leasing: ${dealerSupportedProviders.find((p) => p.provider_slug === leasingProvider)?.provider_name || leasingProvider}`
+                              : `${dealerSupportedProviders.length} Leasing-Anbieter unterstützt`}
+                          </span>
+                          <ChevronDown className={`w-3.5 h-3.5 transition-transform duration-200 ${isDealerLeasingDropdownOpen ? 'rotate-180' : ''}`} />
+                        </button>
+
+                        {/* Interactive Dropdown Menu */}
+                        {isDealerLeasingDropdownOpen && (
+                          <div className="absolute left-0 mt-2 w-80 sm:w-96 bg-white border border-slate-200 rounded-2xl shadow-xl z-50 p-3.5 space-y-2.5 text-slate-800 animate-in fade-in slide-in-from-top-2 duration-150">
+                            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+                              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-900">
+                                <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                                <span>Unterstützte Leasing-Partner ({currentDealer?.name})</span>
+                              </div>
+                              <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                {dealerSupportedProviders.length} autorisiert
+                              </span>
+                            </div>
+
+                            <p className="text-[11px] text-slate-600 leading-normal">
+                              <strong>{currentDealer?.name}</strong> unterstützt Dienstrad-Leasing über folgende autorisierte Partner. Klicke auf einen Anbieter, um die Angebote zu filtern:
+                            </p>
+
+                            <div className="max-h-64 overflow-y-auto space-y-1.5 pr-0.5 divide-y divide-slate-50">
+                              {/* Option: All providers */}
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setLeasingProvider('ALL');
+                                  setIsDealerLeasingDropdownOpen(false);
+                                }}
+                                className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-colors ${
+                                  leasingProvider === 'ALL'
+                                    ? 'bg-emerald-50 font-bold text-emerald-950 border border-emerald-200/80'
+                                    : 'hover:bg-slate-50 text-slate-700'
+                                }`}
+                              >
+                                <span className="flex items-center gap-2">
+                                  <Layers className="w-3.5 h-3.5 text-emerald-600" />
+                                  <span>Alle Leasing-Anbieter dieses Händlers ({dealerSupportedProviders.length})</span>
+                                </span>
+                                {leasingProvider === 'ALL' && <Check className="w-4 h-4 text-emerald-600" />}
+                              </button>
+
+                              {dealerSupportedProviders.map((provider) => {
+                                const isSelected = leasingProvider === provider.provider_slug;
+                                return (
+                                  <button
+                                    key={provider.provider_slug}
+                                    type="button"
+                                    onClick={() => {
+                                      setLeasingProvider(isSelected ? 'ALL' : provider.provider_slug);
+                                      setIsDealerLeasingDropdownOpen(false);
+                                    }}
+                                    className={`w-full text-left p-2 rounded-xl text-xs flex items-center justify-between transition-colors border ${
+                                      isSelected
+                                        ? 'bg-emerald-50 border-emerald-300 font-bold text-emerald-950 shadow-2xs'
+                                        : 'border-transparent hover:bg-slate-50 text-slate-800'
+                                    }`}
+                                  >
+                                    <div className="flex items-center gap-2.5">
+                                      <LeasingProviderLogo slug={provider.provider_slug} name={provider.provider_name} size="xs" />
+                                      <div>
+                                        <div className="font-semibold text-slate-900">{provider.provider_name}</div>
+                                        <div className="text-[10px] text-slate-500">
+                                          {provider.contract_reference ? `Vertrags-ID: ${provider.contract_reference}` : 'Offizieller Rahmenvertrag autorisiert'}
+                                        </div>
+                                      </div>
+                                    </div>
+                                    <div className="flex items-center gap-1.5">
+                                      <span className="text-[10px] font-bold px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800">
+                                        {provider.status || 'VERIFIZIERT'}
+                                      </span>
+                                      {isSelected && <Check className="w-4 h-4 text-emerald-600" />}
+                                    </div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+
+                            <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                              <span>✓ Alle Partner-Verträge verifiziert</span>
+                              {currentDealer && (
+                                <button
+                                  type="button"
+                                  onClick={() => {
+                                    setIsDealerLeasingDropdownOpen(false);
+                                    setPartnerModalDealer(currentDealer);
+                                  }}
+                                  className="text-emerald-700 hover:text-emerald-900 hover:underline font-bold"
+                                >
+                                  Händlerprofil öffnen →
+                                </button>
+                              )}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Quick preview tags of the top supported leasing providers */}
+                      <div className="hidden lg:flex items-center gap-1.5">
+                        {dealerSupportedProviders.slice(0, 3).map((p) => (
+                          <span
+                            key={p.provider_slug}
+                            className="px-2 py-0.5 text-[11px] font-semibold bg-white text-emerald-800 rounded-lg border border-emerald-200/80 shadow-2xs flex items-center gap-1"
+                            title={`${p.provider_name} unterstützt`}
+                          >
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
+                            <span>{p.provider_name}</span>
+                          </span>
+                        ))}
+                        {dealerSupportedProviders.length > 3 && (
+                          <span className="text-[11px] text-emerald-800/80 font-medium">
+                            +{dealerSupportedProviders.length - 3} weitere
+                          </span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 self-end md:self-auto shrink-0">
+                      <button
+                        onClick={() => {
+                          if (currentDealer) setPartnerModalDealer(currentDealer);
+                        }}
+                        className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline"
+                      >
+                        Händlerprofil öffnen
+                      </button>
+                      <button
+                        onClick={() => {
+                          setSelectedDealerSlug('');
+                          setIsDealerLeasingDropdownOpen(false);
+                        }}
+                        className="px-2.5 py-1.5 text-xs font-semibold bg-white hover:bg-emerald-100 text-emerald-800 rounded-xl border border-emerald-200 transition-colors flex items-center gap-1 shadow-2xs"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                        <span>Filter aufheben</span>
+                      </button>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <button
-                      onClick={() => {
-                        const d = dealers.find((x) => x.slug === selectedDealerSlug);
-                        if (d) setPartnerModalDealer(d);
-                      }}
-                      className="text-xs text-emerald-700 hover:text-emerald-900 font-bold underline"
-                    >
-                      Händlerprofil öffnen
-                    </button>
-                    <button
-                      onClick={() => setSelectedDealerSlug('')}
-                      className="px-2 py-1 text-xs font-semibold bg-white hover:bg-emerald-100 text-emerald-800 rounded-lg border border-emerald-200 transition-colors flex items-center gap-1"
-                    >
-                      <X className="w-3.5 h-3.5" />
-                      <span>Händler-Filter aufheben</span>
-                    </button>
-                  </div>
-                </div>
-              )}
+                );
+              })()}
               {/* Results Count & Quick Info Banner */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
                 <div>
