@@ -23,6 +23,10 @@ import { useFavorites } from './utils/favorites';
 import { useCompare } from './utils/compare';
 import { resolveLocation, getNearbyDealers } from './utils/geo';
 import { getPartnerGeneralOfferUrl, groupPartnerOffers } from './utils/partner-bike-grouper';
+import { CityBlogPostView } from './components/CityBlogPostView';
+import { CitiesBlogHubView } from './components/CitiesBlogHubView';
+import { GermanCity, ALL_GERMAN_CITIES } from './data/germanCities';
+import { findCityBySlugOrName, getCitySlug } from './data/cityBlogData';
 
 export default function App() {
   // Read initial search params from URL
@@ -34,12 +38,23 @@ export default function App() {
     }
   }, []);
 
-  const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin'>(() => {
+  const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'cities' | 'admin'>(() => {
     const tabParam = initialParams.get('tab');
-    if (tabParam === 'dealers' || tabParam === 'favorites' || tabParam === 'leasing' || tabParam === 'admin') {
+    if (tabParam === 'dealers' || tabParam === 'favorites' || tabParam === 'leasing' || tabParam === 'admin' || tabParam === 'cities') {
       return tabParam;
     }
+    if (initialParams.get('city')) {
+      return 'cities';
+    }
     return 'bikes';
+  });
+
+  const [activeBlogCity, setActiveBlogCity] = useState<GermanCity | null>(() => {
+    const cityParam = initialParams.get('city');
+    if (cityParam) {
+      return findCityBySlugOrName(cityParam) || null;
+    }
+    return null;
   });
   const { favoriteIds, clearFavorites, favoritesCount } = useFavorites();
   const { compareIds, compareCount, removeCompare, clearCompare } = useCompare();
@@ -370,6 +385,33 @@ export default function App() {
     setPostalCode('');
     setRadiusKm(50);
     setSort('newest');
+  };
+
+  const handleSelectCityBlog = (city: GermanCity) => {
+    setActiveBlogCity(city);
+    setCurrentTab('cities');
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'cities');
+      url.searchParams.set('city', getCitySlug(city.name));
+      window.history.pushState({}, '', url.toString());
+    } catch {}
+  };
+
+  const handleBackToCitiesHub = () => {
+    setActiveBlogCity(null);
+    try {
+      const url = new URL(window.location.href);
+      url.searchParams.set('tab', 'cities');
+      url.searchParams.delete('city');
+      window.history.pushState({}, '', url.toString());
+    } catch {}
+  };
+
+  const handleApplyCityToCatalog = (cityPostalCode: string, cityName: string) => {
+    setPostalCode(cityPostalCode);
+    setCurrentTab('bikes');
+    showToast(`Filter auf ${cityName} (${cityPostalCode}) angewendet`);
   };
 
   return (
@@ -1024,6 +1066,32 @@ export default function App() {
           />
         )}
 
+        {currentTab === 'cities' && (
+          activeBlogCity ? (
+            <CityBlogPostView
+              city={activeBlogCity}
+              allOffers={offers}
+              allDealers={dealers}
+              onSelectCity={handleSelectCityBlog}
+              onBackToOverview={handleBackToCitiesHub}
+              onSelectOffer={setSelectedOffer}
+              onTrackOutbound={handleTrackOutbound}
+              onOpenDealer={(dealerSlug) => {
+                const d = dealers.find((x) => x.slug === dealerSlug);
+                if (d) setPartnerModalDealer(d);
+              }}
+              onApplyCityToCatalog={handleApplyCityToCatalog}
+              onOpenLeasingGuide={() => setCurrentTab('leasing')}
+            />
+          ) : (
+            <CitiesBlogHubView
+              onSelectCity={handleSelectCityBlog}
+              onApplyCityToCatalog={handleApplyCityToCatalog}
+              onOpenLeasingGuide={() => setCurrentTab('leasing')}
+            />
+          )
+        )}
+
         {currentTab === 'admin' && (
           <DealerAdminPortal
             dealers={dealers}
@@ -1038,24 +1106,56 @@ export default function App() {
       {/* Footer */}
       <footer className="bg-white border-t border-slate-200 py-10 mt-16">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8 text-xs text-slate-600">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-8 mb-8 text-xs text-slate-600">
             <div>
               <div className="flex items-center gap-2 font-bold text-slate-900 text-base mb-2">
                 <Bike className="w-5 h-5 text-emerald-600" />
                 <span>VeloFind Deutschland</span>
               </div>
               <p className="leading-relaxed text-slate-500">
-                Die unabhängige Entdeckungs- und Vergleichsplattform für stationären Fachhändler-Bestand und Dienstrad-Leasing.
+                Die unabhängige Entdeckungs- und Vergleichsplattform für stationären Fachhändler-Bestand und Dienstrad-Leasing in ganz Deutschland.
               </p>
+            </div>
+
+            <div>
+              <span className="font-bold text-slate-900 block mb-2">Städte & Regionen</span>
+              <ul className="space-y-1.5 text-slate-500">
+                {['Berlin', 'München', 'Hamburg', 'Köln', 'Frankfurt am Main', 'Stuttgart', 'Dortmund'].map((cityName) => {
+                  const c = ALL_GERMAN_CITIES.find(x => x.name.toLowerCase() === cityName.toLowerCase());
+                  return (
+                    <li key={cityName}>
+                      <button
+                        onClick={() => {
+                          if (c) handleSelectCityBlog(c);
+                        }}
+                        className="hover:text-emerald-600 transition-colors text-left"
+                      >
+                        Fahrrad kaufen in {cityName.replace(' am Main', '')}
+                      </button>
+                    </li>
+                  );
+                })}
+                <li>
+                  <button
+                    onClick={() => {
+                      setActiveBlogCity(null);
+                      setCurrentTab('cities');
+                    }}
+                    className="font-semibold text-emerald-600 hover:text-emerald-700 hover:underline pt-0.5 inline-block"
+                  >
+                    Alle 170+ Städte & Ratgeber →
+                  </button>
+                </li>
+              </ul>
             </div>
 
             <div>
               <span className="font-bold text-slate-900 block mb-2">Dienstrad-Leasing</span>
               <ul className="space-y-1.5 text-slate-500">
-                <li>JobRad Partnerhändler</li>
-                <li>Bikeleasing-Service</li>
-                <li>BusinessBike Entdeckung</li>
-                <li>Deutsche Dienstrad & Eurorad</li>
+                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">JobRad Partnerhändler</button></li>
+                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">Bikeleasing-Service</button></li>
+                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">BusinessBike Entdeckung</button></li>
+                <li><button onClick={() => setCurrentTab('leasing')} className="hover:text-emerald-600">Deutsche Dienstrad & Eurorad</button></li>
               </ul>
             </div>
 

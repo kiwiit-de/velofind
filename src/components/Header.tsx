@@ -4,8 +4,8 @@ import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
 
 interface HeaderProps {
-  currentTab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin';
-  setCurrentTab: (tab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'admin') => void;
+  currentTab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'cities' | 'admin';
+  setCurrentTab: (tab: 'bikes' | 'favorites' | 'leasing' | 'dealers' | 'cities' | 'admin') => void;
   selectedCity: string;
   setSelectedCity: (city: string) => void;
   onOpenCompare?: () => void;
@@ -125,6 +125,20 @@ export const Header: React.FC<HeaderProps> = ({
               <Building2 className="w-4 h-4" />
               <span className="hidden md:inline">Partner-Händler</span>
               <span className="md:hidden">Händler</span>
+            </button>
+
+            <button
+              id="nav-cities-btn"
+              onClick={() => setCurrentTab('cities')}
+              className={`px-3 py-2 text-sm font-medium rounded-lg transition-colors flex items-center gap-1.5 ${
+                currentTab === 'cities'
+                  ? 'bg-slate-900 text-white'
+                  : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+              }`}
+            >
+              <MapPin className="w-4 h-4 text-emerald-500" />
+              <span className="hidden lg:inline">Städte & Ratgeber</span>
+              <span className="lg:hidden">Städte</span>
             </button>
 
             <button
