@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
-import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check, Globe, Navigation } from 'lucide-react';
+import { Search, MapPin, SlidersHorizontal, ArrowUpDown, X, Heart, Edit3, ListFilter, Bike, ChevronDown, Check, Globe, Navigation, Bell, Zap, Gauge, Weight, Euro, Sparkles } from 'lucide-react';
 import { BikeCategory, PropulsionType } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { ALL_GERMAN_CITIES, TOP_GERMAN_METROPOLES, CITIES_BY_STATE, findCity } from '../data/germanCities';
@@ -19,6 +19,18 @@ interface SearchFiltersBarProps {
   motorBrand?: string;
   setMotorBrand?: (mb: string) => void;
   availableMotorBrands?: { name: string; count: number }[];
+  engineType?: string;
+  setEngineType?: (et: string) => void;
+  frameType?: string;
+  setFrameType?: (ft: string) => void;
+  minTorque?: number;
+  setMinTorque?: (nm: number) => void;
+  maxWeight?: number;
+  setMaxWeight?: (kg: number) => void;
+  minPrice?: number;
+  setMinPrice?: (min: number | undefined) => void;
+  maxPrice?: number;
+  setMaxPrice?: (max: number | undefined) => void;
   leasingProvider: string;
   setLeasingProvider: (lp: string) => void;
   selectedDealerSlug?: string;
@@ -36,6 +48,8 @@ interface SearchFiltersBarProps {
   resetFilters: () => void;
   onlyFavorites?: boolean;
   setOnlyFavorites?: (val: boolean) => void;
+  onOpenSaveSearch?: () => void;
+  onOpenSavedSearches?: () => void;
 }
 
 export interface CategoryOption {
@@ -76,6 +90,18 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   motorBrand,
   setMotorBrand,
   availableMotorBrands,
+  engineType = 'ALL',
+  setEngineType,
+  frameType = 'ALL',
+  setFrameType,
+  minTorque = 0,
+  setMinTorque,
+  maxWeight = 0,
+  setMaxWeight,
+  minPrice,
+  setMinPrice,
+  maxPrice,
+  setMaxPrice,
   leasingProvider,
   setLeasingProvider,
   selectedDealerSlug,
@@ -92,7 +118,9 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   totalResults,
   resetFilters,
   onlyFavorites = false,
-  setOnlyFavorites
+  setOnlyFavorites,
+  onOpenSaveSearch,
+  onOpenSavedSearches
 }) => {
   const { favoritesCount } = useFavorites();
   const [isCustomMode, setIsCustomMode] = useState(false);
@@ -102,6 +130,8 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
   const [isProviderOpen, setIsProviderOpen] = useState(false);
   const providerDropdownRef = useRef<HTMLDivElement>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [isPriceCustomOpen, setIsPriceCustomOpen] = useState(false);
+  const priceDropdownRef = useRef<HTMLDivElement>(null);
 
   const handleDetectLocation = () => {
     if (!navigator.geolocation) return;
@@ -132,11 +162,15 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
       if (providerDropdownRef.current && !providerDropdownRef.current.contains(event.target as Node)) {
         setIsProviderOpen(false);
       }
+      if (priceDropdownRef.current && !priceDropdownRef.current.contains(event.target as Node)) {
+        setIsPriceCustomOpen(false);
+      }
     };
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         setIsCategoryOpen(false);
         setIsProviderOpen(false);
+        setIsPriceCustomOpen(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -221,7 +255,23 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
     tagline: ''
   };
 
-  const isFiltered = query || category !== 'ALL' || propulsion !== 'ALL' || brand !== 'ALL' || (motorBrand && motorBrand !== 'ALL') || leasingProvider !== 'ALL' || selectedDealerSlug || postalCode || onlyFavorites;
+  const isFiltered = Boolean(
+    query ||
+    category !== 'ALL' ||
+    propulsion !== 'ALL' ||
+    brand !== 'ALL' ||
+    (motorBrand && motorBrand !== 'ALL') ||
+    (engineType && engineType !== 'ALL') ||
+    (frameType && frameType !== 'ALL') ||
+    (minTorque && minTorque > 0) ||
+    (maxWeight && maxWeight > 0) ||
+    (minPrice !== undefined && minPrice > 0) ||
+    (maxPrice !== undefined && maxPrice > 0) ||
+    leasingProvider !== 'ALL' ||
+    selectedDealerSlug ||
+    postalCode ||
+    onlyFavorites
+  );
 
   // Check if current postalCode matches a known city
   const knownCity = findCity(postalCode);
@@ -975,6 +1025,226 @@ export const SearchFiltersBar: React.FC<SearchFiltersBarProps> = ({
               <span>Filter zurücksetzen</span>
             </button>
           )}
+        </div>
+
+        {/* Advanced Filters & Saved Search Row */}
+        <div className="mt-3 pt-3 border-t border-slate-100 flex flex-wrap items-center gap-2 text-xs">
+          {/* Motortyp Filter */}
+          {setEngineType && (
+            <select
+              id="filter-engine-type-select"
+              value={engineType}
+              onChange={(e) => setEngineType(e.target.value)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                engineType !== 'ALL'
+                  ? 'bg-emerald-50 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-white text-slate-700 border-slate-200'
+              }`}
+              title="Motortyp filtern"
+            >
+              <option value="ALL">⚡ Motortyp: Alle</option>
+              <option value="MITTELMOTOR">Mittelmotor (Tretlager)</option>
+              <option value="HECKMOTOR">Heckmotor (Nabenmotor)</option>
+              <option value="FRONT_MOTOR">Frontmotor (Vorderrad)</option>
+              <option value="MUSCULAR">Bio-Bike (ohne Motor)</option>
+            </select>
+          )}
+
+          {/* Rahmenform Filter */}
+          {setFrameType && (
+            <select
+              id="filter-frame-type-select"
+              value={frameType}
+              onChange={(e) => setFrameType(e.target.value)}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                frameType !== 'ALL'
+                  ? 'bg-emerald-50 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-white text-slate-700 border-slate-200'
+              }`}
+              title="Rahmenform filtern"
+            >
+              <option value="ALL">🚲 Rahmenform: Alle</option>
+              <option value="DIAMOND">Diamant / Herren</option>
+              <option value="TRAPEZE">Trapez / Damen</option>
+              <option value="WAVE">Wave / Tiefeinsteiger</option>
+              <option value="COMPACT">Kompakt / Faltrad</option>
+            </select>
+          )}
+
+          {/* Drehmoment Nm Filter */}
+          {setMinTorque && (
+            <select
+              id="filter-torque-select"
+              value={minTorque || 0}
+              onChange={(e) => setMinTorque(Number(e.target.value))}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                minTorque && minTorque > 0
+                  ? 'bg-emerald-50 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-white text-slate-700 border-slate-200'
+              }`}
+              title="Mindest-Drehmoment des Motors filtern"
+            >
+              <option value={0}>💪 Drehmoment: Beliebig</option>
+              <option value={40}>ab 40 Nm (City & Leicht)</option>
+              <option value={60}>ab 60 Nm (Allround)</option>
+              <option value={75}>ab 75 Nm (Sport & Tour)</option>
+              <option value={85}>ab 85 Nm (Power E-MTB)</option>
+            </select>
+          )}
+
+          {/* Bike Weight Filter */}
+          {setMaxWeight && (
+            <select
+              id="filter-weight-select"
+              value={maxWeight || 0}
+              onChange={(e) => setMaxWeight(Number(e.target.value))}
+              className={`px-3 py-1.5 rounded-lg border text-xs font-medium focus:outline-none focus:ring-1 focus:ring-emerald-500 transition-colors ${
+                maxWeight && maxWeight > 0
+                  ? 'bg-emerald-50 text-emerald-950 border-emerald-400 font-semibold'
+                  : 'bg-white text-slate-700 border-slate-200'
+              }`}
+              title="Maximales Fahrradgewicht filtern"
+            >
+              <option value={0}>⚖️ Gewicht: Beliebig</option>
+              <option value={16}>bis 16 kg (Ultraleicht)</option>
+              <option value={20}>bis 20 kg (Leichtbau)</option>
+              <option value={24}>bis 24 kg</option>
+              <option value={28}>bis 28 kg</option>
+            </select>
+          )}
+
+          {/* Price Range Filter */}
+          {(setMinPrice || setMaxPrice) && (
+            <div className="relative" ref={priceDropdownRef}>
+              <button
+                id="filter-price-dropdown-btn"
+                type="button"
+                onClick={() => setIsPriceCustomOpen((prev) => !prev)}
+                className={`px-3 py-1.5 rounded-lg border text-xs font-medium flex items-center gap-1.5 transition-colors cursor-pointer ${
+                  (minPrice !== undefined && minPrice > 0) || (maxPrice !== undefined && maxPrice > 0)
+                    ? 'bg-emerald-50 text-emerald-950 border-emerald-400 font-semibold'
+                    : 'bg-white text-slate-700 hover:text-slate-900 border-slate-200'
+                }`}
+                title="Preisspanne filtern"
+              >
+                <Euro className="w-3.5 h-3.5 text-emerald-600" />
+                <span>
+                  {minPrice && maxPrice
+                    ? `${minPrice.toLocaleString('de-DE')} € – ${maxPrice.toLocaleString('de-DE')} €`
+                    : minPrice
+                    ? `ab ${minPrice.toLocaleString('de-DE')} €`
+                    : maxPrice
+                    ? `bis ${maxPrice.toLocaleString('de-DE')} €`
+                    : 'Preis: Beliebig'}
+                </span>
+                <ChevronDown className={`w-3 h-3 transition-transform ${isPriceCustomOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {isPriceCustomOpen && (
+                <div className="absolute left-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-slate-200 p-3 z-40 space-y-3 animate-in fade-in zoom-in-95 duration-100">
+                  <div className="text-xs font-bold text-slate-800 flex items-center justify-between">
+                    <span>Preisspanne wählen</span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (setMinPrice) setMinPrice(undefined);
+                        if (setMaxPrice) setMaxPrice(undefined);
+                        setIsPriceCustomOpen(false);
+                      }}
+                      className="text-[11px] text-slate-400 hover:text-slate-700 underline"
+                    >
+                      Zurücksetzen
+                    </button>
+                  </div>
+
+                  {/* Popular Presets */}
+                  <div className="grid grid-cols-2 gap-1.5 text-xs">
+                    {[
+                      { label: 'bis 1.500 €', min: undefined, max: 1500 },
+                      { label: '1.500 – 3.000 €', min: 1500, max: 3000 },
+                      { label: '3.000 – 5.000 €', min: 3000, max: 5000 },
+                      { label: 'über 5.000 €', min: 5000, max: undefined }
+                    ].map((preset) => (
+                      <button
+                        key={preset.label}
+                        type="button"
+                        onClick={() => {
+                          if (setMinPrice) setMinPrice(preset.min);
+                          if (setMaxPrice) setMaxPrice(preset.max);
+                          setIsPriceCustomOpen(false);
+                        }}
+                        className="px-2 py-1.5 bg-slate-50 hover:bg-emerald-50 hover:text-emerald-800 rounded-lg text-slate-700 text-left border border-slate-200/80 transition-colors text-[11px] font-medium"
+                      >
+                        {preset.label}
+                      </button>
+                    ))}
+                  </div>
+
+                  {/* Custom Min / Max Inputs */}
+                  <div className="pt-2 border-t border-slate-100 flex items-center gap-2">
+                    <div className="flex-1">
+                      <label className="block text-[10px] text-slate-500 font-semibold mb-1">Min (€)</label>
+                      <input
+                        type="number"
+                        placeholder="0"
+                        value={minPrice ?? ''}
+                        onChange={(e) => setMinPrice && setMinPrice(e.target.value ? Number(e.target.value) : undefined)}
+                        className="w-full px-2 py-1 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                    <span className="text-slate-400 mt-4">–</span>
+                    <div className="flex-1">
+                      <label className="block text-[10px] text-slate-500 font-semibold mb-1">Max (€)</label>
+                      <input
+                        type="number"
+                        placeholder="10000"
+                        value={maxPrice ?? ''}
+                        onChange={(e) => setMaxPrice && setMaxPrice(e.target.value ? Number(e.target.value) : undefined)}
+                        className="w-full px-2 py-1 border border-slate-200 rounded-lg text-xs"
+                      />
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => setIsPriceCustomOpen(false)}
+                    className="w-full py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs font-semibold"
+                  >
+                    Anwenden
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Action: Saved Search / Suchagent Buttons */}
+          <div className="ml-auto flex items-center gap-2">
+            {onOpenSaveSearch && (
+              <button
+                id="btn-save-search-alert"
+                type="button"
+                onClick={onOpenSaveSearch}
+                className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center gap-1.5 shadow-2xs hover:shadow transition-all cursor-pointer"
+                title="Suchauftrag speichern & Benachrichtigung bei neuen Rädern erhalten"
+              >
+                <Bell className="w-3.5 h-3.5 fill-emerald-100 text-white" />
+                <span>Suchauftrag speichern</span>
+              </button>
+            )}
+
+            {onOpenSavedSearches && (
+              <button
+                id="btn-view-saved-searches"
+                type="button"
+                onClick={onOpenSavedSearches}
+                className="px-2.5 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200/80 text-slate-700 hover:text-slate-900 font-medium text-xs flex items-center gap-1.5 transition-colors cursor-pointer border border-slate-200/70"
+                title="Meine gespeicherten Suchagenten verwalten"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-slate-500" />
+                <span className="hidden sm:inline">Meine Suchagenten</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
     </div>

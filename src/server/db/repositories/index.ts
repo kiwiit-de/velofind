@@ -15,4 +15,5 @@ export * from './leasing-providers.repository.ts';
 export * from './import-runs.repository.ts';
 export * from './audit-events.repository.ts';
 export * from './user-alerts.repository.ts';
+export * from './saved-searches.repository.ts';
 

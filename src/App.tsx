@@ -12,6 +12,8 @@ import { CompareFloatingBar } from './components/CompareFloatingBar';
 import { CompareModal } from './components/CompareModal';
 import { NearbyDealersMap } from './components/NearbyDealersMap';
 import { PartnerDealerModal } from './components/PartnerDealerModal';
+import { SaveSearchModal } from './components/SaveSearchModal';
+import { SavedSearchesListModal } from './components/SavedSearchesListModal';
 import { MarketTrendsSection } from './components/MarketTrendsSection';
 import { OfferCardSkeleton, OfferGridSkeleton } from './components/OfferCardSkeleton';
 import { BikeLoadingSpinner } from './components/BikeLoadingSpinner';
@@ -39,6 +41,22 @@ export default function App() {
   }, []);
 
   const [currentTab, setCurrentTab] = useState<'bikes' | 'favorites' | 'leasing' | 'dealers' | 'cities' | 'admin'>(() => {
+    try {
+      const pathname = window.location.pathname.toLowerCase();
+      if (pathname.startsWith('/stadt/') || pathname === '/staedte' || pathname === '/ratgeber') {
+        return 'cities';
+      }
+      if (pathname.startsWith('/leasing')) {
+        return 'leasing';
+      }
+      if (pathname === '/haendler') {
+        return 'dealers';
+      }
+      if (pathname === '/favoriten') {
+        return 'favorites';
+      }
+    } catch {}
+
     const tabParam = initialParams.get('tab');
     if (tabParam === 'dealers' || tabParam === 'favorites' || tabParam === 'leasing' || tabParam === 'admin' || tabParam === 'cities') {
       return tabParam;
@@ -50,12 +68,60 @@ export default function App() {
   });
 
   const [activeBlogCity, setActiveBlogCity] = useState<GermanCity | null>(() => {
+    try {
+      const pathname = window.location.pathname;
+      if (pathname.toLowerCase().startsWith('/stadt/')) {
+        const slug = pathname.slice(7).split('/')[0];
+        const match = findCityBySlugOrName(slug);
+        if (match) return match;
+      }
+    } catch {}
+
     const cityParam = initialParams.get('city');
     if (cityParam) {
       return findCityBySlugOrName(cityParam) || null;
     }
     return null;
   });
+
+  // Listen for browser back/forward buttons
+  useEffect(() => {
+    const handlePopState = () => {
+      try {
+        const path = window.location.pathname.toLowerCase();
+        const search = new URLSearchParams(window.location.search);
+        if (path.startsWith('/stadt/')) {
+          const slug = path.slice(7).split('/')[0];
+          const matched = findCityBySlugOrName(slug);
+          if (matched) {
+            setActiveBlogCity(matched);
+            setCurrentTab('cities');
+            return;
+          }
+        }
+        if (path === '/staedte' || path === '/ratgeber' || search.get('tab') === 'cities') {
+          setActiveBlogCity(null);
+          setCurrentTab('cities');
+          return;
+        }
+        if (path.startsWith('/leasing') || search.get('tab') === 'leasing') {
+          setCurrentTab('leasing');
+          return;
+        }
+        if (path === '/haendler' || search.get('tab') === 'dealers') {
+          setCurrentTab('dealers');
+          return;
+        }
+        if (path === '/favoriten' || search.get('tab') === 'favorites') {
+          setCurrentTab('favorites');
+          return;
+        }
+        setCurrentTab('bikes');
+      } catch {}
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
   const { favoriteIds, clearFavorites, favoritesCount } = useFavorites();
   const { compareIds, compareCount, removeCompare, clearCompare } = useCompare();
 
@@ -65,6 +131,18 @@ export default function App() {
   const [propulsion, setPropulsion] = useState(() => initialParams.get('propulsion') || 'ALL');
   const [brand, setBrand] = useState(() => initialParams.get('brand') || 'ALL');
   const [motorBrand, setMotorBrand] = useState(() => initialParams.get('motorBrand') || 'ALL');
+  const [engineType, setEngineType] = useState(() => initialParams.get('engineType') || 'ALL');
+  const [frameType, setFrameType] = useState(() => initialParams.get('frameType') || 'ALL');
+  const [minTorque, setMinTorque] = useState<number>(() => Number(initialParams.get('minTorque')) || 0);
+  const [maxWeight, setMaxWeight] = useState<number>(() => Number(initialParams.get('maxWeight')) || 0);
+  const [minPrice, setMinPrice] = useState<number | undefined>(() => {
+    const val = initialParams.get('minPrice');
+    return val ? Number(val) : undefined;
+  });
+  const [maxPrice, setMaxPrice] = useState<number | undefined>(() => {
+    const val = initialParams.get('maxPrice');
+    return val ? Number(val) : undefined;
+  });
   const [leasingProvider, setLeasingProvider] = useState(() => initialParams.get('provider') || 'ALL');
   const [selectedDealerSlug, setSelectedDealerSlug] = useState(() => initialParams.get('dealerSlug') || initialParams.get('dealer') || '');
   const [postalCode, setPostalCode] = useState(() => initialParams.get('postalCode') || '');
@@ -75,6 +153,10 @@ export default function App() {
   const [sort, setSort] = useState(() => initialParams.get('sort') || 'newest');
   const [onlyFavorites, setOnlyFavorites] = useState(false);
   const [bikesViewMode, setBikesViewMode] = useState<'grid' | 'map'>('grid');
+
+  // Saved Search Alert Modals State
+  const [isSaveSearchModalOpen, setIsSaveSearchModalOpen] = useState(false);
+  const [isSavedSearchesListOpen, setIsSavedSearchesListOpen] = useState(false);
 
   // Pagination & Loading State
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -246,6 +328,12 @@ export default function App() {
         if (propulsion !== 'ALL') params.append('propulsion', propulsion);
         if (brand !== 'ALL') params.append('brand', brand);
         if (motorBrand !== 'ALL') params.append('motorBrand', motorBrand);
+        if (engineType !== 'ALL') params.append('engineType', engineType);
+        if (frameType !== 'ALL') params.append('frameType', frameType);
+        if (minTorque > 0) params.append('minTorque', String(minTorque));
+        if (maxWeight > 0) params.append('maxWeight', String(maxWeight));
+        if (minPrice !== undefined && minPrice > 0) params.append('minPrice', String(minPrice));
+        if (maxPrice !== undefined && maxPrice > 0) params.append('maxPrice', String(maxPrice));
         if (leasingProvider !== 'ALL') params.append('provider', leasingProvider);
         if (selectedDealerSlug) params.append('dealerSlug', selectedDealerSlug);
         if (postalCode) {
@@ -295,13 +383,13 @@ export default function App() {
         setIsLoadingMore(false);
       }
     },
-    [query, category, propulsion, brand, motorBrand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort, pageSize]
+    [query, category, propulsion, brand, motorBrand, engineType, frameType, minTorque, maxWeight, minPrice, maxPrice, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort, pageSize]
   );
 
   useEffect(() => {
     setCurrentPage(1);
     fetchSearchResults(1, false, pageSize);
-  }, [query, category, propulsion, brand, motorBrand, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
+  }, [query, category, propulsion, brand, motorBrand, engineType, frameType, minTorque, maxWeight, minPrice, maxPrice, leasingProvider, selectedDealerSlug, postalCode, radiusKm, sort]);
 
   const totalPages = typeof pageSize === 'number' ? Math.max(1, Math.ceil(totalOffers / pageSize)) : 1;
 
@@ -380,6 +468,12 @@ export default function App() {
     setPropulsion('ALL');
     setBrand('ALL');
     setMotorBrand('ALL');
+    setEngineType('ALL');
+    setFrameType('ALL');
+    setMinTorque(0);
+    setMaxWeight(0);
+    setMinPrice(undefined);
+    setMaxPrice(undefined);
     setLeasingProvider('ALL');
     setSelectedDealerSlug('');
     setPostalCode('');
@@ -387,24 +481,38 @@ export default function App() {
     setSort('newest');
   };
 
+  const handleApplySavedSearchFilters = (savedFilters: any) => {
+    if (savedFilters.query !== undefined) setQuery(savedFilters.query || '');
+    if (savedFilters.category) setCategory(savedFilters.category);
+    if (savedFilters.propulsion) setPropulsion(savedFilters.propulsion);
+    if (savedFilters.brand) setBrand(savedFilters.brand);
+    if (savedFilters.motorBrand) setMotorBrand(savedFilters.motorBrand);
+    if (savedFilters.engineType) setEngineType(savedFilters.engineType);
+    if (savedFilters.frameType) setFrameType(savedFilters.frameType);
+    if (savedFilters.minTorque !== undefined) setMinTorque(savedFilters.minTorque);
+    if (savedFilters.maxWeight !== undefined) setMaxWeight(savedFilters.maxWeight);
+    if (savedFilters.minPrice !== undefined) setMinPrice(savedFilters.minPrice);
+    if (savedFilters.maxPrice !== undefined) setMaxPrice(savedFilters.maxPrice);
+    if (savedFilters.leasingProvider) setLeasingProvider(savedFilters.leasingProvider);
+    if (savedFilters.postalCode !== undefined) setPostalCode(savedFilters.postalCode);
+    if (savedFilters.radiusKm) setRadiusKm(savedFilters.radiusKm);
+    setCurrentTab('bikes');
+    showToast('Kriterien aus Suchagent angewendet!');
+  };
+
   const handleSelectCityBlog = (city: GermanCity) => {
     setActiveBlogCity(city);
     setCurrentTab('cities');
     try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', 'cities');
-      url.searchParams.set('city', getCitySlug(city.name));
-      window.history.pushState({}, '', url.toString());
+      const slug = getCitySlug(city.name);
+      window.history.pushState({}, '', `/stadt/${slug}`);
     } catch {}
   };
 
   const handleBackToCitiesHub = () => {
     setActiveBlogCity(null);
     try {
-      const url = new URL(window.location.href);
-      url.searchParams.set('tab', 'cities');
-      url.searchParams.delete('city');
-      window.history.pushState({}, '', url.toString());
+      window.history.pushState({}, '', '/staedte');
     } catch {}
   };
 
@@ -450,6 +558,18 @@ export default function App() {
               motorBrand={motorBrand}
               setMotorBrand={setMotorBrand}
               availableMotorBrands={availableMotorBrands}
+              engineType={engineType}
+              setEngineType={setEngineType}
+              frameType={frameType}
+              setFrameType={setFrameType}
+              minTorque={minTorque}
+              setMinTorque={setMinTorque}
+              maxWeight={maxWeight}
+              setMaxWeight={setMaxWeight}
+              minPrice={minPrice}
+              setMinPrice={setMinPrice}
+              maxPrice={maxPrice}
+              setMaxPrice={setMaxPrice}
               leasingProvider={leasingProvider}
               setLeasingProvider={setLeasingProvider}
               selectedDealerSlug={selectedDealerSlug}
@@ -468,6 +588,8 @@ export default function App() {
               resetFilters={resetFilters}
               onlyFavorites={onlyFavorites}
               setOnlyFavorites={setOnlyFavorites}
+              onOpenSaveSearch={() => setIsSaveSearchModalOpen(true)}
+              onOpenSavedSearches={() => setIsSavedSearchesListOpen(true)}
             />
 
             {/* Offers Grid Container */}
@@ -1273,6 +1395,38 @@ export default function App() {
           showToast(`Hauptkatalog nach ${matched?.name || 'Partner-Händler'} gefiltert`);
         }}
         onCompareNotice={showToast}
+      />
+
+      {/* Save Search Modal */}
+      <SaveSearchModal
+        isOpen={isSaveSearchModalOpen}
+        onClose={() => setIsSaveSearchModalOpen(false)}
+        activeFilters={{
+          query,
+          category,
+          propulsion,
+          brand,
+          motorBrand,
+          engineType,
+          frameType,
+          minTorque,
+          maxWeight,
+          minPrice,
+          maxPrice,
+          leasingProvider,
+          postalCode,
+          radiusKm
+        }}
+        totalMatches={totalOffers}
+        onSuccessNotice={showToast}
+      />
+
+      {/* Saved Searches List Modal */}
+      <SavedSearchesListModal
+        isOpen={isSavedSearchesListOpen}
+        onClose={() => setIsSavedSearchesListOpen(false)}
+        onApplyFilters={handleApplySavedSearchFilters}
+        onNotice={showToast}
       />
     </div>
   );

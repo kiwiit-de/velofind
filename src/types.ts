@@ -292,6 +292,9 @@ export interface SearchFilters {
   brand?: string;
   leasingProvider?: string;
   motorBrand?: string;
+  engineType?: string;
+  frameType?: FrameType | string;
+  maxWeight?: number;
   minTorque?: number;
   minPrice?: number;
   maxPrice?: number;
@@ -341,4 +344,34 @@ export interface UserAlert {
   offer_title?: string;
   current_price_cents?: number;
 }
+
+export interface SavedSearch {
+  id: string;
+  email: string;
+  title: string;
+  filters: {
+    query?: string;
+    category?: string;
+    propulsion?: string;
+    brand?: string;
+    motorBrand?: string;
+    engineType?: string;
+    frameType?: string;
+    maxWeight?: number;
+    minTorque?: number;
+    minPrice?: number;
+    maxPrice?: number;
+    leasingProvider?: string;
+    postalCode?: string;
+    radiusKm?: number;
+  };
+  filter_summary: string;
+  match_count_at_save: number;
+  notify_on_new: boolean;
+  frequency: 'INSTANT' | 'DAILY' | 'WEEKLY';
+  created_at: string;
+  last_checked_at?: string;
+  new_matches_count?: number;
+}
+
 

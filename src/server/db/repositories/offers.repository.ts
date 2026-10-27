@@ -34,6 +34,11 @@ export interface OfferSearchFilterParams {
   propulsion?: PropulsionType | 'ALL';
   brand?: string;
   leasingProvider?: string;
+  motorBrand?: string;
+  engineType?: string;
+  frameType?: string;
+  maxWeight?: number;
+  minTorque?: number;
   minPrice?: number;
   maxPrice?: number;
   availability?: AvailabilityStatus | 'ALL';
@@ -653,6 +658,75 @@ export class OffersRepository {
     if (filters.motorBrand && filters.motorBrand !== 'ALL') {
       const mb = filters.motorBrand.toLowerCase();
       items = items.filter((o) => (o.variant_details?.motor_brand || '').toLowerCase().includes(mb));
+    }
+    if (filters.engineType && filters.engineType !== 'ALL') {
+      const et = filters.engineType.toUpperCase();
+      items = items.filter((o) => {
+        const bikeEngine = (o.variant_details?.engine_type || '').toLowerCase();
+        const bikePropulsion = o.propulsion;
+        const bikeTitle = o.title.toLowerCase();
+
+        if (et === 'MITTELMOTOR') {
+          return (
+            bikeEngine.includes('mittel') ||
+            (bikePropulsion !== 'MUSCULAR' &&
+              !bikeEngine.includes('heck') &&
+              !bikeEngine.includes('front') &&
+              !bikeTitle.includes('heckmotor') &&
+              !bikeTitle.includes('frontmotor'))
+          );
+        }
+        if (et === 'HECKMOTOR') {
+          return (
+            bikeEngine.includes('heck') ||
+            bikeEngine.includes('nabenmotor hinten') ||
+            bikeTitle.includes('heckmotor') ||
+            bikeTitle.includes('nabenmotor')
+          );
+        }
+        if (et === 'FRONT_MOTOR') {
+          return bikeEngine.includes('front') || bikeEngine.includes('vorderrad') || bikeTitle.includes('frontmotor');
+        }
+        if (et === 'MUSCULAR') {
+          return bikePropulsion === 'MUSCULAR';
+        }
+        return true;
+      });
+    }
+    if (filters.frameType && filters.frameType !== 'ALL') {
+      const ft = filters.frameType.toUpperCase();
+      items = items.filter((o) => {
+        const variantFt = (o.variant_details?.frame_type || '').toUpperCase();
+        const title = o.title.toLowerCase();
+
+        if (ft === 'DIAMOND') {
+          return variantFt === 'DIAMOND' || title.includes('diamant') || title.includes('herren');
+        }
+        if (ft === 'TRAPEZE') {
+          return variantFt === 'TRAPEZE' || title.includes('trapez') || title.includes('trapeze');
+        }
+        if (ft === 'WAVE' || ft === 'STEP_THROUGH') {
+          return (
+            variantFt === 'WAVE' ||
+            variantFt === 'STEP_THROUGH' ||
+            title.includes('wave') ||
+            title.includes('tiefeinsteiger') ||
+            title.includes('comfort') ||
+            title.includes('low entry')
+          );
+        }
+        if (ft === 'COMPACT') {
+          return variantFt === 'COMPACT' || title.includes('kompakt') || title.includes('faltrad') || title.includes('folding');
+        }
+        return variantFt === ft;
+      });
+    }
+    if (filters.maxWeight !== undefined && filters.maxWeight > 0) {
+      items = items.filter((o) => {
+        const weight = o.variant_details?.weight_kg;
+        if (!weight) return true;
+        return weight <= filters.maxWeight!;
+      });
     }
     if (filters.minTorque !== undefined && filters.minTorque > 0) {
       items = items.filter((o) => (o.variant_details?.torque_nm || 0) >= filters.minTorque!);
