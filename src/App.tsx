@@ -194,6 +194,39 @@ export default function App() {
 
   // Modals State
   const [selectedOffer, setSelectedOffer] = useState<Offer | null>(null);
+
+  const handleSelectOffer = (offer: Offer | null) => {
+    setSelectedOffer(offer);
+    try {
+      const url = new URL(window.location.href);
+      if (offer) {
+        url.searchParams.set('offer', offer.id);
+      } else {
+        url.searchParams.delete('offer');
+        url.searchParams.delete('bike');
+      }
+      window.history.replaceState({}, '', url.toString());
+    } catch {}
+  };
+
+  // Direct deep-link loader for shared bike links (?offer=... or ?bike=...)
+  useEffect(() => {
+    const directOfferId = initialParams.get('offer') || initialParams.get('bike');
+    if (directOfferId) {
+      fetch(apiUrl(`/api/offers/${encodeURIComponent(directOfferId)}`))
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: Offer | null) => {
+          if (data) {
+            setSelectedOffer(data);
+            showToast(`Angebot „${data.title}“ geöffnet`);
+          }
+        })
+        .catch((err) => {
+          console.warn('Failed to load deep-linked offer:', err);
+        });
+    }
+  }, [initialParams]);
+
   const [leadOffer, setLeadOffer] = useState<Offer | null>(null);
   const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
@@ -961,10 +994,11 @@ export default function App() {
                         <OfferCard
                           key={offer.id}
                           offer={offer}
-                          onSelectOffer={setSelectedOffer}
+                          onSelectOffer={handleSelectOffer}
                           onTrackOutbound={handleTrackOutbound}
                           onOpenLeadModal={setLeadOffer}
                           onCompareNotice={showToast}
+                          onShareNotice={showToast}
                           onOpenDealer={(dealerSlug) => {
                             const d = dealers.find((x) => x.slug === dealerSlug);
                             if (d) setPartnerModalDealer(d);
@@ -1133,7 +1167,7 @@ export default function App() {
           <FavoritesView
             favoriteIds={favoriteIds}
             allOffers={offers}
-            onSelectOffer={setSelectedOffer}
+            onSelectOffer={handleSelectOffer}
             onOpenLeadModal={setLeadOffer}
             onTrackOutbound={handleTrackOutbound}
             onCompareNotice={showToast}
@@ -1317,9 +1351,9 @@ export default function App() {
       {/* Offer Detail Modal */}
       <OfferModal
         offer={selectedOffer}
-        onClose={() => setSelectedOffer(null)}
+        onClose={() => handleSelectOffer(null)}
         onOpenLeadModal={(offer) => {
-          setSelectedOffer(null);
+          handleSelectOffer(null);
           setLeadOffer(offer);
         }}
         onTrackOutbound={handleTrackOutbound}
@@ -1379,7 +1413,7 @@ export default function App() {
         onClose={() => setPartnerModalDealer(null)}
         onSelectOffer={(offer) => {
           setPartnerModalDealer(null);
-          setSelectedOffer(offer);
+          handleSelectOffer(offer);
         }}
         onTrackOutbound={handleTrackOutbound}
         onOpenLeadModal={(offer) => {

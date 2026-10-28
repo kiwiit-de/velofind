@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2, Heart, Scale, Building2 } from 'lucide-react';
+import React, { useState, useRef, useEffect } from 'react';
+import { MapPin, BatteryCharging, Zap, Gauge, ExternalLink, ShieldCheck, CheckCircle2, Heart, Scale, Building2, Share2, Check, Copy, MessageCircle, Send, Globe } from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
 import { useCompare } from '../utils/compare';
@@ -13,6 +13,7 @@ interface OfferCardProps {
   onTrackOutbound: (offerId: string, alreadyOpened?: boolean) => void;
   onOpenLeadModal?: (offer: Offer) => void;
   onCompareNotice?: (msg: string) => void;
+  onShareNotice?: (msg: string) => void;
   onOpenDealer?: (dealerSlug: string) => void;
 }
 
@@ -22,6 +23,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   onTrackOutbound,
   onOpenLeadModal,
   onCompareNotice,
+  onShareNotice,
   onOpenDealer
 }) => {
   const { isFavorite, toggleFavorite } = useFavorites();
@@ -31,6 +33,9 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const [imgSrc, setImgSrc] = useState(
     resolveImageUrl(offer.image_url)
   );
+  const [copied, setCopied] = useState(false);
+  const [isShareMenuOpen, setIsShareMenuOpen] = useState(false);
+  const shareDropdownRef = useRef<HTMLDivElement>(null);
 
   const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
     style: 'currency',
@@ -48,6 +53,96 @@ export const OfferCard: React.FC<OfferCardProps> = ({
   const closestLocation = offer.dealer_locations[0];
   const isLowStock = offer.quantity > 0 && (offer.quantity <= 2 || offer.availability === 'AVAILABLE_SHORT_TERM');
   const isOutOfStock = offer.availability === 'OUT_OF_STOCK' || offer.quantity === 0;
+
+  // Click outside listener for the share menu
+  useEffect(() => {
+    const handleOutsideClick = (e: MouseEvent) => {
+      if (shareDropdownRef.current && !shareDropdownRef.current.contains(e.target as Node)) {
+        setIsShareMenuOpen(false);
+      }
+    };
+    if (isShareMenuOpen) {
+      document.addEventListener('mousedown', handleOutsideClick);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleOutsideClick);
+    };
+  }, [isShareMenuOpen]);
+
+  const getDeepLink = () => {
+    try {
+      const url = new URL(window.location.origin);
+      url.pathname = '/';
+      url.searchParams.set('offer', offer.id);
+      return url.toString();
+    } catch {
+      return `${window.location.origin}/?offer=${encodeURIComponent(offer.id)}`;
+    }
+  };
+
+  const shareTitle = `${offer.title} | VeloFind`;
+  const shareText = `Schau dir dieses Fahrrad an: ${offer.title} (${formattedPrice}) bei VeloFind – Fahrrad & E-Bike Leasing-Vergleich:`;
+
+  const copyDeepLink = async () => {
+    const deepLink = getDeepLink();
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(deepLink);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = deepLink;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+      if (onShareNotice) {
+        onShareNotice('Link zum Fahrrad in die Zwischenablage kopiert!');
+      } else if (onCompareNotice) {
+        onCompareNotice('Link zum Fahrrad in die Zwischenablage kopiert!');
+      }
+    } catch (err) {
+      console.warn('Copy link failed:', err);
+    }
+  };
+
+  const handleShare = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    const deepLink = getDeepLink();
+
+    // 1. Try Native Web Share API first
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: deepLink
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+        if (onShareNotice) {
+          onShareNotice('Angebot erfolgreich geteilt!');
+        } else if (onCompareNotice) {
+          onCompareNotice('Angebot erfolgreich geteilt!');
+        }
+        return;
+      } catch (err: any) {
+        if (err && err.name === 'AbortError') {
+          // User closed the share sheet
+          return;
+        }
+        // Fallback to copy & menu
+      }
+    }
+
+    // 2. Fallback: Copy to clipboard and open social menu
+    await copyDeepLink();
+    setIsShareMenuOpen((prev) => !prev);
+  };
 
   return (
     <div
@@ -133,7 +228,7 @@ export const OfferCard: React.FC<OfferCardProps> = ({
           </div>
         </div>
 
-        {/* Top Right Action Toolbar: Compare & Heart Favorite */}
+        {/* Top Right Action Toolbar: Compare, Share & Heart Favorite */}
         <div className="absolute top-3 right-3 flex items-center gap-1.5 z-10">
           <button
             id={`compare-btn-${offer.id}`}
@@ -156,6 +251,110 @@ export const OfferCard: React.FC<OfferCardProps> = ({
             <Scale className={`w-3.5 h-3.5 ${inCompare ? 'text-white' : 'text-slate-500'}`} />
             <span className="text-[11px]">{inCompare ? 'Im Vergleich' : 'Vergleichen'}</span>
           </button>
+
+          {/* Share Button (Web Share API with Clipboard & Social Fallback) */}
+          <div className="relative" ref={shareDropdownRef}>
+            <button
+              id={`share-btn-${offer.id}`}
+              type="button"
+              onClick={handleShare}
+              aria-label="Fahrrad teilen oder Link kopieren"
+              title={copied ? 'Link kopiert!' : 'Fahrrad teilen (Web Share API / Link kopieren)'}
+              className={`w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 shadow-sm backdrop-blur-xs ${
+                copied
+                  ? 'bg-emerald-600 text-white ring-2 ring-emerald-200 shadow-md scale-105'
+                  : 'bg-white/90 text-slate-600 hover:text-emerald-700 hover:bg-white'
+              }`}
+            >
+              {copied ? (
+                <Check className="w-3.5 h-3.5 text-white animate-in zoom-in-75 duration-150" />
+              ) : (
+                <Share2 className="w-3.5 h-3.5" />
+              )}
+            </button>
+
+            {/* Social Sharing Dropdown Menu */}
+            {isShareMenuOpen && (
+              <div
+                id={`share-menu-${offer.id}`}
+                className="absolute right-0 mt-2 w-56 bg-white rounded-2xl shadow-xl border border-slate-200 p-2 z-50 animate-in fade-in zoom-in-95 duration-150 space-y-1 text-slate-800"
+                onClick={(e) => e.stopPropagation()}
+              >
+                <div className="flex items-center justify-between px-2.5 py-1.5 border-b border-slate-100">
+                  <span className="text-[11px] font-bold text-slate-900 flex items-center gap-1.5">
+                    <Share2 className="w-3 h-3 text-emerald-600" />
+                    Fahrrad teilen
+                  </span>
+                  {copied ? (
+                    <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100/80 px-1.5 py-0.5 rounded">
+                      ✓ Kopiert
+                    </span>
+                  ) : (
+                    <span className="text-[10px] text-slate-400">Deep-Link</span>
+                  )}
+                </div>
+
+                {/* Direct Link Copy Button */}
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    copyDeepLink();
+                  }}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 text-left text-xs font-medium text-slate-700 transition-colors"
+                >
+                  <Copy className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <span className="truncate">Deep-Link kopieren</span>
+                </button>
+
+                {/* WhatsApp */}
+                <a
+                  href={`https://api.whatsapp.com/send?text=${encodeURIComponent(shareText + ' ' + getDeepLink())}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-emerald-50 text-left text-xs font-medium text-emerald-800 transition-colors"
+                >
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                  <span>WhatsApp</span>
+                </a>
+
+                {/* X / Twitter */}
+                <a
+                  href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(getDeepLink())}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 text-left text-xs font-medium text-slate-700 transition-colors"
+                >
+                  <Send className="w-3.5 h-3.5 text-sky-500 shrink-0" />
+                  <span>X (Twitter)</span>
+                </a>
+
+                {/* Facebook */}
+                <a
+                  href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(getDeepLink())}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 text-left text-xs font-medium text-slate-700 transition-colors"
+                >
+                  <Globe className="w-3.5 h-3.5 text-blue-600 shrink-0" />
+                  <span>Facebook</span>
+                </a>
+
+                {/* E-Mail */}
+                <a
+                  href={`mailto:?subject=${encodeURIComponent(shareTitle)}&body=${encodeURIComponent(shareText + '\n\n' + getDeepLink())}`}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full flex items-center gap-2 px-2.5 py-1.5 rounded-xl hover:bg-slate-50 text-left text-xs font-medium text-slate-700 transition-colors"
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-500 shrink-0" />
+                  <span>Per E-Mail teilen</span>
+                </a>
+              </div>
+            )}
+          </div>
 
           <button
             id={`favorite-btn-${offer.id}`}

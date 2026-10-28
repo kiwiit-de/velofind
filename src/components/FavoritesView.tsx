@@ -122,6 +122,7 @@ export const FavoritesView: React.FC<FavoritesViewProps> = ({
                 onOpenLeadModal={onOpenLeadModal}
                 onTrackOutbound={onTrackOutbound}
                 onCompareNotice={onCompareNotice}
+                onShareNotice={onCompareNotice}
                 onOpenDealer={onOpenDealer}
               />
             ))}

@@ -18,7 +18,10 @@ import {
   Bell,
   BellRing,
   CheckCircle2,
-  TrendingDown
+  TrendingDown,
+  Share2,
+  Check,
+  Copy
 } from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
@@ -62,6 +65,7 @@ export const OfferModal: React.FC<OfferModalProps> = ({
   const [showAlertForm, setShowAlertForm] = useState(false);
   const [alertEmail, setAlertEmail] = useState('');
   const [targetDiscountPct, setTargetDiscountPct] = useState<number | 'any'>('any');
+  const [copied, setCopied] = useState(false);
 
   // Prepopulate saved email if available
   React.useEffect(() => {
@@ -75,6 +79,71 @@ export const OfferModal: React.FC<OfferModalProps> = ({
   const isFav = isFavorite(offer.id);
   const inCompare = isInCompare(offer.id);
   const currentImg = modalImg || resolveImageUrl(offer.image_url);
+
+  const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
+    style: 'currency',
+    currency: 'EUR'
+  });
+
+  const formattedComparePrice = offer.compare_at_price_cents
+    ? (offer.compare_at_price_cents / 100).toLocaleString('de-DE', {
+        style: 'currency',
+        currency: 'EUR'
+      })
+    : null;
+
+  const location = offer.dealer_locations[0];
+
+  const getDeepLink = () => {
+    try {
+      const url = new URL(window.location.origin);
+      url.pathname = '/';
+      url.searchParams.set('offer', offer.id);
+      return url.toString();
+    } catch {
+      return `${window.location.origin}/?offer=${encodeURIComponent(offer.id)}`;
+    }
+  };
+
+  const handleShare = async () => {
+    const deepLink = getDeepLink();
+    const shareTitle = `${offer.title} | VeloFind`;
+    const shareText = `Schau dir dieses Fahrrad an: ${offer.title} (${formattedPrice}) bei VeloFind – Fahrrad & E-Bike Leasing-Vergleich:`;
+
+    if (typeof navigator !== 'undefined' && typeof navigator.share === 'function') {
+      try {
+        await navigator.share({
+          title: shareTitle,
+          text: shareText,
+          url: deepLink
+        });
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2500);
+        if (onCompareNotice) onCompareNotice('Angebot erfolgreich geteilt!');
+        return;
+      } catch (err: any) {
+        if (err && err.name === 'AbortError') return;
+      }
+    }
+
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(deepLink);
+      } else {
+        const ta = document.createElement('textarea');
+        ta.value = deepLink;
+        ta.style.position = 'fixed';
+        ta.style.opacity = '0';
+        document.body.appendChild(ta);
+        ta.select();
+        document.execCommand('copy');
+        document.body.removeChild(ta);
+      }
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2500);
+      if (onCompareNotice) onCompareNotice('Link zum Fahrrad in die Zwischenablage kopiert!');
+    } catch {}
+  };
 
   const handleAlertSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,21 +161,6 @@ export const OfferModal: React.FC<OfferModalProps> = ({
       }, 2400);
     }
   };
-
-
-  const formattedPrice = (offer.price_cents / 100).toLocaleString('de-DE', {
-    style: 'currency',
-    currency: 'EUR'
-  });
-
-  const formattedComparePrice = offer.compare_at_price_cents
-    ? (offer.compare_at_price_cents / 100).toLocaleString('de-DE', {
-        style: 'currency',
-        currency: 'EUR'
-      })
-    : null;
-
-  const location = offer.dealer_locations[0];
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4 sm:p-6">
@@ -166,6 +220,25 @@ export const OfferModal: React.FC<OfferModalProps> = ({
           >
             <Bell className={`w-3.5 h-3.5 ${hasAlert ? 'fill-white text-white' : 'text-amber-500'}`} />
             <span>{hasAlert ? 'Alarm aktiv' : 'Preisalarm'}</span>
+          </button>
+
+          <button
+            id="modal-btn-share"
+            type="button"
+            onClick={handleShare}
+            className={`px-3 py-1.5 rounded-full transition-all duration-200 shadow-xs flex items-center gap-1.5 text-xs font-semibold ${
+              copied
+                ? 'bg-emerald-600 text-white shadow-md ring-2 ring-emerald-200'
+                : 'bg-white/95 text-slate-700 hover:text-emerald-700 hover:bg-white border border-slate-200 backdrop-blur-xs'
+            }`}
+            title={copied ? 'Link kopiert!' : 'Fahrrad teilen (Web Share API / Link kopieren)'}
+          >
+            {copied ? (
+              <Check className="w-3.5 h-3.5 text-white animate-in zoom-in-75 duration-150" />
+            ) : (
+              <Share2 className="w-3.5 h-3.5 text-emerald-600" />
+            )}
+            <span>{copied ? 'Kopiert' : 'Teilen'}</span>
           </button>
 
           <button

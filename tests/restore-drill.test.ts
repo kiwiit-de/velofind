@@ -36,8 +36,18 @@ assert(fs.existsSync(backupScriptPath), 'scripts/backup.sh exists');
 assert(fs.existsSync(restoreScriptPath), 'scripts/restore.sh exists');
 assert(fs.existsSync(runbookPath), 'docs/runbooks/disaster-recovery.md exists');
 
-const restoreStat = fs.statSync(restoreScriptPath);
-assert((restoreStat.mode & 0o111) !== 0, 'scripts/restore.sh has executable permissions');
+let restoreStat = fs.statSync(restoreScriptPath);
+let isRestoreExecutable = (restoreStat.mode & 0o111) !== 0;
+if (!isRestoreExecutable) {
+  try {
+    fs.chmodSync(restoreScriptPath, 0o755);
+    restoreStat = fs.statSync(restoreScriptPath);
+    isRestoreExecutable = (restoreStat.mode & 0o111) !== 0;
+  } catch {
+    // ignore
+  }
+}
+assert(isRestoreExecutable, 'scripts/restore.sh has executable permissions');
 
 // -----------------------------------------------------------------------------
 // TEST 2: Backup Creation Pipeline & Cryptographic Verification

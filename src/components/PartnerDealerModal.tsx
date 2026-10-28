@@ -405,6 +405,7 @@ export const PartnerDealerModal: React.FC<PartnerDealerModalProps> = ({
                     onTrackOutbound={onTrackOutbound}
                     onOpenLeadModal={onOpenLeadModal}
                     onCompareNotice={onCompareNotice}
+                    onShareNotice={onCompareNotice}
                   />
                 ))}
               </div>

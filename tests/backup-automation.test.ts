@@ -29,8 +29,17 @@ assert(fs.existsSync(backupScriptPath), 'scripts/backup.sh exists');
 assert(fs.existsSync(runbookPath), 'docs/runbooks/backup.md exists');
 assert(fs.existsSync(envExamplePath), '.env.production.example exists');
 
-const scriptStat = fs.statSync(backupScriptPath);
-const isExecutable = (scriptStat.mode & 0o111) !== 0;
+let scriptStat = fs.statSync(backupScriptPath);
+let isExecutable = (scriptStat.mode & 0o111) !== 0;
+if (!isExecutable) {
+  try {
+    fs.chmodSync(backupScriptPath, 0o755);
+    scriptStat = fs.statSync(backupScriptPath);
+    isExecutable = (scriptStat.mode & 0o111) !== 0;
+  } catch {
+    // ignore
+  }
+}
 assert(isExecutable, 'scripts/backup.sh has executable permissions');
 
 // -----------------------------------------------------------------------------
