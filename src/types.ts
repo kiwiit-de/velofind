@@ -16,7 +16,7 @@ export type BikeCategory =
 
 export type PropulsionType = 'PEDELEC' | 'S_PEDELEC' | 'MUSCULAR';
 
-export type FrameType = 'DIAMOND' | 'STEP_THROUGH' | 'TRAPEZE' | 'WAVE';
+export type FrameType = 'DIAMOND' | 'STEP_THROUGH' | 'TRAPEZE' | 'WAVE' | 'COMPACT';
 
 export type OfferCondition = 'NEW' | 'REFURBISHED' | 'EX_DISPLAY';
 
@@ -176,6 +176,7 @@ export interface Offer {
   first_seen_at: string;
   last_seen_at: string;
   is_active: boolean;
+  description?: string;
   variant_details?: {
     frame_size: string;
     frame_type: FrameType;
@@ -188,6 +189,7 @@ export interface Offer {
     motor_model?: string;
     engine_type?: string;   // Bauform / Motortyp (z.B. 'Mittelmotor', 'Hecknabenmotor')
     torque_nm?: number;
+    description?: string;
     gtin?: string;
     sku?: string;
   };

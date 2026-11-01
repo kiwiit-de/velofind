@@ -22,7 +22,8 @@
     "test:caddy": "tsx tests/caddy-production.test.ts",
     "test:backup": "tsx tests/backup-automation.test.ts",
     "test:restore": "tsx tests/restore-drill.test.ts",
-    "test": "tsx tests/postgres-connection.test.ts && tsx tests/kysely-repositories.test.ts && tsx tests/mvp-verification.test.ts && tsx tests/compose-production.test.ts && tsx tests/caddy-production.test.ts && tsx tests/backup-automation.test.ts && tsx tests/restore-drill.test.ts"
+    "test:validation": "tsx tests/data-validation.test.ts",
+    "test": "tsx tests/postgres-connection.test.ts && tsx tests/kysely-repositories.test.ts && tsx tests/mvp-verification.test.ts && tsx tests/compose-production.test.ts && tsx tests/caddy-production.test.ts && tsx tests/backup-automation.test.ts && tsx tests/restore-drill.test.ts && tsx tests/data-validation.test.ts"
   },
   "dependencies": {
     "@google/genai": "^2.4.0",

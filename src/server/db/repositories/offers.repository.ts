@@ -668,24 +668,28 @@ export class OffersRepository {
 
         if (et === 'MITTELMOTOR') {
           return (
-            bikeEngine.includes('mittel') ||
-            (bikePropulsion !== 'MUSCULAR' &&
-              !bikeEngine.includes('heck') &&
-              !bikeEngine.includes('front') &&
-              !bikeTitle.includes('heckmotor') &&
-              !bikeTitle.includes('frontmotor'))
+            bikePropulsion !== 'MUSCULAR' &&
+            (bikeEngine.includes('mittel') ||
+              (!bikeEngine.includes('heck') &&
+                !bikeEngine.includes('front') &&
+                !bikeTitle.includes('heckmotor') &&
+                !bikeTitle.includes('frontmotor')))
           );
         }
         if (et === 'HECKMOTOR') {
           return (
-            bikeEngine.includes('heck') ||
-            bikeEngine.includes('nabenmotor hinten') ||
-            bikeTitle.includes('heckmotor') ||
-            bikeTitle.includes('nabenmotor')
+            bikePropulsion !== 'MUSCULAR' &&
+            (bikeEngine.includes('heck') ||
+              bikeEngine.includes('nabenmotor hinten') ||
+              bikeTitle.includes('heckmotor') ||
+              bikeTitle.includes('nabenmotor'))
           );
         }
         if (et === 'FRONT_MOTOR') {
-          return bikeEngine.includes('front') || bikeEngine.includes('vorderrad') || bikeTitle.includes('frontmotor');
+          return (
+            bikePropulsion !== 'MUSCULAR' &&
+            (bikeEngine.includes('front') || bikeEngine.includes('vorderrad') || bikeTitle.includes('frontmotor'))
+          );
         }
         if (et === 'MUSCULAR') {
           return bikePropulsion === 'MUSCULAR';

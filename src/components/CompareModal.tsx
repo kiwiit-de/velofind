@@ -498,6 +498,32 @@ export const CompareModal: React.FC<CompareModalProps> = ({
                   </h4>
 
                   <SpecRow
+                    label="Modell-Charakteristik"
+                    onlyDifferences={false}
+                    isDiff={false}
+                  >
+                    {compareOffers.map((o) => (
+                      <div key={o.id} className="text-slate-600 text-xs leading-relaxed max-w-[280px]">
+                        {o.variant_details?.description || o.description || 'Geprüftes Markenrad beim autorisierten Fachhändler.'}
+                      </div>
+                    ))}
+                    {emptySlotsCount > 0 && <EmptySpecSlots count={emptySlotsCount} />}
+                  </SpecRow>
+
+                  <SpecRow
+                    label="Modelljahr"
+                    onlyDifferences={onlyDifferences}
+                    isDiff={isDifferent((o) => o.model_year)}
+                  >
+                    {compareOffers.map((o) => (
+                      <div key={o.id} className="text-slate-800 font-semibold">
+                        {o.model_year || 2025}
+                      </div>
+                    ))}
+                    {emptySlotsCount > 0 && <EmptySpecSlots count={emptySlotsCount} />}
+                  </SpecRow>
+
+                  <SpecRow
                     label="Fahrrad-Kategorie"
                     onlyDifferences={onlyDifferences}
                     isDiff={isDifferent((o) => o.category)}

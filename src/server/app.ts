@@ -28,6 +28,7 @@ import { deepScraperService } from './services/deep-scraper.service.ts';
 import { imageFetcherService } from './services/image-fetcher.service.ts';
 import { marketTrendsService } from './services/market-trends.service.ts';
 import { priceAlertService } from './services/price-alert.service.ts';
+import { dataValidatorService } from './services/data-validator.service.ts';
 
 import { GERMAN_LOCATIONS, sanitizeCSVField, generateUUID } from './db/utils.ts';
 import { metricsMiddleware, handleMetricsEndpoint, metrics } from './monitoring/metrics.ts';
@@ -683,9 +684,27 @@ export async function createApp(): Promise<Application> {
     res.json(GERMAN_LOCATIONS);
   });
 
-  // --- DAILY CATALOG SYNC ---
+  // --- DAILY CATALOG SYNC & DATA VALIDATION ---
   apiRouter.get('/sync/status', (_req: Request, res: Response) => {
     res.json(dailySyncService.getStatus());
+  });
+
+  apiRouter.get('/sync/validation', (_req: Request, res: Response) => {
+    const report = dataValidatorService.getLastReport();
+    res.json(report || { message: 'Noch kein Prüflauf durchgeführt', report: null });
+  });
+
+  apiRouter.post('/sync/validate', async (req: Request, res: Response) => {
+    try {
+      const autoFix = req.body?.autoFix !== false;
+      const report = await dataValidatorService.validateAndCleanCatalog({
+        autoFix,
+        saveToAuditLog: true
+      });
+      res.json({ success: true, autoFix, report });
+    } catch (err: any) {
+      res.status(500).json({ error: 'Fehler bei der Datenvalidierung', details: err.message });
+    }
   });
 
   apiRouter.post('/sync/trigger', async (_req: Request, res: Response) => {

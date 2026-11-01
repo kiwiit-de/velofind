@@ -10,7 +10,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PARTNER_DEALERS_DATA, PARTNER_OFFERS_DATA, LEASING_PROVIDERS_DATA } from '../src/server/db/dealer-registry.ts';
-import { enrichBikeSpecs } from '../src/server/services/spec-enricher.service.ts';
+import { enrichBikeSpecs, isElectricBike, inferBioCategory } from '../src/server/services/spec-enricher.service.ts';
 import type { Dealer, Offer, BikeCategory, PropulsionType } from '../src/types.ts';
 
 function hashCode(str: string): number {
@@ -84,8 +84,9 @@ async function fetchFahrradXxlRealCatalog(): Promise<any[]> {
         const title = `${brand} ${modelRaw}`;
         const lower = title.toLowerCase();
 
-        let category: BikeCategory = 'E_BIKE';
-        let propulsion: PropulsionType = 'PEDELEC';
+        const isEbike = isElectricBike(title, brand);
+        const propulsion: PropulsionType = isEbike ? 'PEDELEC' : 'MUSCULAR';
+        let category: BikeCategory = isEbike ? 'E_BIKE' : inferBioCategory(title, brand);
 
         if (lower.includes('mountain') || lower.includes('mtb') || lower.includes('fully') || lower.includes('hardtail')) {
           category = 'MTB';
@@ -101,24 +102,14 @@ async function fetchFahrradXxlRealCatalog(): Promise<any[]> {
           category = 'ROAD';
         }
 
-        if (
-          !lower.includes('wh') &&
-          !lower.includes('e-') &&
-          !lower.includes('hybrid') &&
-          !lower.includes('pedelec') &&
-          !url.includes('e-bike')
-        ) {
-          propulsion = 'MUSCULAR';
-        } else {
-          propulsion = 'PEDELEC';
-        }
-
         let batteryWh: number | undefined = undefined;
-        const bMatch = title.match(/(\d{3,4})\s*wh/i);
-        if (bMatch) {
-          batteryWh = parseInt(bMatch[1], 10);
-        } else if (propulsion === 'PEDELEC') {
-          batteryWh = lower.includes('800') ? 800 : lower.includes('750') ? 750 : lower.includes('625') ? 625 : 750;
+        if (isEbike) {
+          const bMatch = title.match(/(\d{3,4})\s*wh/i);
+          if (bMatch) {
+            batteryWh = parseInt(bMatch[1], 10);
+          } else {
+            batteryWh = lower.includes('800') ? 800 : lower.includes('750') ? 750 : lower.includes('625') ? 625 : 750;
+          }
         }
 
         bikes.push({
@@ -133,9 +124,9 @@ async function fetchFahrradXxlRealCatalog(): Promise<any[]> {
           sourceUrl: productUrl,
           externalId: `XXL-${slug.substring(0, 30).toUpperCase().replace(/[^A-Z0-9-]/g, '')}`,
           batteryWh,
-          motorBrand: propulsion === 'PEDELEC' ? (brand === 'Specialized' ? 'Specialized' : brand === 'Haibike' ? 'Yamaha' : 'Bosch') : undefined,
-          motorModel: propulsion === 'PEDELEC' ? (brand === 'Specialized' ? 'Turbo Full Power 2.2' : brand === 'Haibike' ? 'PW-X3 85Nm' : 'Performance Line CX Smart System') : undefined,
-          torqueNm: propulsion === 'PEDELEC' ? 85 : undefined,
+          motorBrand: isEbike ? (brand === 'Specialized' ? 'Specialized' : brand === 'Haibike' ? 'Yamaha' : 'Bosch') : undefined,
+          motorModel: isEbike ? (brand === 'Specialized' ? 'Turbo Full Power 2.2' : brand === 'Haibike' ? 'PW-X3 85Nm' : 'Performance Line CX Smart System') : undefined,
+          torqueNm: isEbike ? 85 : undefined,
           frameSize: 'Diamant 54cm (L / 29 Zoll)'
         });
       }
@@ -190,8 +181,10 @@ async function fetchBocRealCatalog(): Promise<any[]> {
         const brand = p.vendor?.trim() || 'CUBE';
         const img = p.images?.[0]?.src || undefined;
 
-        let category: BikeCategory = 'E_BIKE';
-        let propulsion: PropulsionType = 'PEDELEC';
+        const isEbike = isElectricBike(title, brand);
+        const propulsion: PropulsionType = isEbike ? 'PEDELEC' : 'MUSCULAR';
+        let category: BikeCategory = isEbike ? 'E_BIKE' : inferBioCategory(title, brand);
+
         if (lower.includes('mountain') || lower.includes('mtb') || lower.includes('fully') || lower.includes('hardtail')) {
           category = 'MTB';
         } else if (lower.includes('gravel') || lower.includes('nuroad') || lower.includes('grizl')) {
@@ -206,16 +199,14 @@ async function fetchBocRealCatalog(): Promise<any[]> {
           category = 'ROAD';
         }
 
-        if (!lower.includes('e-') && !lower.includes('hybrid') && !lower.includes('pedelec') && !lower.includes('ebike') && !u.includes('e-bikes')) {
-          propulsion = 'MUSCULAR';
-        }
-
         let batteryWh: number | undefined = undefined;
-        const bMatch = title.match(/(\d{3,4})\s*wh/i);
-        if (bMatch) {
-          batteryWh = parseInt(bMatch[1], 10);
-        } else if (propulsion === 'PEDELEC') {
-          batteryWh = lower.includes('800') ? 800 : lower.includes('750') ? 750 : lower.includes('625') ? 625 : 750;
+        if (isEbike) {
+          const bMatch = title.match(/(\d{3,4})\s*wh/i);
+          if (bMatch) {
+            batteryWh = parseInt(bMatch[1], 10);
+          } else {
+            batteryWh = lower.includes('800') ? 800 : lower.includes('750') ? 750 : lower.includes('625') ? 625 : 750;
+          }
         }
 
         items.push({
@@ -230,9 +221,9 @@ async function fetchBocRealCatalog(): Promise<any[]> {
           sourceUrl: `https://www.boc24.de/products/${p.handle}`,
           externalId: `BOC-${p.id || Math.abs(hashCode(title))}`,
           batteryWh,
-          motorBrand: propulsion === 'PEDELEC' ? 'Bosch' : undefined,
-          motorModel: propulsion === 'PEDELEC' ? 'Bosch Performance CX Smart System' : undefined,
-          torqueNm: propulsion === 'PEDELEC' ? 85 : undefined,
+          motorBrand: isEbike ? 'Bosch' : undefined,
+          motorModel: isEbike ? 'Bosch Performance CX Smart System' : undefined,
+          torqueNm: isEbike ? 85 : undefined,
           frameSize: variant.title && variant.title !== 'Default Title' ? variant.title : '50cm (M)'
         });
       }
@@ -293,8 +284,10 @@ async function fetchLuckyBikeRealCatalog(): Promise<any[]> {
               const img = parsed.image || undefined;
               const lower = title.toLowerCase();
 
-              let category: BikeCategory = 'E_BIKE';
-              let propulsion: PropulsionType = 'PEDELEC';
+              const isEbike = isElectricBike(title, brand);
+              const propulsion: PropulsionType = isEbike ? 'PEDELEC' : 'MUSCULAR';
+              let category: BikeCategory = isEbike ? 'E_BIKE' : inferBioCategory(title, brand);
+
               if (lower.includes('mountain') || lower.includes('mtb') || lower.includes('fully') || lower.includes('hardtail')) {
                 category = 'MTB';
               } else if (lower.includes('gravel') || lower.includes('nuroad')) {
@@ -309,10 +302,6 @@ async function fetchLuckyBikeRealCatalog(): Promise<any[]> {
                 category = 'ROAD';
               }
 
-              if (!lower.includes('e-') && !lower.includes('hybrid') && !lower.includes('pedelec') && !lower.includes('625') && !lower.includes('750') && !lower.includes('800')) {
-                propulsion = 'MUSCULAR';
-              }
-
               items.push({
                 title,
                 brand,
@@ -324,10 +313,10 @@ async function fetchLuckyBikeRealCatalog(): Promise<any[]> {
                 imageUrl: img,
                 sourceUrl: url,
                 externalId: `LUK-${Math.abs(hashCode(url))}`,
-                batteryWh: propulsion === 'PEDELEC' ? 750 : undefined,
-                motorBrand: propulsion === 'PEDELEC' ? 'Bosch' : undefined,
-                motorModel: propulsion === 'PEDELEC' ? 'Bosch Performance CX Smart System' : undefined,
-                torqueNm: propulsion === 'PEDELEC' ? 85 : undefined,
+                batteryWh: isEbike ? 750 : undefined,
+                motorBrand: isEbike ? 'Bosch' : undefined,
+                motorModel: isEbike ? 'Bosch Performance CX Smart System' : undefined,
+                torqueNm: isEbike ? 85 : undefined,
                 frameSize: 'Diamant 54cm (L)'
               });
             } catch {}

@@ -21,7 +21,8 @@ import {
   TrendingDown,
   Share2,
   Check,
-  Copy
+  Copy,
+  Info
 } from 'lucide-react';
 import { Offer } from '../types';
 import { useFavorites } from '../utils/favorites';
@@ -262,8 +263,17 @@ export const OfferModal: React.FC<OfferModalProps> = ({
                 Modelljahr {offer.model_year}
               </span>
               <span className="px-2.5 py-0.5 text-xs font-semibold bg-slate-100 text-slate-700 rounded-md">
-                {offer.category}
+                {offer.propulsion === 'MUSCULAR' && offer.category === 'E_BIKE' ? 'Trekking' : offer.category}
               </span>
+              {offer.propulsion === 'MUSCULAR' ? (
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-slate-800 text-white rounded-md">
+                  Bio-Bike (Muskelkraft)
+                </span>
+              ) : (offer.propulsion === 'PEDELEC' || offer.propulsion === 'S_PEDELEC') ? (
+                <span className="px-2.5 py-0.5 text-xs font-bold bg-emerald-700 text-white rounded-md flex items-center gap-1">
+                  E-Bike
+                </span>
+              ) : null}
               {offer.quantity > 0 && (offer.quantity <= 2 || offer.availability === 'AVAILABLE_SHORT_TERM') ? (
                 <span className="px-2.5 py-0.5 text-xs font-bold bg-amber-50 text-amber-950 border border-amber-300 rounded-full flex items-center gap-1.5 shadow-xs">
                   <span className="relative flex h-2 w-2">
@@ -517,6 +527,19 @@ export const OfferModal: React.FC<OfferModalProps> = ({
             </div>
           </div>
 
+          {/* Detailed Model Description & Overview */}
+          {(offer.variant_details?.description || offer.description) && (
+            <div className="p-4 bg-slate-50/90 rounded-2xl border border-slate-200/90 shadow-2xs">
+              <h3 className="text-xs font-bold text-emerald-800 uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                <Info className="w-4 h-4 text-emerald-600 shrink-0" />
+                <span>Modellbeschreibung & Fachhändler-Überblick</span>
+              </h3>
+              <p className="text-sm text-slate-700 leading-relaxed">
+                {offer.variant_details?.description || offer.description}
+              </p>
+            </div>
+          )}
+
           {/* Technical Specifications */}
           <div>
             <h3 className="text-base font-bold text-slate-900 mb-3 flex items-center gap-2">
@@ -524,30 +547,45 @@ export const OfferModal: React.FC<OfferModalProps> = ({
               <span>Technische Spezifikationen & Ausstattung</span>
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
-              {offer.variant_details?.motor_brand && (
+              {offer.model_year && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Modelljahr</span>
+                  <span className="text-sm font-semibold text-slate-900">{offer.model_year}</span>
+                </div>
+              )}
+              {offer.propulsion !== 'MUSCULAR' &&
+              offer.variant_details?.motor_brand &&
+              !offer.variant_details.motor_brand.includes('Ohne Motor') &&
+              !offer.variant_details.motor_brand.includes('Muskelkraft') ? (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Motorenmarke & Modell</span>
                   <span className="text-sm font-semibold text-slate-900">
                     {offer.variant_details.motor_brand} {offer.variant_details.motor_model ? `– ${offer.variant_details.motor_model}` : ''}
                   </span>
                 </div>
-              )}
-              {offer.variant_details?.engine_type && (
+              ) : null}
+              {offer.propulsion !== 'MUSCULAR' && offer.variant_details?.engine_type && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Motortyp / Bauform</span>
                   <span className="text-sm font-semibold text-slate-900">{offer.variant_details.engine_type}</span>
                 </div>
               )}
-              {offer.variant_details?.torque_nm && (
+              {offer.propulsion !== 'MUSCULAR' && offer.variant_details?.torque_nm ? (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Motorkraft / Drehmoment</span>
                   <span className="text-sm font-semibold text-emerald-800">{offer.variant_details.torque_nm} Nm</span>
                 </div>
-              )}
-              {offer.variant_details?.battery_wh && (
+              ) : null}
+              {offer.propulsion !== 'MUSCULAR' && offer.variant_details?.battery_wh ? (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Akkukapazität</span>
                   <span className="text-sm font-semibold text-slate-900">{offer.variant_details.battery_wh} Wh</span>
+                </div>
+              ) : null}
+              {offer.propulsion === 'MUSCULAR' && (
+                <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
+                  <span className="text-xs text-slate-500 block">Antriebsart</span>
+                  <span className="text-sm font-semibold text-slate-900">Bio-Antrieb (Reine Muskelkraft / Ohne Motor)</span>
                 </div>
               )}
               {offer.variant_details?.weight_kg && (
@@ -572,7 +610,17 @@ export const OfferModal: React.FC<OfferModalProps> = ({
               {offer.variant_details?.frame_type && (
                 <div className="p-3 bg-slate-50 rounded-xl border border-slate-200/70">
                   <span className="text-xs text-slate-500 block">Rahmenform</span>
-                  <span className="text-sm font-semibold text-slate-900">{offer.variant_details.frame_type}</span>
+                  <span className="text-sm font-semibold text-slate-900">
+                    {offer.variant_details.frame_type === 'DIAMOND'
+                      ? 'Diamant (Herrenrahmen)'
+                      : offer.variant_details.frame_type === 'STEP_THROUGH'
+                      ? 'Wave (Tiefeinsteiger)'
+                      : offer.variant_details.frame_type === 'TRAPEZE'
+                      ? 'Trapez (Damenrahmen)'
+                      : offer.variant_details.frame_type === 'COMPACT'
+                      ? 'Kompakt / Faltrad'
+                      : offer.variant_details.frame_type}
+                  </span>
                 </div>
               )}
               {offer.variant_details?.color && (
