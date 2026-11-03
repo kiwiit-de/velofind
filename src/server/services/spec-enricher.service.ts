@@ -154,7 +154,27 @@ export const KNOWN_BIKE_WEIGHTS: Record<string, number> = {
   'riese & müller nevo': 27.8,
   'riese & müller load': 38.5,
   'riese & müller packster': 42.0,
-  'riese & müller multicharger': 29.5
+  'riese & müller multicharger': 29.5,
+
+  // --- Winora E-Bikes ---
+  'winora tria r5': 28.0, // Official Winora spec: 28.0 kg (Bosch Performance Line + 625 Wh + Gates belt)
+  'winora tria 10': 27.8,
+  'winora tria 9': 27.8,
+  'winora tria 8': 27.8,
+  'winora tria 7': 27.5,
+  'winora tria': 27.5,
+  'winora sinus r5f': 27.8,
+  'winora sinus r8': 27.8,
+  'winora sinus': 27.8,
+  'winora yakun 12': 28.5,
+  'winora yakun 10': 28.2,
+  'winora yakun r5': 28.2,
+  'winora yakun': 28.2,
+  'winora yucatan 12': 27.6,
+  'winora yucatan 10': 27.4,
+  'winora yucatan 8': 27.2,
+  'winora yucatan': 27.4,
+  'winora f.u.b.': 49.5
 };
 
 /**
@@ -355,7 +375,24 @@ export function isElectricBike(
     }
   }
 
-  // 14. Strong unequivocal electric keywords
+  // 14. Winora E-Bike Series (Tria, Sinus, Yakun, Yucatan, F.U.B., E-Flitzer)
+  if (t.includes('winora')) {
+    if (
+      t.includes('tria') ||
+      t.includes('sinus') ||
+      t.includes('yakun') ||
+      t.includes('yucatan') ||
+      t.includes('f.u.b.') ||
+      t.includes('fub') ||
+      t.includes('e-flitzer') ||
+      t.includes('cb400') ||
+      t.includes('radius')
+    ) {
+      return true;
+    }
+  }
+
+  // 15. Strong unequivocal electric keywords
   const electricTerms = [
     'e-bike',
     'ebike',
@@ -447,7 +484,12 @@ export function isElectricBike(
     'load 60',
     'packster',
     'sorrento 600',
-    'sorrento wave'
+    'sorrento wave',
+    'tria',
+    'sinus',
+    'yakun',
+    'yucatan',
+    'f.u.b.'
   ];
   for (const s of ebikeSeries) {
     if (t.includes(s)) return true;
@@ -678,17 +720,22 @@ export function inferBioCategory(title: string, brand: string = '', fallback?: B
 export function extractFrameType(title: string, existing?: FrameType): FrameType {
   const lower = title.toLowerCase();
 
+  if (lower.includes('diamant') || lower.includes('herren') || lower.includes('gent') || /\bhigh\b/i.test(title)) {
+    return 'DIAMOND';
+  }
+  if (lower.includes('trapez') || lower.includes('trapeze') || lower.includes('damen') || lower.includes('lady')) {
+    return 'TRAPEZE';
+  }
   if (
     lower.includes('wave') ||
     lower.includes('tiefeinsteiger') ||
     lower.includes('easy entry') ||
     lower.includes('low entry') ||
-    lower.includes('mono')
+    lower.includes('mono') ||
+    /\blow\b/i.test(title) ||
+    /\bwa\b/i.test(title)
   ) {
     return 'STEP_THROUGH';
-  }
-  if (lower.includes('trapez') || lower.includes('trapeze') || lower.includes('damen') || lower.includes('lady')) {
-    return 'TRAPEZE';
   }
   if (
     lower.includes('compact') ||
@@ -699,9 +746,6 @@ export function extractFrameType(title: string, existing?: FrameType): FrameType
     lower.includes('long john')
   ) {
     return 'COMPACT';
-  }
-  if (lower.includes('diamant') || lower.includes('herren') || lower.includes('gent')) {
-    return 'DIAMOND';
   }
   return existing || 'DIAMOND';
 }
@@ -1106,6 +1150,42 @@ export function enrichBikeSpecs(data: {
       engine_type = 'Mittelmotor (Cargo Schwerlast)';
       battery_wh = battery_wh || 545;
     }
+    // L2. Winora E-Bikes (Tria, Sinus, Yakun, Yucatan, F.U.B.)
+    else if (lower.includes('winora')) {
+      const hasExplicitWh = Boolean(title.match(/\b\d{3,4}\s*(?:wh|watt)\b/i));
+      if (lower.includes('f.u.b.') || lower.includes('fub')) {
+        motor_brand = 'Bosch';
+        motor_model = 'Cargo Line Smart System';
+        torque_nm = 85;
+        engine_type = 'Mittelmotor (Cargo Schwerlast)';
+        if (!hasExplicitWh) battery_wh = 500;
+      } else if (lower.includes('yakun')) {
+        motor_brand = 'Bosch';
+        motor_model = 'Performance Line CX Smart System';
+        torque_nm = 85;
+        if (!hasExplicitWh) battery_wh = 750;
+      } else if (lower.includes('yucatan')) {
+        motor_brand = 'Yamaha';
+        motor_model = 'PW-S2 System';
+        torque_nm = 75;
+        if (!hasExplicitWh) battery_wh = 720;
+      } else if (lower.includes('sinus')) {
+        motor_brand = 'Bosch';
+        motor_model = 'Performance Line (75Nm) Smart System';
+        torque_nm = 75;
+        if (!hasExplicitWh) battery_wh = 625;
+      } else if (lower.includes('tria r5') || lower.includes('tria 10') || lower.includes('tria 9') || lower.includes('tria 8')) {
+        motor_brand = 'Bosch';
+        motor_model = 'Performance Line Smart System';
+        torque_nm = 75;
+        if (!hasExplicitWh) battery_wh = 625;
+      } else {
+        motor_brand = 'Bosch';
+        motor_model = 'Active Line Plus';
+        torque_nm = 50;
+        if (!hasExplicitWh) battery_wh = 500;
+      }
+    }
     // M. Bosch (Dominant Market Leader in Germany)
     else {
       motor_brand = 'Bosch';
@@ -1142,8 +1222,13 @@ export function enrichBikeSpecs(data: {
 
   // 5. Max weight capacity / zulässiges Gesamtgewicht in kg (Fahrrad + Fahrer + Gepäck)
   let max_weight_kg = existing.max_weight_kg;
+  if (lower.includes('winora') && (lower.includes('tria') || lower.includes('sinus'))) {
+    max_weight_kg = 130;
+  } else if (lower.includes('yakun')) {
+    max_weight_kg = 150;
+  }
   if (!max_weight_kg || max_weight_kg <= 0) {
-    if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster') || lower.includes('family')) {
+    if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster') || lower.includes('family') || lower.includes('f.u.b.')) {
       max_weight_kg = 250;
     } else if (lower.includes('plus') || lower.includes('xxl') || lower.includes('heavy duty')) {
       max_weight_kg = 170; // Heavy duty / Plus models

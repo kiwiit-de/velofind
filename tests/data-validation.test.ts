@@ -203,29 +203,136 @@ async function runTests() {
   assert(mockMisclassifiedTrekRail.variant_details?.battery_wh === 625, 'Assigned 625 Wh battery to Trek Rail 5');
   assert(mockMisclassifiedTrekRail.variant_details?.weight_kg === 24.9, 'Assigned authentic manufacturer weight 24.9 kg (never bio 14.2 kg)');
 
-  // TEST 6: Suspicious Weight Detection on E-Bikes
-  console.log('\nTEST 6: Suspicious weight discrepancy detection on E-Bikes');
-  const mockSuspiciousWeightEbike: Offer = {
+  // TEST 6: Suspicious Weight Detection on E-Bikes (< 15kg & higher than range)
+  console.log('\nTEST 6: Comprehensive Weight Sanity Check & Manual Review Flags');
+  const mockSuspiciousLowEbike: Offer = {
     ...mockValidEbike,
-    id: 'test-suspicious-weight-1',
+    id: 'test-suspicious-weight-low',
     variant_details: {
       ...mockValidEbike.variant_details!,
-      weight_kg: 14.2 // Corrupt bio weight on e-bike
+      weight_kg: 14.2 // Corrupt bio weight on standard e-trekking (< 15kg)
     }
   };
-  const weightIssues = dataValidatorService.validateOffer(mockSuspiciousWeightEbike, true);
-  assert(weightIssues.some(i => i.ruleViolated === 'SUSPICIOUS_WEIGHT'), 'Detected SUSPICIOUS_WEIGHT rule violation');
-  assert(mockSuspiciousWeightEbike.variant_details?.weight_kg! >= 24.0, 'Auto-fixed suspicious weight to authentic e-bike weight >= 24 kg');
+  const weightLowIssues = dataValidatorService.validateOffer(mockSuspiciousLowEbike, true);
+  assert(weightLowIssues.some(i => i.ruleViolated === 'SUSPICIOUS_WEIGHT'), 'Detected SUSPICIOUS_WEIGHT for e-bike < 15 kg');
+  assert(mockSuspiciousLowEbike.manual_review_required === true, 'Set manual_review_required = true on offer');
+  assert(Boolean(mockSuspiciousLowEbike.review_flags?.includes('SUSPICIOUS_WEIGHT')), 'Added SUSPICIOUS_WEIGHT to review_flags');
+  assert(mockSuspiciousLowEbike.variant_details?.manual_review_required === true, 'Set manual_review_required on variant_details');
+  assert(mockSuspiciousLowEbike.variant_details?.weight_kg! >= 24.0, 'Auto-fixed suspicious weight to authentic e-bike weight >= 24 kg');
 
-  // TEST 7: Integration with DailySyncService pipeline
-  console.log('\nTEST 7: Daily Sync Pipeline Integration');
+  // Test suspiciously high weight
+  const mockSuspiciousHighEbike: Offer = {
+    ...mockValidEbike,
+    id: 'test-suspicious-weight-high',
+    variant_details: {
+      ...mockValidEbike.variant_details!,
+      weight_kg: 48.0 // Implausibly high for standard e-trekking
+    }
+  };
+  const weightHighIssues = dataValidatorService.validateOffer(mockSuspiciousHighEbike, true);
+  assert(weightHighIssues.some(i => i.ruleViolated === 'SUSPICIOUS_WEIGHT'), 'Detected SUSPICIOUS_WEIGHT for implausibly heavy e-bike');
+  assert(mockSuspiciousHighEbike.manual_review_required === true, 'Flagged heavy e-bike for manual review');
+
+  // TEST 7: Torque and Battery Sanity Checks
+  console.log('\nTEST 7: Torque & Battery Sanity Checks');
+  const mockBadTorqueEbike: Offer = {
+    ...mockValidEbike,
+    id: 'test-bad-torque',
+    variant_details: {
+      ...mockValidEbike.variant_details!,
+      torque_nm: 10 // Implausibly low torque for e-bike (< 25 Nm)
+    }
+  };
+  const torqueIssues = dataValidatorService.validateOffer(mockBadTorqueEbike, true);
+  assert(torqueIssues.some(i => i.ruleViolated === 'TORQUE_OUT_OF_BOUNDS'), 'Detected TORQUE_OUT_OF_BOUNDS');
+  assert(mockBadTorqueEbike.manual_review_required === true, 'Flagged bad torque offer for manual review');
+  assert(mockBadTorqueEbike.variant_details?.torque_nm! >= 50, 'Auto-corrected torque to plausible value');
+
+  const mockBadBatteryEbike: Offer = {
+    ...mockValidEbike,
+    id: 'test-bad-battery',
+    variant_details: {
+      ...mockValidEbike.variant_details!,
+      battery_wh: 50 // Implausibly low battery for e-bike (< 150 Wh)
+    }
+  };
+  const batteryIssues = dataValidatorService.validateOffer(mockBadBatteryEbike, true);
+  assert(batteryIssues.some(i => i.ruleViolated === 'BATTERY_OUT_OF_BOUNDS'), 'Detected BATTERY_OUT_OF_BOUNDS');
+  assert(mockBadBatteryEbike.manual_review_required === true, 'Flagged bad battery offer for manual review');
+
+  // TEST 8: Max Permissible Weight Sanity (Zul. Gesamtgewicht)
+  console.log('\nTEST 8: Max Permissible Weight Sanity Check');
+  const mockInvalidMaxWeight: Offer = {
+    ...mockValidEbike,
+    id: 'test-invalid-max-weight',
+    variant_details: {
+      ...mockValidEbike.variant_details!,
+      weight_kg: 26.5,
+      max_weight_kg: 20 // Impossible: max weight less than bike's own weight
+    }
+  };
+  const maxWeightIssues = dataValidatorService.validateOffer(mockInvalidMaxWeight, true);
+  assert(maxWeightIssues.some(i => i.ruleViolated === 'MAX_WEIGHT_SANITY'), 'Detected MAX_WEIGHT_SANITY violation (max_weight <= weight_kg)');
+  assert(mockInvalidMaxWeight.manual_review_required === true, 'Flagged max weight contradiction for manual review');
+  assert(mockInvalidMaxWeight.variant_details?.max_weight_kg! > mockInvalidMaxWeight.variant_details?.weight_kg!, 'Corrected max_weight_kg exceeds bike own weight');
+
+  // TEST 9: Winora TRIA R5 Low Classification & Authentic 28.0 kg Weight
+  console.log('\nTEST 9: Winora TRIA R5 Low E-Bike Classification & 28.0 kg Weight');
+  const mockWinoraTria: Offer = {
+    id: 'test-winora-tria-corrupt',
+    dealer_id: 'test-dealer-1',
+    dealer_name: 'B.O.C. Bochum',
+    dealer_slug: 'boc-bochum',
+    dealer_verified: true,
+    dealer_locations: [],
+    source_id: 'test-src',
+    external_id: 'BOC-15516403106057',
+    title: 'Winora TRIA R5 Low',
+    brand_name: 'WINORA',
+    model_name: 'TRIA R5 Low',
+    model_year: 2025,
+    category: 'TREKKING',
+    propulsion: 'MUSCULAR', // Previously misclassified as muscular
+    price_cents: 359900,
+    currency: 'EUR',
+    availability: 'IN_STOCK',
+    quantity: 1,
+    condition: 'NEW',
+    source_url: 'https://example.com/winora-tria-r5',
+    content_hash: 'hash-winora-tria',
+    first_seen_at: new Date().toISOString(),
+    last_seen_at: new Date().toISOString(),
+    is_active: true,
+    leasing_compatibilities: [],
+    variant_details: {
+      frame_size: 'CAVALRY / 41 CM',
+      frame_type: 'DIAMOND', // Incorrectly marked as DIAMOND
+      color: 'Graphite Anthrazit',
+      wheel_size_in: 28,
+      weight_kg: 14.2, // Corrupt 14.2 kg bio weight
+      max_weight_kg: 140
+    }
+  };
+
+  const winoraIssues = dataValidatorService.validateOffer(mockWinoraTria, true);
+  assert(winoraIssues.some(i => i.ruleViolated === 'EBIKE_MISCLASSIFIED_AS_MUSCULAR'), 'Caught Winora TRIA R5 misclassified as muscular');
+  assert(mockWinoraTria.propulsion === 'PEDELEC', 'Reclassified Winora TRIA R5 to PEDELEC');
+  assert(mockWinoraTria.variant_details?.frame_type === 'STEP_THROUGH', 'Corrected frame_type to STEP_THROUGH (Wave/Low)');
+  assert(mockWinoraTria.variant_details?.motor_brand === 'Bosch', 'Assigned Bosch motor to Winora TRIA R5');
+  assert(mockWinoraTria.variant_details?.torque_nm === 75, 'Assigned 75 Nm torque to Winora TRIA R5');
+  assert(mockWinoraTria.variant_details?.battery_wh === 625, 'Assigned 625 Wh battery to Winora TRIA R5');
+  assert(mockWinoraTria.variant_details?.weight_kg === 28.0, 'Assigned authentic manufacturer weight 28.0 kg (never 14.2 kg)');
+  assert(mockWinoraTria.variant_details?.max_weight_kg === 130, 'Assigned authentic Winora max weight 130 kg');
+
+  // TEST 10: Integration with DailySyncService pipeline
+  console.log('\nTEST 10: Daily Sync Pipeline Integration');
   const syncStatus = dailySyncService.getStatus();
   assert(syncStatus.automatedDailySync === true, 'dailySyncService has automatedDailySync enabled');
   assert(typeof syncStatus.scheduleInterval === 'string', 'dailySyncService provides human-readable schedule interval');
   assert('lastValidationReport' in syncStatus, 'dailySyncService exposes lastValidationReport');
 
-  // TEST 8: Live Catalog Health Verification
-  console.log('\nTEST 8: Full Live Catalog Discrepancy Scan');
+  // TEST 11: Live Catalog Health Verification
+  console.log('\nTEST 11: Full Live Catalog Discrepancy Scan');
   const catalogReport = await dataValidatorService.validateAndCleanCatalog({
     autoFix: true,
     offers: PARTNER_OFFERS_DATA,

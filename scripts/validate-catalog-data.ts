@@ -52,9 +52,14 @@ async function main() {
   console.log(`- Muscular with Motor/Battery: ${report.breakdown.muscularWithMotorSpecs}`);
   console.log(`- E-Bike Marked Muscular:      ${report.breakdown.ebikeMisclassifiedAsMuscular}`);
   console.log(`- Bio-Bike Marked E-Bike:      ${report.breakdown.bioMisclassifiedAsEbike}`);
+  console.log(`- Suspicious Weights:          ${report.breakdown.suspiciousWeights}`);
   console.log(`- Frame Type Contradictions:   ${report.breakdown.frameTypeContradictions}`);
   console.log(`- Wheel Size Contradictions:   ${report.breakdown.wheelSizeContradictions}`);
+  console.log(`- Torque Out of Bounds:        ${report.breakdown.torqueOutOfBounds}`);
+  console.log(`- Battery Out of Bounds:       ${report.breakdown.batteryOutOfBounds}`);
+  console.log(`- Max Weight Sanity:           ${report.breakdown.maxWeightSanity}`);
   console.log(`- Invalid Prices:              ${report.breakdown.invalidPrices}`);
+  console.log(`- Missing Mandatory Fields:    ${report.breakdown.missingMandatoryFields}`);
 
   if (report.flaggedForManualReview.length > 0) {
     console.log('\n⚠️ FLAGGED FOR MANUAL REVIEW:');

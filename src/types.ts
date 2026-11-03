@@ -192,6 +192,8 @@ export interface Offer {
     description?: string;
     gtin?: string;
     sku?: string;
+    review_flag?: string;
+    manual_review_required?: boolean;
   };
   leasing_compatibilities: OfferProviderEligibility[];
   price_history?: OfferPriceHistory[];
@@ -199,6 +201,9 @@ export interface Offer {
   available_branches?: AvailableBranch[];
   available_locations?: AvailableLocation[];
   branches_count?: number;
+  manual_review_required?: boolean;
+  review_flags?: string[];
+  review_reason?: string;
 }
 
 export interface AvailableBranch {
