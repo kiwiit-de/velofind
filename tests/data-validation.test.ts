@@ -156,15 +156,76 @@ async function runTests() {
   assert(wheelIssues.some(i => i.ruleViolated === 'WHEEL_SIZE_CONTRADICTION'), 'Detected WHEEL_SIZE_CONTRADICTION');
   assert(mockWheelContradiction.variant_details?.wheel_size_in === 29, 'Auto-fixed wheel_size_in to 29 Zoll matching title');
 
-  // TEST 5: Integration with DailySyncService pipeline
-  console.log('\nTEST 5: Daily Sync Pipeline Integration');
+  // TEST 5: Trek Rail 5 625 E-MTB & Authentic 24.9 kg Weight Repair
+  console.log('\nTEST 5: Trek Rail 5 625 E-MTB classification & authentic 24.9 kg weight repair');
+  const mockMisclassifiedTrekRail: Offer = {
+    id: 'test-trek-rail-corrupt',
+    dealer_id: 'test-dealer-1',
+    dealer_name: 'Lucky Bike Bochum',
+    dealer_slug: 'lucky-bike-bochum',
+    dealer_verified: true,
+    dealer_locations: [],
+    source_id: 'test-src',
+    external_id: 'LUCKY-TREK-RAIL-5',
+    title: 'Trek Rail 5 625',
+    brand_name: 'Trek',
+    model_name: 'Rail 5 625',
+    model_year: 2025,
+    category: 'TREKKING',
+    propulsion: 'MUSCULAR', // Previously misclassified
+    price_cents: 499900,
+    currency: 'EUR',
+    availability: 'IN_STOCK',
+    quantity: 1,
+    condition: 'NEW',
+    source_url: 'https://example.com/trek-rail-5',
+    content_hash: 'hash-trek-rail',
+    first_seen_at: new Date().toISOString(),
+    last_seen_at: new Date().toISOString(),
+    is_active: true,
+    leasing_compatibilities: [],
+    variant_details: {
+      frame_size: 'Diamant 54 cm (L)',
+      frame_type: 'DIAMOND',
+      color: 'Olive Grey',
+      wheel_size_in: 29,
+      weight_kg: 14.2, // Corrupt bio-bike weight
+      max_weight_kg: 140
+    }
+  };
+
+  const railIssues = dataValidatorService.validateOffer(mockMisclassifiedTrekRail, true);
+  assert(railIssues.some(i => i.ruleViolated === 'EBIKE_MISCLASSIFIED_AS_MUSCULAR'), 'Caught Trek Rail 5 misclassified as muscular');
+  assert(mockMisclassifiedTrekRail.propulsion === 'PEDELEC', 'Reclassified Trek Rail 5 to PEDELEC');
+  assert(mockMisclassifiedTrekRail.category === 'MTB', 'Corrected Trek Rail 5 category from TREKKING to MTB');
+  assert(mockMisclassifiedTrekRail.variant_details?.motor_brand === 'Bosch', 'Assigned Bosch motor to Trek Rail 5');
+  assert(mockMisclassifiedTrekRail.variant_details?.torque_nm === 85, 'Assigned 85 Nm torque to Trek Rail 5');
+  assert(mockMisclassifiedTrekRail.variant_details?.battery_wh === 625, 'Assigned 625 Wh battery to Trek Rail 5');
+  assert(mockMisclassifiedTrekRail.variant_details?.weight_kg === 24.9, 'Assigned authentic manufacturer weight 24.9 kg (never bio 14.2 kg)');
+
+  // TEST 6: Suspicious Weight Detection on E-Bikes
+  console.log('\nTEST 6: Suspicious weight discrepancy detection on E-Bikes');
+  const mockSuspiciousWeightEbike: Offer = {
+    ...mockValidEbike,
+    id: 'test-suspicious-weight-1',
+    variant_details: {
+      ...mockValidEbike.variant_details!,
+      weight_kg: 14.2 // Corrupt bio weight on e-bike
+    }
+  };
+  const weightIssues = dataValidatorService.validateOffer(mockSuspiciousWeightEbike, true);
+  assert(weightIssues.some(i => i.ruleViolated === 'SUSPICIOUS_WEIGHT'), 'Detected SUSPICIOUS_WEIGHT rule violation');
+  assert(mockSuspiciousWeightEbike.variant_details?.weight_kg! >= 24.0, 'Auto-fixed suspicious weight to authentic e-bike weight >= 24 kg');
+
+  // TEST 7: Integration with DailySyncService pipeline
+  console.log('\nTEST 7: Daily Sync Pipeline Integration');
   const syncStatus = dailySyncService.getStatus();
   assert(syncStatus.automatedDailySync === true, 'dailySyncService has automatedDailySync enabled');
   assert(typeof syncStatus.scheduleInterval === 'string', 'dailySyncService provides human-readable schedule interval');
   assert('lastValidationReport' in syncStatus, 'dailySyncService exposes lastValidationReport');
 
-  // TEST 6: Live Catalog Health Verification
-  console.log('\nTEST 6: Full Live Catalog Discrepancy Scan');
+  // TEST 8: Live Catalog Health Verification
+  console.log('\nTEST 8: Full Live Catalog Discrepancy Scan');
   const catalogReport = await dataValidatorService.validateAndCleanCatalog({
     autoFix: true,
     offers: PARTNER_OFFERS_DATA,

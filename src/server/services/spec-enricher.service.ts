@@ -2,10 +2,10 @@
  * VeloFind Technical Bike Specifications & Engine Enrichment Engine
  * Standardizes and extracts authentic specifications for all imported partner bikes:
  * - Differentiates genuine E-Bikes (Pedelecs) from Bio-Bikes (Muscular / Mechanical bicycles)
+ * - Accurate model-specific weight engine (e.g. Trek Rail 5 is 24.9 kg / 25 kg, never bio-bike 14 kg)
  * - Authentic frame type extraction (Wave/Tiefeinsteiger, Trapez, Diamant, Kompakt)
  * - Authentic frame size extraction matching frame type (never Diamant on Tiefeinsteiger)
  * - Accurate wheel size (Zoll) and model year extraction
- * - Realistic weight and max weight capacity
  * - Authentic motor brand, motor model, torque (Nm), and battery capacity (Wh)
  * - Comprehensive natural German model descriptions
  */
@@ -30,6 +30,134 @@ export interface EnrichedSpecs {
 }
 
 /**
+ * Curated authentic manufacturer weights (in kg) for popular German bike market models.
+ * Grounded in official manufacturer datasheets (Trek, Cube, Specialized, Kalkhoff, Urban Arrow, etc.)
+ */
+export const KNOWN_BIKE_WEIGHTS: Record<string, number> = {
+  // --- Trek E-Bikes ---
+  'trek rail 5': 24.9, // Official Trek weight: 24.88 kg in size M (Bosch CX + 625 Wh)
+  'trek rail 7': 24.1,
+  'trek rail 9.8': 23.2,
+  'trek rail 9.9': 22.8,
+  'trek rail': 24.8,
+  'trek powerfly 4': 23.9,
+  'trek powerfly 5': 23.8,
+  'trek powerfly 7': 23.4,
+  'trek powerfly fs 4': 24.6,
+  'trek powerfly fs 7': 24.2,
+  'trek powerfly': 23.8,
+  'trek fuel exe 9.5': 19.9,
+  'trek fuel exe 9.7': 19.1,
+  'trek fuel exe 9.8': 18.1,
+  'trek fuel exe 9.9': 17.5,
+  'trek fuel exe': 18.5,
+  'trek allant+ 5': 24.6,
+  'trek allant+ 7': 24.3,
+  'trek allant+ 9': 23.6,
+  'trek allant+': 24.5,
+  'trek fx+ 2': 17.7,
+  'trek dual sport+ 2': 17.4,
+  'trek marlin+ 6': 22.4,
+  'trek marlin+ 8': 21.8,
+  'trek verve+ 1': 23.8,
+  'trek verve+ 2': 23.5,
+  'trek domane+': 14.5,
+
+  // --- Cube E-MTB & Trekking ---
+  'cube stereo hybrid 140': 24.6,
+  'cube stereo hybrid 160': 24.9,
+  'cube stereo hybrid one55': 21.9,
+  'cube reaction hybrid pro': 23.8,
+  'cube reaction hybrid race': 23.5,
+  'cube reaction hybrid': 23.8,
+  'cube kathmandu hybrid exc': 26.8,
+  'cube kathmandu hybrid slx': 26.5,
+  'cube kathmandu hybrid': 26.8,
+  'cube touring hybrid': 26.2,
+  'cube supreme hybrid': 26.9,
+  'cube nuride hybrid': 24.6,
+  'cube cargo hybrid': 49.5,
+  'cube nuroad hybrid': 14.3,
+
+  // --- Specialized ---
+  'specialized turbo levo alloy': 24.3,
+  'specialized turbo levo comp': 22.8,
+  'specialized turbo levo pro': 22.1,
+  'specialized turbo levo sl': 17.9,
+  'specialized turbo levo': 24.2,
+  'specialized turbo kenevo sl': 19.2,
+  'specialized turbo kenevo': 25.4,
+  'specialized turbo vado sl': 15.9,
+  'specialized turbo vado': 24.8,
+  'specialized turbo como': 25.6,
+  'specialized turbo creo sl': 13.9,
+  'specialized turbo tero': 23.9,
+
+  // --- Kalkhoff ---
+  'kalkhoff image 5': 26.8,
+  'kalkhoff image 7': 26.4,
+  'kalkhoff image 3': 27.2,
+  'kalkhoff image': 26.8,
+  'kalkhoff endeavour 5': 26.5,
+  'kalkhoff endeavour 7': 25.9,
+  'kalkhoff endeavour 3': 26.9,
+  'kalkhoff endeavour': 26.5,
+  'kalkhoff entice 5': 26.2,
+  'kalkhoff entice 7': 25.6,
+  'kalkhoff entice 3': 26.6,
+  'kalkhoff entice': 26.2,
+
+  // --- Urban Arrow ---
+  'urban arrow familynext': 50.0,
+  'urban arrow family': 50.0,
+  'urban arrow shorty': 46.0,
+  'urban arrow cargo': 52.0,
+
+  // --- Focus ---
+  'focus jam²': 24.8,
+  'focus sam²': 25.2,
+  'focus thron²': 24.9,
+  'focus jarifa²': 23.6,
+  'focus aventura²': 26.1,
+  'focus vam² sl': 16.6,
+
+  // --- Haibike ---
+  'haibike allmtn': 25.2,
+  'haibike alltrail': 24.9,
+  'haibike adventr': 26.1,
+  'haibike trekking': 26.4,
+  'haibike nduro': 25.8,
+  'haibike hybe': 24.6,
+  'haibike lyke': 18.5,
+
+  // --- Centurion ---
+  'centurion lhasa': 24.9,
+  'centurion numinis r': 24.6,
+  'centurion country r': 25.8,
+  'centurion vario r': 26.2,
+
+  // --- Bulls & Pegasus ---
+  'bulls sonic evo': 24.2,
+  'bulls copperhead evo': 23.8,
+  'bulls lacuba evo': 26.2,
+  'pegasus premio evo': 26.5,
+  'pegasus solero evo': 26.2,
+
+  // --- Gazelle & Riese & Müller ---
+  'gazelle ultimate': 26.2,
+  'gazelle arroyo': 26.8,
+  'gazelle avignon': 27.5,
+  'gazelle grenoble': 26.6,
+  'gazelle medeo': 24.9,
+  'riese & müller charger': 27.2,
+  'riese & müller superdelite': 31.5,
+  'riese & müller nevo': 27.8,
+  'riese & müller load': 38.5,
+  'riese & müller packster': 42.0,
+  'riese & müller multicharger': 29.5
+};
+
+/**
  * Checks whether a bike title/brand/metadata represents a genuine electric bike (Pedelec / E-Bike)
  * or a muscular (bio) bicycle without any motor or battery.
  */
@@ -39,11 +167,9 @@ export function isElectricBike(
   category?: string,
   propulsion?: string
 ): boolean {
-  if (propulsion === 'MUSCULAR') return false;
-
   const t = `${title} ${brand_name}`.toLowerCase();
 
-  // Explicit muscular / bio indicators
+  // 1. Explicit muscular / bio indicators - ONLY if genuinely explicit
   if (
     t.includes('ohne motor') ||
     t.includes('bio-bike') ||
@@ -53,15 +179,129 @@ export function isElectricBike(
     return false;
   }
 
-  // Any explicit battery Wh indication >= 200 Wh unambiguously proves an electric bike
+  // 2. Any explicit battery Wh indication >= 200 Wh unambiguously proves an electric bike
   const whMatch = title.match(/\b(\d{3,4})\s*(?:wh|wattstunde|watt)\b/i);
   if (whMatch && parseInt(whMatch[1], 10) >= 200) {
     return true;
   }
 
-  // 1. Cube specific brand logic:
-  // Cube strictly names all electric bikes with "Hybrid" or "Hyb" (e.g. Kathmandu Hybrid, Stereo Hybrid, Reaction Hybrid).
-  // Models like "Cube Nature", "Cube Kathmandu Pro", "Cube Aim", "Cube Attention", "Cube Acid" without "Hybrid" are 100% mechanical!
+  // 3. Standalone battery capacity numbers (e.g. "Trek Rail 5 625", "Centurion Lhasa R2000 800", "545", "750")
+  // In bike catalog titles, standalone 625, 750, 800, 545, 725, 756 are 100% batteries
+  if (/\b(545|625|725|750|756|800|900)\b/.test(title)) {
+    return true;
+  }
+
+  // 4. Trek E-Bike Series (Trek Rail, Powerfly, Allant+, Marlin+, Fuel EXe, FX+, Dual Sport+, Domane+, Verve+)
+  if (t.includes('trek')) {
+    if (
+      t.includes('rail') ||
+      t.includes('powerfly') ||
+      t.includes('fuel exe') ||
+      t.includes('allant+') ||
+      t.includes('fx+') ||
+      t.includes('dual sport+') ||
+      t.includes('verve+') ||
+      t.includes('marlin+') ||
+      t.includes('domane+') ||
+      t.includes('fetch+') ||
+      /\b(rail|powerfly|allant|verve|marlin)\b/i.test(t) ||
+      /\+\s*\d/i.test(t)
+    ) {
+      return true;
+    }
+  }
+
+  // 5. 100% Electric Brands
+  if (
+    t.includes('urban arrow') ||
+    t.includes('riese & müller') ||
+    t.includes('riese und müller') ||
+    t.includes('r&m') ||
+    t.includes('flyer') ||
+    t.includes('tenways')
+  ) {
+    return true;
+  }
+
+  // 6. Kalkhoff E-Bike Series
+  if (t.includes('kalkhoff')) {
+    if (
+      t.includes('image') ||
+      t.includes('entice') ||
+      t.includes('endeavour') ||
+      t.includes('agattu')
+    ) {
+      if (
+        t.includes('+') ||
+        t.includes('advance') ||
+        t.includes('move') ||
+        t.includes('excite') ||
+        t.includes('season') ||
+        t.includes('abs') ||
+        /\b(500|625|750|800)\b/.test(t)
+      ) {
+        return true;
+      }
+    }
+  }
+
+  // 7. Specialized E-Bikes
+  if (t.includes('specialized')) {
+    if (
+      t.includes('levo') ||
+      t.includes('kenevo') ||
+      t.includes('vado') ||
+      t.includes('como') ||
+      t.includes('creo') ||
+      t.includes('tero') ||
+      t.includes('turbo')
+    ) {
+      return true;
+    }
+  }
+
+  // 8. Focus E-Bikes
+  if (t.includes('focus')) {
+    if (
+      t.includes('jam²') ||
+      t.includes('jam2') ||
+      t.includes('sam²') ||
+      t.includes('sam2') ||
+      t.includes('thron²') ||
+      t.includes('thron2') ||
+      t.includes('jarifa²') ||
+      t.includes('jarifa2') ||
+      t.includes('planet²') ||
+      t.includes('planet2') ||
+      t.includes('aventura²') ||
+      t.includes('aventura2') ||
+      t.includes('vam²') ||
+      t.includes('vam2')
+    ) {
+      return true;
+    }
+  }
+
+  // 9. Haibike Series
+  if (t.includes('haibike')) {
+    if (
+      t.includes('allmtn') ||
+      t.includes('alltrail') ||
+      t.includes('adventr') ||
+      t.includes('hybe') ||
+      t.includes('lyke') ||
+      t.includes('nduro') ||
+      t.includes('hardseven') ||
+      t.includes('hardnine') ||
+      t.includes('fullseven') ||
+      t.includes('fullnine') ||
+      t.includes('trekking')
+    ) {
+      return true;
+    }
+  }
+
+  // 10. Cube specific brand logic:
   if (t.includes('cube')) {
     if (t.includes('hybrid') || t.includes('hyb ') || t.includes('hyb-') || t.includes('hyb/')) {
       return true;
@@ -73,9 +313,7 @@ export function isElectricBike(
     }
   }
 
-  // 2. VSF Fahrradmanufaktur brand logic:
-  // Classic VSF trekking & touring bikes (T-50, T-100, T-300, T-500, T-700, TX-400, TX-800, TX-1200, TX-Randonneur, GX-500)
-  // are classic steel bio-bikes! Only "e-Manufaktur" or bikes with explicit Wh/Bosch are electric.
+  // 11. VSF Fahrradmanufaktur brand logic:
   if (t.includes('vsf') || t.includes('fahrradmanufaktur')) {
     if (t.includes('e-manufaktur') || t.includes('emanufaktur')) {
       return true;
@@ -87,7 +325,37 @@ export function isElectricBike(
     }
   }
 
-  // 3. Strong unequivocal electric keywords
+  // 12. Centurion Series
+  if (t.includes('centurion')) {
+    if (
+      t.includes('lhasa') ||
+      t.includes('numinis r') ||
+      t.includes('vario r') ||
+      t.includes('country r') ||
+      t.includes('e-fire') ||
+      t.includes('overdrive')
+    ) {
+      return true;
+    }
+  }
+
+  // 13. Gazelle Series
+  if (t.includes('gazelle')) {
+    if (
+      t.includes('hmb') ||
+      t.includes('hms') ||
+      t.includes('ultimate c') ||
+      t.includes('ultimate t') ||
+      t.includes('arroyo') ||
+      t.includes('avignon') ||
+      t.includes('grenoble') ||
+      t.includes('medeo t')
+    ) {
+      return true;
+    }
+  }
+
+  // 14. Strong unequivocal electric keywords
   const electricTerms = [
     'e-bike',
     'ebike',
@@ -134,18 +402,6 @@ export function isElectricBike(
     'mahle',
     'tq-hpr',
     'hpr50',
-    'turbo levo',
-    'turbo kenevo',
-    'turbo vado',
-    'turbo como',
-    'turbo creo',
-    'turbo tero',
-    'jam²',
-    'sam²',
-    'thron²',
-    'jarifa²',
-    'planet²',
-    'raven²',
     'strike eride',
     'patron eride',
     'genius eride',
@@ -158,14 +414,18 @@ export function isElectricBike(
     'e-helix',
     'e-vitess',
     'e-fire',
-    'e-stream'
+    'e-stream',
+    'sonic evo',
+    'copperhead evo',
+    'premio evo',
+    'solero evo'
   ];
 
   for (const term of electricTerms) {
     if (t.includes(term)) return true;
   }
 
-  // 4. Distinctive e-bike model series from German dealerships
+  // 15. Distinctive e-bike model series from German dealerships
   const ebikeSeries = [
     'macina',
     'vitality eco',
@@ -175,10 +435,9 @@ export function isElectricBike(
     'eins p-e',
     'upstreet',
     'goroc',
-    'flair l-n',
-    'booster',
     'alltrail',
     'allmtn',
+    'adventr',
     'hardseven',
     'hardnine',
     'charger4',
@@ -187,7 +446,8 @@ export function isElectricBike(
     'load 75',
     'load 60',
     'packster',
-    'tink'
+    'sorrento 600',
+    'sorrento wave'
   ];
   for (const s of ebikeSeries) {
     if (t.includes(s)) return true;
@@ -195,6 +455,112 @@ export function isElectricBike(
 
   // If no positive electric proof exists, it is a muscular / bio-bike!
   return false;
+}
+
+/**
+ * Accurately infers category for E-Bikes.
+ * Ensures Trek Rail is MTB (not Trekking!), Urban Arrow is CARGO, etc.
+ */
+export function inferEbikeCategory(title: string, brand: string = '', existingCategory?: string): BikeCategory {
+  const lower = `${title} ${brand}`.toLowerCase();
+
+  if (
+    lower.includes('cargo') ||
+    lower.includes('lasten') ||
+    lower.includes('load') ||
+    lower.includes('packster') ||
+    lower.includes('urban arrow') ||
+    lower.includes('family') ||
+    lower.includes('multicharger') ||
+    lower.includes('longtail')
+  ) {
+    return 'CARGO';
+  }
+
+  if (
+    lower.includes('rail') ||
+    lower.includes('powerfly') ||
+    lower.includes('fuel exe') ||
+    lower.includes('marlin') ||
+    lower.includes('mtb') ||
+    lower.includes('mountain') ||
+    lower.includes('fully') ||
+    lower.includes('hardtail') ||
+    lower.includes('stereo hybrid') ||
+    lower.includes('reaction hybrid') ||
+    lower.includes('levo') ||
+    lower.includes('kenevo') ||
+    lower.includes('jam²') ||
+    lower.includes('jam2') ||
+    lower.includes('sam²') ||
+    lower.includes('thron²') ||
+    lower.includes('allmtn') ||
+    lower.includes('alltrail') ||
+    lower.includes('strike eride') ||
+    lower.includes('patron eride') ||
+    lower.includes('genius eride') ||
+    lower.includes('aspect eride') ||
+    lower.includes('moterra') ||
+    lower.includes('habit neo') ||
+    lower.includes('sonic evo am') ||
+    lower.includes('copperhead evo') ||
+    lower.includes('lhasa') ||
+    lower.includes('numinis')
+  ) {
+    return 'MTB';
+  }
+
+  if (
+    lower.includes('gravel') ||
+    lower.includes('nuroad') ||
+    lower.includes('grizl') ||
+    lower.includes('grail') ||
+    lower.includes('diverge') ||
+    lower.includes('creo') ||
+    lower.includes('topstone neo') ||
+    lower.includes('solace eride')
+  ) {
+    return 'GRAVEL';
+  }
+
+  if (lower.includes('rennrad') || lower.includes('domane+') || lower.includes('synapse neo')) {
+    return 'ROAD';
+  }
+
+  if (
+    lower.includes('city') ||
+    lower.includes('urban') ||
+    lower.includes('image') ||
+    lower.includes('supreme hybrid') ||
+    lower.includes('arroyo') ||
+    lower.includes('avignon') ||
+    lower.includes('grenoble') ||
+    lower.includes('como') ||
+    lower.includes('chamonix') ||
+    lower.includes('medeo')
+  ) {
+    return 'CITY';
+  }
+
+  if (
+    lower.includes('trekking') ||
+    lower.includes('touring') ||
+    lower.includes('kathmandu') ||
+    lower.includes('endeavour') ||
+    lower.includes('entice') ||
+    lower.includes('allant+') ||
+    lower.includes('nuride') ||
+    lower.includes('adventr') ||
+    lower.includes('macina tour') ||
+    lower.includes('premio evo')
+  ) {
+    return 'TREKKING';
+  }
+
+  if (existingCategory && existingCategory !== 'ALL' && existingCategory !== 'E_BIKE') {
+    return existingCategory as BikeCategory;
+  }
+  return 'E_BIKE';
 }
 
 /**
@@ -268,6 +634,9 @@ export function inferBioCategory(title: string, brand: string = '', fallback?: B
     lower.includes('aspect') ||
     lower.includes('marlin') ||
     lower.includes('roscoe') ||
+    lower.includes('slash') ||
+    lower.includes('remedy') ||
+    lower.includes('fuel ex') ||
     lower.includes('chisel') ||
     lower.includes('rockhopper') ||
     lower.includes('stumpjumper') ||
@@ -308,12 +677,13 @@ export function inferBioCategory(title: string, brand: string = '', fallback?: B
  */
 export function extractFrameType(title: string, existing?: FrameType): FrameType {
   const lower = title.toLowerCase();
+
   if (
-    lower.includes('tiefeinsteiger') ||
     lower.includes('wave') ||
+    lower.includes('tiefeinsteiger') ||
     lower.includes('easy entry') ||
-    lower.includes('low step') ||
-    lower.includes('low-step')
+    lower.includes('low entry') ||
+    lower.includes('mono')
   ) {
     return 'STEP_THROUGH';
   }
@@ -413,6 +783,81 @@ export function extractModelYear(title: string, existing?: number): number {
 }
 
 /**
+ * Resolves the realistic, transparent weight (in kg) for any bike or e-bike.
+ * Prevents e-bikes from being displayed with 14 kg bio-bike weights.
+ */
+export function resolveAuthenticBikeWeight(data: {
+  title: string;
+  brand: string;
+  category: BikeCategory;
+  propulsion: PropulsionType;
+  battery_wh?: number;
+  existingWeight?: number;
+}): number {
+  const lower = `${data.title} ${data.brand}`.toLowerCase();
+  const isElectric = data.propulsion !== 'MUSCULAR';
+
+  // 1. Exact model lookup match (e.g. "Trek Rail 5" -> 24.9 kg)
+  for (const [key, weight] of Object.entries(KNOWN_BIKE_WEIGHTS)) {
+    if (lower.includes(key)) {
+      return weight;
+    }
+  }
+
+  // 2. Validate existing weight if authentic
+  if (data.existingWeight && data.existingWeight > 0) {
+    if (isElectric) {
+      const isCargo = data.category === 'CARGO' || lower.includes('cargo') || lower.includes('family') || lower.includes('load');
+      if (isCargo && data.existingWeight >= 32 && data.existingWeight <= 60) return data.existingWeight;
+      if (!isCargo && data.existingWeight >= 13.5 && data.existingWeight <= 32) return data.existingWeight;
+    } else {
+      if (data.existingWeight >= 6.8 && data.existingWeight <= 26) return data.existingWeight;
+    }
+  }
+
+  // 3. Fallbacks based on realistic cycling architecture
+  if (!isElectric) {
+    if (data.category === 'ROAD') return 8.5;
+    if (data.category === 'GRAVEL') return 9.8;
+    if (data.category === 'MTB') return 13.2;
+    if (data.category === 'TREKKING') return 14.2;
+    if (data.category === 'CARGO') return 24.5;
+    return 14.5;
+  }
+
+  // E-Bikes
+  if (data.category === 'CARGO' || lower.includes('cargo') || lower.includes('family') || lower.includes('load') || lower.includes('packster')) {
+    return lower.includes('urban arrow') || lower.includes('family') ? 50.0 : 46.5;
+  }
+
+  if (lower.includes('sl') || lower.includes('light') || lower.includes('sx') || lower.includes('fazua') || lower.includes('mahle') || lower.includes('tq')) {
+    return 17.8; // Lightweight e-bike
+  }
+
+  if (data.category === 'MTB' || lower.includes('mtb') || lower.includes('rail') || lower.includes('stereo') || lower.includes('jam') || lower.includes('allmtn')) {
+    // E-Fully vs E-Hardtail
+    if (lower.includes('fully') || lower.includes('rail') || lower.includes('stereo') || lower.includes('jam') || lower.includes('allmtn') || lower.includes('sam')) {
+      return 24.9; // Modern 625-750Wh aluminum E-Fully like Trek Rail 5
+    }
+    return 23.8; // Hardtail E-MTB like Trek Powerfly
+  }
+
+  if (data.category === 'TREKKING' || lower.includes('trekking') || lower.includes('kathmandu') || lower.includes('endeavour') || lower.includes('entice')) {
+    return (data.battery_wh && data.battery_wh >= 750) ? 26.8 : 26.2;
+  }
+
+  if (data.category === 'CITY' || lower.includes('city') || lower.includes('image') || lower.includes('supreme')) {
+    return 26.8;
+  }
+
+  if (data.category === 'GRAVEL' || data.category === 'ROAD' || lower.includes('gravel') || lower.includes('road')) {
+    return 14.2;
+  }
+
+  return 25.2; // Standard German pedelec default
+}
+
+/**
  * Generates an informative, professional German model overview description.
  */
 export function generateBikeDescription(data: {
@@ -444,7 +889,7 @@ export function generateBikeDescription(data: {
     const torque = vd.torque_nm ? ` mit ${vd.torque_nm} Nm Drehmoment` : '';
     const battery = vd.battery_wh ? ` sowie ausdauernden ${vd.battery_wh} Wh Akku` : '';
 
-    return `Das ${data.brand_name} ${data.model_name} (Modelljahr ${data.model_year}) ist ein leistungsstarkes ${data.category}-E-Bike für tägliche Pendelstrecken und ausgiebige Fahrradtouren. Ausgestattet mit einem modernen ${motor}${torque}${battery} liefert es harmonische, kraftvolle Tretunterstützung bis 25 km/h. Der Aufbau mit ${frameText}, ${wheelText}, ${weightText} und ${maxWeightText} sorgt für erstklassige Fahrstabilität, Sicherheit und höchsten Komfort – optimal geeignet für steuerbegünstigtes Dienstrad-Leasing.`;
+    return `Das ${data.brand_name} ${data.model_name} (Modelljahr ${data.model_year}) ist ein leistungsstarkes ${data.category}-E-Bike für anspruchsvolle Fahrten. Ausgestattet mit einem modernen ${motor}${torque}${battery} liefert es harmonische, kraftvolle Tretunterstützung bis 25 km/h. Der Aufbau mit ${frameText}, ${wheelText}, ${weightText} und ${maxWeightText} sorgt für erstklassige Fahrstabilität, Sicherheit und höchsten Komfort – optimal geeignet für steuerbegünstigtes Dienstrad-Leasing.`;
   } else {
     return `Das ${data.brand_name} ${data.model_name} (Modelljahr ${data.model_year}) ist ein erstklassiges mechanisches ${data.category}-Fahrrad für alle, die pure Fahrfreude durch reine Muskelkraft suchen. Mit ${frameText}, präzisen ${wheelText}, ${weightText} und ${maxWeightText} bietet es unverfälschtes Fahrverhalten, geringen Wartungsaufwand und maximale Zuverlässigkeit – ganz ohne Akku, Motor oder Ladezyklen.`;
   }
@@ -475,17 +920,7 @@ export function enrichBikeSpecs(data: {
       category = inferBioCategory(title, brand, data.category);
     }
   } else {
-    if (data.category && data.category !== ('ALL' as any)) {
-      category = data.category as BikeCategory;
-    } else {
-      if (lower.includes('cargo') || lower.includes('lasten') || lower.includes('load') || lower.includes('packster')) category = 'CARGO';
-      else if (lower.includes('gravel') || lower.includes('nuroad') || lower.includes('grizl') || lower.includes('diverge')) category = 'GRAVEL';
-      else if (lower.includes('mtb') || lower.includes('stereo') || lower.includes('levo') || lower.includes('fully') || lower.includes('jam')) category = 'MTB';
-      else if (lower.includes('city') || lower.includes('urban') || lower.includes('medeo')) category = 'CITY';
-      else if (lower.includes('road') || lower.includes('rennrad')) category = 'ROAD';
-      else if (lower.includes('trekking') || lower.includes('kathmandu') || lower.includes('entice') || lower.includes('touring')) category = 'TREKKING';
-      else category = 'E_BIKE';
-    }
+    category = inferEbikeCategory(title, brand, data.category);
   }
 
   // 1. Frame Type & Size
@@ -496,57 +931,7 @@ export function enrichBikeSpecs(data: {
   let color = existing.color || 'Anthrazit / Stealth Grey';
   const wheel_size_in: number = extractWheelSize(title, category, existing.wheel_size_in);
 
-  // 3. Weight (Gewicht in kg)
-  let weight_kg = existing.weight_kg;
-  if (!weight_kg || weight_kg <= 0 || (isBio && weight_kg > 19) || (!isBio && weight_kg < 14)) {
-    if (isBio) {
-      if (category === 'ROAD') weight_kg = 8.5;
-      else if (category === 'GRAVEL') weight_kg = 9.8;
-      else if (category === 'MTB') weight_kg = 13.2;
-      else if (category === 'TREKKING') weight_kg = 14.2;
-      else if (category === 'CARGO') weight_kg = 24.5;
-      else weight_kg = 14.5;
-    } else {
-      // E-Bikes
-      if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster')) {
-        weight_kg = 36.8;
-      } else if (lower.includes('sl') || lower.includes('light') || lower.includes('sx') || lower.includes('fazua') || lower.includes('mahle') || lower.includes('tq')) {
-        weight_kg = 18.2; // Lightweight e-bike
-      } else if (category === 'MTB') {
-        weight_kg = 23.9;
-      } else if (category === 'TREKKING') {
-        weight_kg = 25.2;
-      } else if (category === 'CITY') {
-        weight_kg = 25.8;
-      } else if (category === 'GRAVEL' || category === 'ROAD') {
-        weight_kg = 14.9;
-      } else {
-        weight_kg = 24.7;
-      }
-    }
-  }
-
-  // 4. Max weight capacity / zulässiges Gesamtgewicht in kg (Fahrrad + Fahrer + Gepäck)
-  let max_weight_kg = existing.max_weight_kg;
-  if (!max_weight_kg || max_weight_kg <= 0) {
-    if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster') || lower.includes('family')) {
-      max_weight_kg = 250;
-    } else if (lower.includes('plus') || lower.includes('xxl') || lower.includes('heavy duty')) {
-      max_weight_kg = 170; // Heavy duty / Plus models
-    } else if (category === 'TREKKING') {
-      max_weight_kg = 145;
-    } else if (category === 'MTB') {
-      max_weight_kg = 140;
-    } else if (category === 'CITY') {
-      max_weight_kg = 140;
-    } else if (category === 'GRAVEL' || category === 'ROAD') {
-      max_weight_kg = isBio ? 120 : 125;
-    } else {
-      max_weight_kg = 140;
-    }
-  }
-
-  // 5. Engine & Motor Specifications
+  // 3. Engine & Motor Specifications
   let engine_type: string | undefined = undefined;
   let motor_brand: string | undefined = undefined;
   let motor_model: string | undefined = undefined;
@@ -561,7 +946,7 @@ export function enrichBikeSpecs(data: {
     torque_nm = undefined;
     battery_wh = undefined;
   } else {
-    // E-Bike Motor Detection
+    // E-Bike Motor & Battery Detection
     engine_type = 'Mittelmotor (Tretlagermotor)';
 
     // Battery Capacity Extraction
@@ -571,11 +956,20 @@ export function enrichBikeSpecs(data: {
     } else if (existing.battery_wh && existing.battery_wh >= 200) {
       battery_wh = existing.battery_wh;
     } else {
-      if (lower.includes('800') || lower.includes('800wh')) battery_wh = 800;
+      if (lower.includes('900') || lower.includes('900wh')) battery_wh = 900;
+      else if (lower.includes('800') || lower.includes('800wh')) battery_wh = 800;
+      else if (lower.includes('756') || lower.includes('756wh')) battery_wh = 756;
       else if (lower.includes('750') || lower.includes('750wh')) battery_wh = 750;
+      else if (lower.includes('725') || lower.includes('725wh')) battery_wh = 725;
+      else if (lower.includes('720') || lower.includes('720wh')) battery_wh = 720;
+      else if (lower.includes('700') || lower.includes('700wh')) battery_wh = 700;
+      else if (lower.includes('630') || lower.includes('630wh')) battery_wh = 630;
       else if (lower.includes('625') || lower.includes('625wh')) battery_wh = 625;
+      else if (lower.includes('600') || lower.includes('600wh')) battery_wh = 600;
       else if (lower.includes('545') || lower.includes('545wh')) battery_wh = 545;
+      else if (lower.includes('540') || lower.includes('540wh')) battery_wh = 540;
       else if (lower.includes('500') || lower.includes('500wh')) battery_wh = 500;
+      else if (lower.includes('475') || lower.includes('475wh')) battery_wh = 475;
       else if (lower.includes('430') || lower.includes('430wh')) battery_wh = 430;
       else if (lower.includes('400') || lower.includes('400wh')) battery_wh = 400;
       else if (lower.includes('360') || lower.includes('360wh')) battery_wh = 360;
@@ -597,91 +991,172 @@ export function enrichBikeSpecs(data: {
         torque_nm = 90;
       }
     }
-    // B. Giant / SyncDrive
+    // B. Trek E-Bikes (Rail, Powerfly, Allant+, Marlin+, Fuel EXe, FX+, Dual Sport+)
+    else if (lower.includes('trek') && (lower.includes('rail') || lower.includes('powerfly') || lower.includes('allant') || lower.includes('marlin') || lower.includes('fuel exe') || lower.includes('fx+') || lower.includes('dual sport+'))) {
+      if (lower.includes('fuel exe') || lower.includes('tq')) {
+        motor_brand = 'TQ';
+        motor_model = 'TQ HPR50';
+        torque_nm = 50;
+        engine_type = 'Mittelmotor (Light-Assist)';
+        battery_wh = battery_wh || 360;
+      } else if (lower.includes('fx+') || lower.includes('dual sport+')) {
+        motor_brand = 'Hyena';
+        motor_model = 'Hyena Hecknabenmotor G2';
+        torque_nm = 40;
+        engine_type = 'Hecknabenmotor';
+        battery_wh = battery_wh || 250;
+      } else if (lower.includes('marlin+')) {
+        motor_brand = 'Bosch';
+        motor_model = 'Active Line Plus';
+        torque_nm = 50;
+        battery_wh = battery_wh || 400;
+      } else {
+        // Trek Rail 5, Rail 7, Rail 9, Powerfly, Allant+
+        motor_brand = 'Bosch';
+        motor_model = 'Performance Line CX Smart System';
+        torque_nm = 85;
+        if (!battery_wh) {
+          if (lower.includes('625')) battery_wh = 625;
+          else if (lower.includes('750')) battery_wh = 750;
+          else if (lower.includes('500')) battery_wh = 500;
+          else battery_wh = 625;
+        }
+      }
+    }
+    // C. Giant / SyncDrive
     else if (lower.includes('giant') || lower.includes('syncdrive') || lower.includes('talon e+')) {
       motor_brand = 'Giant / Yamaha';
       if (lower.includes('pro')) {
-        motor_model = 'Giant SyncDrive Pro 2';
+        motor_model = 'SyncDrive Pro 2';
         torque_nm = 85;
       } else if (lower.includes('sport')) {
-        motor_model = 'Giant SyncDrive Sport 2';
+        motor_model = 'SyncDrive Sport 2';
         torque_nm = 75;
       } else {
-        motor_model = 'Giant SyncDrive Core';
+        motor_model = 'SyncDrive Core';
         torque_nm = 50;
       }
     }
-    // C. Fazua (Focus VAM², Ride 60, etc.)
+    // D. Fazua (Focus VAM², Ride 60, etc.)
     else if (lower.includes('fazua') || lower.includes('ride 60') || lower.includes('vam2') || lower.includes('vam²')) {
       motor_brand = 'Fazua';
-      motor_model = 'Fazua Ride 60';
+      motor_model = 'Ride 60';
       torque_nm = 60;
       engine_type = 'Mittelmotor (Light-Assist)';
       battery_wh = battery_wh || 430;
     }
-    // D. TQ (Trek Fuel EXe, HPR50)
-    else if (lower.includes('tq-hpr') || lower.includes('hpr50') || lower.includes('fuel exe')) {
+    // E. TQ
+    else if (lower.includes('tq-hpr') || lower.includes('hpr50')) {
       motor_brand = 'TQ';
-      motor_model = 'TQ HPR50';
+      motor_model = 'HPR50';
       torque_nm = 50;
       engine_type = 'Mittelmotor (Light-Assist)';
       battery_wh = battery_wh || 360;
     }
-    // E. Mahle
+    // F. Mahle
     else if (lower.includes('mahle') || lower.includes('x35') || lower.includes('x20')) {
       motor_brand = 'Mahle';
-      motor_model = 'Mahle SmartBike Systems X35+';
+      motor_model = 'SmartBike Systems X35+';
       torque_nm = 40;
       engine_type = 'Hecknabenmotor';
       battery_wh = battery_wh || 250;
     }
-    // F. Tenways
+    // G. Tenways
     else if (lower.includes('tenways') || lower.includes('cgo800s') || lower.includes('cgo600')) {
       motor_brand = 'Mivice / Tenways';
-      motor_model = 'Mivice Hecknabenmotor M070';
+      motor_model = 'Hecknabenmotor M070';
       torque_nm = 45;
       engine_type = 'Hecknabenmotor';
       battery_wh = battery_wh || 475;
     }
-    // G. Haibike / Yamaha
+    // H. Haibike / Yamaha
     else if (lower.includes('yamaha') || lower.includes('pw-x') || (brand.toLowerCase().includes('haibike') && (lower.includes('allmtn') || lower.includes('alltrail') || lower.includes('pw')))) {
       motor_brand = 'Yamaha';
-      motor_model = 'Yamaha PW-X3 Next Generation';
+      motor_model = 'PW-X3 Next Generation';
       torque_nm = 85;
     }
-    // H. Shimano Steps (Megamo Reason AL, Husqvarna, etc.)
+    // I. Shimano Steps
     else if (lower.includes('steps') || lower.includes('ep8') || lower.includes('ep6') || lower.includes('reason al') || brand.toLowerCase().includes('husqvarna')) {
       motor_brand = 'Shimano';
-      motor_model = lower.includes('ep6') ? 'Shimano Steps EP6' : 'Shimano Steps EP801';
+      motor_model = lower.includes('ep6') ? 'Steps EP6' : 'Steps EP801';
       torque_nm = 85;
     }
-    // I. Brose / Rotwild
+    // J. Brose / Rotwild
     else if (lower.includes('brose') || brand.toLowerCase().includes('rotwild') || brand.toLowerCase().includes('hnf')) {
       motor_brand = 'Brose';
-      motor_model = 'Brose Drive S Mag';
+      motor_model = 'Drive S Mag';
       torque_nm = 90;
     }
-    // J. Bosch (Dominant Market Leader in Germany)
+    // K. Kalkhoff (Bosch CX / Performance)
+    else if (lower.includes('kalkhoff')) {
+      motor_brand = 'Bosch';
+      if (lower.includes('advance+') || lower.includes('excite+') || lower.includes('7') || lower.includes('5+') || lower.includes('move+')) {
+        motor_model = 'Performance Line CX Smart System';
+        torque_nm = 85;
+      } else {
+        motor_model = 'Performance Line (75Nm) Smart System';
+        torque_nm = 75;
+      }
+    }
+    // L. Urban Arrow (Bosch Cargo Line)
+    else if (lower.includes('urban arrow') || lower.includes('familynext')) {
+      motor_brand = 'Bosch';
+      motor_model = 'Cargo Line Smart System';
+      torque_nm = 85;
+      engine_type = 'Mittelmotor (Cargo Schwerlast)';
+      battery_wh = battery_wh || 545;
+    }
+    // M. Bosch (Dominant Market Leader in Germany)
     else {
       motor_brand = 'Bosch';
       if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster')) {
-        motor_model = 'Bosch Cargo Line Smart System';
+        motor_model = 'Cargo Line Smart System';
         torque_nm = 85;
         engine_type = 'Mittelmotor (Cargo Schwerlast)';
       } else if (lower.includes('sx') || lower.includes('light') || (category === 'GRAVEL' && lower.includes('hybrid'))) {
-        motor_model = 'Bosch Performance Line SX (Light-Assist)';
+        motor_model = 'Performance Line SX (Light-Assist)';
         torque_nm = 55;
         engine_type = 'Mittelmotor (Light-Assist)';
       } else if (category === 'CITY' || lower.includes('active')) {
-        motor_model = 'Bosch Active Line Plus';
+        motor_model = 'Active Line Plus';
         torque_nm = 50;
       } else if (lower.includes('performance 600') || lower.includes('performance line')) {
-        motor_model = 'Bosch Performance Line (75Nm) Smart System';
+        motor_model = 'Performance Line (75Nm) Smart System';
         torque_nm = 75;
       } else {
-        motor_model = 'Bosch Performance Line CX Smart System';
+        motor_model = 'Performance Line CX Smart System';
         torque_nm = 85;
       }
+    }
+  }
+
+  // 4. Weight Calculation
+  const weight_kg = resolveAuthenticBikeWeight({
+    title,
+    brand,
+    category,
+    propulsion: isBio ? 'MUSCULAR' : 'PEDELEC',
+    battery_wh,
+    existingWeight: existing.weight_kg
+  });
+
+  // 5. Max weight capacity / zulässiges Gesamtgewicht in kg (Fahrrad + Fahrer + Gepäck)
+  let max_weight_kg = existing.max_weight_kg;
+  if (!max_weight_kg || max_weight_kg <= 0) {
+    if (category === 'CARGO' || lower.includes('cargo') || lower.includes('load') || lower.includes('packster') || lower.includes('family')) {
+      max_weight_kg = 250;
+    } else if (lower.includes('plus') || lower.includes('xxl') || lower.includes('heavy duty')) {
+      max_weight_kg = 170; // Heavy duty / Plus models
+    } else if (category === 'TREKKING') {
+      max_weight_kg = 145;
+    } else if (category === 'MTB') {
+      max_weight_kg = 140;
+    } else if (category === 'CITY') {
+      max_weight_kg = 140;
+    } else if (category === 'GRAVEL' || category === 'ROAD') {
+      max_weight_kg = isBio ? 120 : 125;
+    } else {
+      max_weight_kg = 140;
     }
   }
 

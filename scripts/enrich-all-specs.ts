@@ -1,7 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { PARTNER_DEALERS_DATA, PARTNER_OFFERS_DATA, LEASING_PROVIDERS_DATA } from '../src/server/db/dealer-registry.ts';
-import { enrichBikeSpecs, isElectricBike, inferBioCategory, extractModelYear } from '../src/server/services/spec-enricher.service.ts';
+import { enrichBikeSpecs, isElectricBike, inferBioCategory, inferEbikeCategory, extractModelYear } from '../src/server/services/spec-enricher.service.ts';
 import type { BikeCategory, PropulsionType, Offer } from '../src/types.ts';
 
 console.log('Starting full specification & price enrichment...');
@@ -21,14 +21,10 @@ const enrichedOffers: Offer[] = eligibleOffers.map((o) => {
   let correctCategory: BikeCategory;
   if (!isEbike) {
     bioCount++;
-    if (o.category && o.category !== 'E_BIKE' && o.category !== ('ALL' as any)) {
-      correctCategory = o.category as BikeCategory;
-    } else {
-      correctCategory = inferBioCategory(o.title, o.brand_name, o.category);
-    }
+    correctCategory = inferBioCategory(o.title, o.brand_name, o.category);
   } else {
     ebikeCount++;
-    correctCategory = (o.category && o.category !== ('ALL' as any)) ? (o.category as BikeCategory) : 'E_BIKE';
+    correctCategory = inferEbikeCategory(o.title, o.brand_name, o.category);
   }
 
   const enrichedVd = enrichBikeSpecs({

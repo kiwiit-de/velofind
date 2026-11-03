@@ -16,6 +16,9 @@ import type { Offer, PropulsionType, FrameType, BikeCategory } from '../../types
 import {
   isElectricBike,
   inferBioCategory,
+  inferEbikeCategory,
+  enrichBikeSpecs,
+  resolveAuthenticBikeWeight,
   extractFrameType,
   extractFrameSize,
   extractWheelSize,
@@ -33,6 +36,7 @@ export type DiscrepancyRule =
   | 'MUSCULAR_WITH_MOTOR_SPECS'
   | 'EBIKE_MISCLASSIFIED_AS_MUSCULAR'
   | 'BIO_MISCLASSIFIED_AS_EBIKE'
+  | 'SUSPICIOUS_WEIGHT'
   | 'FRAME_TYPE_CONTRADICTION'
   | 'WHEEL_SIZE_CONTRADICTION'
   | 'INVALID_PRICE'
@@ -65,6 +69,7 @@ export interface DataValidationReport {
     muscularWithMotorSpecs: number;
     ebikeMisclassifiedAsMuscular: number;
     bioMisclassifiedAsEbike: number;
+    suspiciousWeights: number;
     frameTypeContradictions: number;
     wheelSizeContradictions: number;
     invalidPrices: number;
@@ -174,21 +179,30 @@ export class DataValidatorService {
     }
 
     // -------------------------------------------------------------------------
-    // RULE 2: Title unambiguously proves E-Bike (e.g. 750 Wh / Hybrid) but marked MUSCULAR
+    // RULE 2: Title unambiguously proves E-Bike (e.g. 750 Wh / Hybrid / Rail / 625) but marked MUSCULAR
     // -------------------------------------------------------------------------
     const detectedAsElectric = isElectricBike(offer.title, offer.brand_name, offer.category, 'PEDELEC');
     const hasExplicitBatteryInTitle = /\b(\d{3,4})\s*(?:wh|wattstunde)\b/i.test(offer.title);
+    const hasStandaloneBatteryNumber = /\b(545|625|725|750|756|800|900)\b/.test(offer.title);
 
-    if (isMuscular && (hasExplicitBatteryInTitle || (detectedAsElectric && !titleLower.includes('ohne motor')))) {
-      const beforeState = { propulsion: offer.propulsion, category: offer.category };
+    if (isMuscular && (hasExplicitBatteryInTitle || hasStandaloneBatteryNumber || (detectedAsElectric && !titleLower.includes('ohne motor')))) {
+      const beforeState = { propulsion: offer.propulsion, category: offer.category, weight_kg: vd.weight_kg };
       let actionTaken = 'Flagged for manual review';
 
       if (autoFix) {
         offer.propulsion = 'PEDELEC';
-        if (offer.category === 'TREKKING' && titleLower.includes('hybrid')) {
-          offer.category = 'E_BIKE';
-        }
-        actionTaken = 'Reclassified propulsion to PEDELEC and updated category to reflect electric powertrain';
+        offer.category = inferEbikeCategory(offer.title, offer.brand_name, offer.category);
+        const enrichedVd = enrichBikeSpecs({
+          title: offer.title,
+          brand_name: offer.brand_name,
+          category: offer.category,
+          propulsion: 'PEDELEC',
+          price_cents: offer.price_cents,
+          existing: offer.variant_details
+        });
+        offer.variant_details = enrichedVd;
+        offer.description = enrichedVd.description;
+        actionTaken = `Reclassified propulsion to PEDELEC (${offer.category}), enriched motor/battery specs, and updated weight to authentic ${enrichedVd.weight_kg} kg`;
       }
 
       discrepancies.push({
@@ -202,7 +216,7 @@ export class DataValidatorService {
         autoFixed: autoFix,
         actionTaken,
         before: beforeState,
-        after: autoFix ? { propulsion: offer.propulsion, category: offer.category } : undefined
+        after: autoFix ? { propulsion: offer.propulsion, category: offer.category, weight_kg: offer.variant_details?.weight_kg } : undefined
       });
     }
 
@@ -247,6 +261,58 @@ export class DataValidatorService {
         before: beforeState,
         after: autoFix ? { propulsion: 'MUSCULAR', motor_brand: undefined } : undefined
       });
+    }
+
+    // -------------------------------------------------------------------------
+    // RULE 3B: Suspicious Weight Discrepancy (e.g. 25kg E-Bike marked as 14.2kg bio-bike)
+    // -------------------------------------------------------------------------
+    if (offer.propulsion !== 'MUSCULAR' && vd.weight_kg) {
+      const isCargo = offer.category === 'CARGO' || titleLower.includes('cargo') || titleLower.includes('family') || titleLower.includes('load');
+      const isLightEbike = titleLower.includes('sl') || titleLower.includes('light') || titleLower.includes('sx') || titleLower.includes('fazua') || titleLower.includes('mahle') || titleLower.includes('tq');
+      const minPlausibleWeight = isLightEbike ? 13.0 : isCargo ? 30.0 : 18.0;
+
+      if (vd.weight_kg < minPlausibleWeight) {
+        const beforeWeight = vd.weight_kg;
+        let actionTaken = 'Flagged for manual review';
+        let newWeight = beforeWeight;
+
+        if (autoFix) {
+          newWeight = resolveAuthenticBikeWeight({
+            title: offer.title,
+            brand: offer.brand_name,
+            category: offer.category,
+            propulsion: offer.propulsion,
+            battery_wh: vd.battery_wh,
+            existingWeight: undefined // Force authentic architecture weight
+          });
+          vd.weight_kg = newWeight;
+          vd.description = generateBikeDescription({
+            title: offer.title,
+            brand_name: offer.brand_name,
+            model_name: offer.model_name || offer.title,
+            category: offer.category,
+            propulsion: offer.propulsion,
+            model_year: offer.model_year || 2025,
+            specs: vd
+          });
+          offer.description = vd.description;
+          actionTaken = `Corrected suspicious e-bike weight from ${beforeWeight} kg to authentic ${newWeight} kg`;
+        }
+
+        discrepancies.push({
+          offerId: offer.id,
+          externalId: offer.external_id,
+          title: offer.title,
+          dealerName: offer.dealer_name,
+          ruleViolated: 'SUSPICIOUS_WEIGHT',
+          severity: 'HIGH',
+          details: `E-Bike had an implausibly low bio-bike weight of ${beforeWeight} kg (corrected to authentic ~${newWeight} kg)`,
+          autoFixed: autoFix,
+          actionTaken,
+          before: { weight_kg: beforeWeight },
+          after: autoFix ? { weight_kg: newWeight } : undefined
+        });
+      }
     }
 
     // -------------------------------------------------------------------------
@@ -374,6 +440,7 @@ export class DataValidatorService {
       muscularWithMotorSpecs: 0,
       ebikeMisclassifiedAsMuscular: 0,
       bioMisclassifiedAsEbike: 0,
+      suspiciousWeights: 0,
       frameTypeContradictions: 0,
       wheelSizeContradictions: 0,
       invalidPrices: 0,
@@ -401,6 +468,9 @@ export class DataValidatorService {
             break;
           case 'BIO_MISCLASSIFIED_AS_EBIKE':
             breakdown.bioMisclassifiedAsEbike++;
+            break;
+          case 'SUSPICIOUS_WEIGHT':
+            breakdown.suspiciousWeights++;
             break;
           case 'FRAME_TYPE_CONTRADICTION':
             breakdown.frameTypeContradictions++;
